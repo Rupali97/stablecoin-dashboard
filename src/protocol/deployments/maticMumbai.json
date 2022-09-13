@@ -1,0 +1,10 @@
+{
+      "Token": {
+            "abi": "Token",
+            "address": "0xd265B941782778B023A494fe4586c54ccb2e130E"
+      },
+      "Token2": {
+            "abi": "Token2",
+            "address": "0xeeff7AFe202361DBB6844cf025caF7C0173544A7"
+      }
+}

@@ -1,0 +1,55 @@
+.m-r-5{
+      margin-right: 5px;
+}
+
+.m-r-10{
+      margin-right: 10px;
+}
+
+.m-r-20{
+      margin-right: 20px;
+}
+
+.m-r-40{
+      margin-right: 40px;
+}
+
+
+
+.m-b-5{
+      margin-bottom: 5px;
+}
+
+.m-b-10{
+      margin-bottom: 10px;
+}
+
+.m-b-15{
+      margin-bottom: 15px;
+}
+
+.flip180 {
+      transform: rotate(90deg);
+}
+
+.flex {
+      display: flex;
+}
+
+.row-left-center{
+      display: flex;
+      align-items: center;
+}
+
+.orange-bold{
+      color: #ed7117;
+      font-weight: bold;
+}
+
+.flex1 {
+      flex: 1;
+}
+
+.flex4 {
+      flex: 4;
+}

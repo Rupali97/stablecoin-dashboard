@@ -1,0 +1,14 @@
+#auth {
+      background: rgb(69, 57, 80);
+      padding: 1px;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+}
+
+.auth-container{
+      /* max-width: 300px; */
+
+}
