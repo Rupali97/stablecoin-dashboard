@@ -1,30 +1,40 @@
 import { HashRouter as Router } from 'react-router-dom';
-import { UseWalletProvider } from 'use-wallet';
+import { useWallet, UseWalletProvider } from 'use-wallet';
 import { SnackbarProvider } from "notistack";
+import {Provider} from "react-redux";
 
 import dotenv from 'dotenv'
-import config from './config';
+import config, { getSupportedChains } from './config';
 import ProtocolProvider from './context/Provider';
 // import ModalsProvider from './context/Modals'
 import Navigation from './navigation';
 import useCore from './hooks/useCore';
 import Dashbaord from './views/dashboard';
+import store from './state';
+import Updaters from './state/Updaters';
+import ModalsProvider from './context/Modals'
+import Popups from './components/Popups';
+import { useGetUpdateActiveChainId } from './state/chains/hooks';
+import { useEffect } from 'react';
 dotenv.config()
 
+const Providers: React.FC = ({children}) => {
+  return (
+    <Provider store={store}>
+      <WalletProvider>{children}</WalletProvider>
+    </Provider>
 
-const CustomizedSnackbars: React.FC<any> = () => {
-  return(
-    <div></div>
-  )
-}
+  );
+};
 
-const Providers = ({ children }: any) => {
+const WalletProvider = ({ children }: any) => {
+
   return (
     <UseWalletProvider
       // chainId={config.chainId}
       connectors={{
         injected: {
-          chainId: [config.chainId],
+          chainId: getSupportedChains(),
         },
         walletconnect: {
           chainId: config.chainId,
@@ -32,30 +42,32 @@ const Providers = ({ children }: any) => {
         }
       }}
       >
+        <Updaters/>
         <ProtocolProvider>
-          {/* <ModalsProvider>
-            <SnackbarProvider
-              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-              maxSnack={2}
-            >
-              <>
-                <CustomizedSnackbars />
-               
-              </>
-            </SnackbarProvider>
-          </ModalsProvider> */}
-           {children}
+          <AppContent>{children}</AppContent>
         </ProtocolProvider>
 
     </UseWalletProvider>
   );
 };
 
-function App() {
+const AppContent: React.FC = ({children}) => {
 
   const core = useCore()
 
-  console.log('core', core)
+  const {ethereum, chainId} = useWallet();
+  const setChainId = useGetUpdateActiveChainId();
+
+  useEffect(() => {
+    if (ethereum)
+      // @ts-ignore
+      ethereum.on('chainChanged', (chainId) => {
+        console.log('chain changed', chainId);
+        setChainId(chainId);
+      });
+  }, [ethereum]);
+
+  console.log('core', core, chainId)
 
   if (!window.ethereum) {
     console.log('no window ethereum')
@@ -65,6 +77,27 @@ function App() {
     console.log('no core');
     return <div />
   };
+
+  return(
+    <ModalsProvider>
+      <SnackbarProvider
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        maxSnack={2}
+        autoHideDuration={2500}
+      >
+        <>
+          <Popups/>
+          {children}
+        </>
+      </SnackbarProvider>
+    </ModalsProvider>
+  )
+}
+
+function App() {
 
 console.log('env', process.env.REACT_APP_TRONLINK_ACC1)
 

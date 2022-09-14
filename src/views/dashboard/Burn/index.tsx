@@ -20,14 +20,13 @@ function Burn() {
   const [amount, setAmount] = useState<string>('')
   const [stableCoin, setStableCoin] = useState<string>('')
   const [chain, setChain] = useState<any>('')
-  const mintTokenAction = useBurnToken(formatToBN(amount))
+  const mintTokenAction = useBurnToken(formatToBN(amount), stableCoin)
 
   const burn = async() => {
     console.log('burn')
 
     if(chain == 'MaticMumbai'){
-      mintTokenAction(() =>{})
-
+      mintTokenAction(() =>{}, () => {})
     }
 
     if(chain == "Neil"){

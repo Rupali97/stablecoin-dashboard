@@ -1,6 +1,8 @@
 import { BigNumber } from 'ethers';
 import {Protocol} from '../protocol';
 
+export type configKeys = keyof Configuration;
+
 export type BasicState = {
   isLoading: boolean;
   value: BigNumber;

@@ -75,7 +75,11 @@ function Mint({isTronNw}) {
     if(chain == 'MaticMumbai'){
       mintTokenAction(() => {
         console.log('mintTokenAction')
-      })
+      },
+      () => {
+        console.log('mintTokenAction failed')
+      }
+      )
     }
 
     if(chain == 'Neil') {

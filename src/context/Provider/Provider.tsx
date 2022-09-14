@@ -1,31 +1,43 @@
-import { useWallet } from 'use-wallet';
-import React, { createContext, useEffect, useState } from 'react';
+import {useWallet} from 'use-wallet';
+import React, {createContext, useEffect, useState} from 'react';
 
 import config from '../../config';
 import {Protocol} from '../../protocol';
-import { ProtocolContext } from '../../utils/interface';
+import {useGetActiveChainId} from '../../state/chains/hooks';
+import {useDispatch} from "react-redux";
 
-export const Context = createContext<ProtocolContext>({ core: new Protocol(config) });
+export interface ProtocolContext {
+  core: Protocol;
+}
 
-export const ProtocolProvider = ({ children }: any) => {
-  const [core, setCore] = useState<Protocol>(new Protocol(config));
+// @ts-ignore
+export const Context = createContext<ProtocolContext>({core: null});
 
-  const { ethereum, account } = useWallet();
+interface IProps {
+  children: any;
+}
+
+export const ProtocolProvider = (props: IProps) => {
+  const {children} = props;
+  const chainId = useGetActiveChainId();
+  const {ethereum, account} = useWallet();
+  const [core, setCore] = useState<Protocol>();
+  const dispatch = useDispatch();
+
 
   useEffect(() => {
+    console.log('ProtocolProvider core', core)
     if (!core && config) {
-      const newCore = new Protocol(config);
+      const newCore = new Protocol(config, chainId);
       if (account) {
-        // Wallet was unlocked at initialization.
         newCore.unlockWallet(ethereum, account);
-        console.log('unlockWallet newCore')
       }
       setCore(newCore);
-    } else if (account) {
+    } else if (account && core) {
       core.unlockWallet(ethereum, account);
-      console.log('unlockWallet oldCore')
     }
-  }, [account, core, ethereum]);
+  }, [account, core, dispatch, ethereum, chainId]);
 
-  return <Context.Provider value={{ core }}>{children}</Context.Provider>;
+  // @ts-ignore
+  return <Context.Provider value={{core}}>{children}</Context.Provider>;
 };

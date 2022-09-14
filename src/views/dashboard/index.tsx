@@ -33,6 +33,7 @@ function Dashbaord({tronNw}) {
   }
 
   console.log('tronNw', tronNw)
+  console.log('account', account)
   return (
  
     <div>
@@ -46,8 +47,9 @@ function Dashbaord({tronNw}) {
                 onClick={connector === "injected" ? noOp : () => {
                   connect('injected')
                     .then(() => {
-                      console.log('Connected')                  
+                      console.log('Connected', account)                  
                       localStorage.setItem('isWalletConnected', 'true')
+                      localStorage.removeItem('disconnectWallet')
 
                     })
                     .catch((e) => {
