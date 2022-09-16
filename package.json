@@ -24,6 +24,7 @@
     "dotenv": "^16.0.2",
     "eslint-visitor-keys": "^3.3.0",
     "ethers": "^5.7.0",
+    "moment": "^2.29.4",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "notistack": "^2.0.5",
     "numeral": "^2.0.6",

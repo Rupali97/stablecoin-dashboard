@@ -6,5 +6,9 @@
       "Token2": {
             "abi": "Token2",
             "address": "0xeeff7AFe202361DBB6844cf025caF7C0173544A7"
+      },
+      "MultiSig": {
+            "abi": "MultiSig",
+            "address": "0x7267BB0b3047b5F64f458d1bbF063F91bbA4443a"
       }
 }

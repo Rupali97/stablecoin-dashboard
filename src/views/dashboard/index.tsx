@@ -37,7 +37,7 @@ function Dashbaord({tronNw}) {
   return (
  
     <div>
-      <div className={classes.wrapper}>
+      <div>
         <div style={{textAlign: 'right', padding: '20px'}}>
           {
             !account ? (
@@ -77,11 +77,11 @@ function Dashbaord({tronNw}) {
 
       <Sidebar />
 
-      <div className={classes.mainPanel}>
+      {/* <div className={classes.mainPanel}>
         <div className={classes.content}>
 
         </div>
-      </div>
+      </div> */}
     </div>
       <Outlet />
     </div>

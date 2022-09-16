@@ -6,7 +6,7 @@ import StepContent from '@material-ui/core/StepContent';
 import { Typography } from '@material-ui/core';
 
 function getSteps() {
-      return ['Created', 'Confirmations', 'Executed'];
+      return ['Creation', 'Confirmations', 'Execution'];
 }
 
 function getStepContent(step: number) {
@@ -14,19 +14,18 @@ function getStepContent(step: number) {
         case 0:
           return (
             <div style={{display: 'flex', flexDirection: 'column'}}>
-                  <div>- &nbsp;Transaction created by Rupali Doke</div>
+                  <div>- &nbsp;Transaction created</div>
                   <div>- &nbsp;Confirmation is pending</div>
             </div>
           );
         case 1:
           return  (
             <div style={{display: 'flex', flexDirection: 'column'}}>
-                  <div>- &nbsp;Need confirmation from Steven Enamaked</div>
-                  <div>- &nbsp;Need confirmation from Alan Johnson</div>
+                  <div>- &nbsp;Confirmation Pending</div>
             </div>
           )
         case 2:
-          return `Can be executed once the threshold is reached`;
+          return `Execution Pending`;
         default:
           return 'Unknown step';
       }
@@ -34,7 +33,7 @@ function getStepContent(step: number) {
 
 function Steps(props: any) {
       const {stepState} = props
-      const [activeStep, setActiveStep] = useState(0);
+      const [activeStep, setActiveStep] = useState(props.activeStep);
       const [stepLabelColor, setStepLabelColor] = useState('#999');
       
       const steps = getSteps();

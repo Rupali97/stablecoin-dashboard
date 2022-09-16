@@ -17,6 +17,10 @@ import ConfirmationStep from '../../../components/ConfirmationStep';
 import { useWallet } from 'use-wallet';
 import { BigNumber, utils } from 'ethers';
 import { tronWeb } from '../TestTron';
+import useGetOwners from '../../../hooks/useGetOwners';
+import useMultiSig from '../../../hooks/useMultiSig';
+import { useAllTransactions } from '../../../state/transactions/hooks';
+import useGetAllMultiSigTxns from '../../../hooks/useGetAllMultiSigTxns';
 
 export const stableCoins = [
   {
@@ -48,12 +52,23 @@ export const chains = [
 function Mint({isTronNw}) {
 
   const core = useCore()
+  const {provider, signer, myAccount } = core
+  const allTransactions = useAllTransactions()
 
-  const {provider, signer } = core
+  console.log('allTransactions', allTransactions)
+  
   const [adddress, setAddress] = useState<string>('')
   const [amount, setAmount] = useState<string>('')
   const [stableCoin, setStableCoin] = useState<string>('')
   const [chain, setChain] = useState<any>('')
+  let allTx = useGetAllMultiSigTxns()
+  console.log('allTx', allTx)
+
+  console.log('stableCoin', stableCoin)
+
+  let testOwners: any = useGetOwners()
+
+  console.log('owners', testOwners)
 
   useEffect(() => {
     isTronNw(chain)
@@ -67,7 +82,7 @@ function Mint({isTronNw}) {
     setChain(event.target.value);
   };
 
-  const mintTokenAction = useMintToken(adddress, formatToBN(amount), stableCoin)
+  const mintTokenAction = useMultiSig(adddress, formatToBN(amount), stableCoin, formatToBN('0'))
 
   const mint = async() => {
     console.log('mint')
@@ -93,14 +108,15 @@ function Mint({isTronNw}) {
     }
   }
 
-  const testHistory = async() => {
-    const res = await provider.getLogs({address: '0xd265B941782778B023A494fe4586c54ccb2e130E'})
-    console.log('res',res )
-  }
+  // const testHistory = async() => {
+  //   const res = await provider.getLogs({address: '0xd265B941782778B023A494fe4586c54ccb2e130E'})
+  //   console.log('res',res )
+  // }
 
-  testHistory()
+  // testHistory()
 
-  const disableMint = adddress && amount && stableCoin && chain
+
+  const disableMint = adddress && amount && stableCoin && chain && testOwners?.includes(myAccount)
 
   return (
     <div style={{marginLeft: '260px', marginRight: '20px',}}>
@@ -177,8 +193,6 @@ function Mint({isTronNw}) {
                     </MenuItem>
                   ))}
               </TextField>
-
-              
             </Grid>
             <Grid item xs={2} style={{display: 'flex', alignItems: 'center'}}>
               <Button
@@ -188,7 +202,7 @@ function Mint({isTronNw}) {
                 fullWidth
                 disabled={!disableMint}
               >
-                Mint
+                Submit
               </Button>
             </Grid>
           </Grid>
@@ -204,7 +218,7 @@ function Mint({isTronNw}) {
           </Typography>
         </CardContent>
       </Card> */}
-      {/* <ConfirmationStep /> */}
+      <ConfirmationStep allTx={allTx} />
     </div>
   )
 }
