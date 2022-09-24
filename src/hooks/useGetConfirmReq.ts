@@ -12,7 +12,6 @@ const useGetConfirmReq = () => {
   const fetchData = useCallback(async () => {
         const contract = await core.contracts[`${chainId}`].MultiSig;
         const res = await contract.numConfirmationsRequired()
-        console.log('useGetConfirmReq res', res.toNumber())
         setResponse(res.toNumber())
   }, [chainId]) 
 

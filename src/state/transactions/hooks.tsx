@@ -6,9 +6,10 @@ import {useWallet} from 'use-wallet';
 import {useAddPopup} from '../application/hooks';
 import {AppDispatch, AppState} from '../index';
 
-import {addTransaction, clearAllTransactions} from './actions';
-import {TransactionDetails} from './reducer';
+import {addTransaction, clearAllTransactions, updateTransaction} from './actions';
+import {DashboardTxnDetails, TransactionDetails} from './reducer';
 import {useGetActiveChainId} from "../chains/hooks";
+import { BigNumber } from 'ethers';
 
 /**
  * Helper that can take a ethers library transaction response and
@@ -16,6 +17,17 @@ import {useGetActiveChainId} from "../chains/hooks";
  */
 export function useTransactionAdder(): (
   response: TransactionResponse,
+  transDetail: {
+    _numConfirmations: any, 
+    _typeOfTx: any, 
+    _createdTime: any, 
+    _executed: boolean, 
+    _value: BigNumber, 
+    _token: string, 
+    txIndex: any, 
+    _executedTime: any, 
+    _to: string,
+  },
   customData?: { summary?: string; approval?: { tokenAddress: string; spender: string } },
 ) => void {
   const {chainId, account} = useWallet();
@@ -25,6 +37,17 @@ export function useTransactionAdder(): (
   return useCallback(
     (
       response: TransactionResponse,
+      transDetail: {
+        _numConfirmations: any, 
+        _typeOfTx: any, 
+        _createdTime: any, 
+        _executed: boolean, 
+        _value: BigNumber, 
+        _token: string, 
+        txIndex: any, 
+        _executedTime: any, 
+        _to: string,
+      },
       {
         summary,
         approval,
@@ -34,6 +57,9 @@ export function useTransactionAdder(): (
       if (!chainId) return;
 
       const {hash} = response;
+
+      const {_numConfirmations, _typeOfTx, _createdTime, _executed, _value, _token, txIndex, _executedTime, _to} = transDetail
+
       if (!hash) {
         throw Error('No transaction hash found.');
       }
@@ -50,7 +76,79 @@ export function useTransactionAdder(): (
         hash,
       );
 
-      dispatch(addTransaction({hash, from: account, chainId, approval, summary}));
+      dispatch(addTransaction({hash, from: account, chainId, approval, summary, txDetail: {
+        _numConfirmations, _typeOfTx, _createdTime, _executed, _value, _token, txIndex, _executedTime, _to
+      }}));
+    },
+    // eslint-disable-next-line
+    [dispatch, chainId, account],
+  );
+}
+
+export function useTransactionUpdater(): (
+  response: TransactionResponse,
+  transDetail: {
+    _numConfirmations: any, 
+    _typeOfTx: any, 
+    _createdTime: any, 
+    _executed: boolean, 
+    _value: BigNumber, 
+    _token: string, 
+    txIndex: any, 
+    _executedTime: any, 
+    _to: string,
+  },
+  customData?: { summary?: string; approval?: { tokenAddress: string; spender: string } },
+) => void {
+  const {chainId, account} = useWallet();
+  const dispatch = useDispatch<AppDispatch>();
+  const addPopup = useAddPopup();
+
+  return useCallback(
+    (
+      response: TransactionResponse,
+      transDetail: {
+        _numConfirmations: any, 
+        _typeOfTx: any, 
+        _createdTime: any, 
+        _executed: boolean, 
+        _value: BigNumber, 
+        _token: string, 
+        txIndex: any, 
+        _executedTime: any, 
+        _to: string,
+      },
+      {
+        summary,
+        approval,
+      }: { summary?: string; approval?: { tokenAddress: string; spender: string } } = {},
+    ) => {
+      if (!account) return;
+      if (!chainId) return;
+
+      const {hash} = response;
+
+      const {_numConfirmations, _typeOfTx, _createdTime, _executed, _value, _token, txIndex, _executedTime, _to} = transDetail
+
+      if (!hash) {
+        throw Error('No transaction hash found.');
+      }
+
+      addPopup(
+        {
+          txn: {
+            hash,
+            loading: true,
+            success: false,
+            summary: summary,
+          },
+        },
+        hash,
+      );
+
+      dispatch(updateTransaction({hash, from: account, chainId, approval, summary, txDetail: {
+        _numConfirmations, _typeOfTx, _createdTime, _executed, _value, _token, txIndex, _executedTime, _to
+      }}));
     },
     // eslint-disable-next-line
     [dispatch, chainId, account],

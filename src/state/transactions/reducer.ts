@@ -1,4 +1,5 @@
 import {createReducer} from '@reduxjs/toolkit';
+import { BigNumber } from 'ethers';
 
 import {
   addTransaction,
@@ -6,6 +7,7 @@ import {
   clearAllTransactions,
   finalizeTransaction,
   SerializableTransactionReceipt,
+  updateTransaction
 } from './actions';
 
 const now = () => new Date().getTime();
@@ -19,6 +21,17 @@ export interface TransactionDetails {
   addedTime: number;
   confirmedTime?: number;
   from: string;
+  txDetail: {
+    _numConfirmations: any, 
+    _typeOfTx: any, 
+    _createdTime: any, 
+    _executed: boolean, 
+    _value: BigNumber, 
+    _token: string, 
+    txIndex: any, 
+    _executedTime: any, 
+    _to: string,
+  },
 }
 
 export interface TransactionState {
@@ -27,19 +40,53 @@ export interface TransactionState {
   };
 }
 
+export interface DashboardTxnDetails {
+  _numConfirmations: BigNumber, 
+  _typeOfTx: BigNumber, 
+  _createdTime: BigNumber, 
+  _executed: boolean, 
+  _value: BigNumber, 
+  _token: string, 
+  txIndex: BigNumber, 
+  _executedTime: BigNumber, 
+  _to: string
+}
+
 export const initialState: TransactionState = {};
 
 export default createReducer(initialState, (builder) =>
   builder
     .addCase(
       addTransaction,
-      (transactions, {payload: {chainId, from, hash, approval, summary}}) => {
+      (transactions, {payload: 
+        {chainId, from, hash, approval, summary, txDetail}}) => {
         if (transactions[chainId]?.[hash]) {
           throw Error('Attempted to add existing transaction.');
         }
-        const txs = transactions[chainId] ?? {};
-        txs[hash] = {hash, approval, summary, from, addedTime: now()};
+       
+        let txs = transactions[chainId] ?? {};
+
+        txs[hash] = {hash, approval, summary, from, addedTime: now(), txDetail};
         transactions[chainId] = txs;
+      },
+    )
+    .addCase(
+      updateTransaction,
+      (transactions, {payload: 
+        {chainId, from, hash, approval, summary, txDetail}}) => {
+        if (transactions[chainId]?.[hash]) {
+          throw Error('Attempted to add existing transaction.');
+        }
+        
+        let txs = transactions[chainId] ?? {};
+        const mappedTxns = Object.entries(txs)
+        const index = mappedTxns.findIndex(obj => obj[1].txDetail.txIndex == txDetail.txIndex)
+        mappedTxns.splice(index, 1)
+        txs = Object.fromEntries(mappedTxns) 
+               
+        txs[hash] = {hash, approval, summary, from, addedTime: now(), txDetail};
+        transactions[chainId] = txs;
+
       },
     )
     .addCase(clearAllTransactions, (transactions, {payload: {chainId}}) => {

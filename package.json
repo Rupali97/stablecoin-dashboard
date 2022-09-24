@@ -1,6 +1,7 @@
 {
   "name": "stablecoin-dashboard",
   "version": "0.1.0",
+  "homepage": "https://github.com/Rupali97/stablecoin-dashboard/",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.0",
@@ -8,6 +9,7 @@
     "@material-ui/core": "^4.12.4",
     "@material-ui/icons": "^4.11.3",
     "@mui/material": "^5.10.2",
+    "@redux-devtools/extension": "^3.2.3",
     "@reduxjs/toolkit": "^1.8.5",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
@@ -24,6 +26,7 @@
     "dotenv": "^16.0.2",
     "eslint-visitor-keys": "^3.3.0",
     "ethers": "^5.7.0",
+    "gh-pages": "^4.0.0",
     "moment": "^2.29.4",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "notistack": "^2.0.5",
@@ -47,7 +50,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "yarn run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [

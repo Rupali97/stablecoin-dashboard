@@ -4,7 +4,33 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getSupportedChains} from '../../config';
 import {AppDispatch, AppState} from '../index';
 
-import {updateChainId} from './actions';
+import {updateBlockchain, updateChainId} from './actions';
+
+
+export function useGetActiveBlockChain(): string {
+
+  const chain = useSelector((state: AppState) => {
+    return state.blockChain.active
+  })
+  return chain
+}
+
+
+export function useHandleBlokchainChange(): (chain: string) => void{
+  const dispatch = useDispatch<AppDispatch>();
+
+  return useCallback(
+    (chain: string) => {
+      dispatch(
+        updateBlockchain({
+          chain
+        }),
+      );
+    },
+    [dispatch],
+  );
+
+}
 
 /**
  * Returns the active chainId
@@ -13,7 +39,7 @@ export function useGetActiveChainId(): number {
   const updateId = useGetUpdateActiveChainId();
   // const updateIds = useUpdateAvailableChains();
   const id = useSelector((state: AppState) => {
-    return state.chains.active;
+    return state.chainId.active;
   });
   const avaiableIds = getSupportedChains();
   if (avaiableIds.includes(id)) {

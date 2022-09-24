@@ -54,11 +54,11 @@ export default function Sidebar () {
       icon: 'signal_cellular_alt',
       name: 'Statistics'
     },
-    {
-      url: '/logout',
-      icon: 'power_settings_new',
-      name: 'Logout'
-    },
+    // {
+    //   url: '/logout',
+    //   icon: 'power_settings_new',
+    //   name: 'Logout'
+    // },
   ]
 
   const links = (

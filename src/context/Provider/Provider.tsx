@@ -26,7 +26,6 @@ export const ProtocolProvider = (props: IProps) => {
 
 
   useEffect(() => {
-    console.log('ProtocolProvider core', core)
     if (!core && config) {
       const newCore = new Protocol(config, chainId);
       if (account) {

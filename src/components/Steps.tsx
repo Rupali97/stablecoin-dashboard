@@ -32,8 +32,8 @@ function getStepContent(step: number) {
 }
 
 function Steps(props: any) {
-      const {stepState} = props
-      const [activeStep, setActiveStep] = useState(props.activeStep);
+      const {stepState, activeStep,  chain} = props
+ 
       const [stepLabelColor, setStepLabelColor] = useState('#999');
       
       const steps = getSteps();
@@ -43,10 +43,6 @@ function Steps(props: any) {
             if(stepState == 'inProgress') setStepLabelColor('#ed7117')
 
       }, [stepState])
-
-
-      console.log('stepLabelColor', stepLabelColor)
-
 
   return (
       <Stepper activeStep={activeStep} orientation="vertical">

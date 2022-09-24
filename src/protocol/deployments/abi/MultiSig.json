@@ -293,6 +293,11 @@
 				"internalType": "uint256",
 				"name": "_executedTime",
 				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "txIndex",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -460,6 +465,11 @@
 			{
 				"internalType": "uint256",
 				"name": "executedTime",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "txIndex",
 				"type": "uint256"
 			}
 		],

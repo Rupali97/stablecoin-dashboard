@@ -1,3 +1,5 @@
+* { box-sizing: border-box; }
+
 .m-r-5{
       margin-right: 5px;
 }
@@ -39,6 +41,12 @@
 .row-left-center{
       display: flex;
       align-items: center;
+}
+
+.row-allcenter{
+      display: flex;
+      align-items: center;
+      justify-content: center;
 }
 
 .orange-bold{

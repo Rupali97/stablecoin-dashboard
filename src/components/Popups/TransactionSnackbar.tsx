@@ -4,7 +4,9 @@ import Slide from '@material-ui/core/Slide';
 import Snackbar from '@material-ui/core/Snackbar';
 import {makeStyles, Theme} from '@material-ui/core/styles';
 import {TransitionProps} from '@material-ui/core/transitions';
-
+import CancelIcon from '@material-ui/icons/Cancel';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import WarningIcon from '@material-ui/icons/Warning';
 // import theme from '../../theme';
 // import '../../customCss/Custom-Snackbar.css';
 
@@ -33,9 +35,6 @@ const CustomizedSnackbars: React.FC<TxButtonProps> = ({
   const isLoading = content?.txn?.loading;
   const chainId = useGetActiveChainId();
 
-  console.log('chainId', chainId)
-  // console.log('test', config[chainId].etherscanUrl)
-
   useEffect(() => {
     setOpen(true)
   }, [isScucess, isLoading])
@@ -55,28 +54,28 @@ const CustomizedSnackbars: React.FC<TxButtonProps> = ({
     if (isLoading) {
       return (
         <SnackBarInnerContainer>
-          <div className="single-line-center-start">
-            <div onClick={handleClose}>Pending Icon</div>
+          <div className="row-left-center">
+            <div onClick={handleClose} className={'m-r-10'}><WarningIcon /></div>
             Transaction Pending
           </div>
-          <div onClick={handleClose}>Cross Icon</div>
+          <div onClick={handleClose}> <CancelIcon /> </div>
         </SnackBarInnerContainer>
       )
     } else if (isScucess) {
       return (
         <SnackBarInnerContainer>
-          <div className="single-line-center-start">
-          <div onClick={handleClose}>Success Icon</div>
-            Transaction Successful
+          <div className="row-left-center">
+            <div onClick={handleClose} className={'m-r-10'}><CheckCircleIcon /></div>
+            <div>Transaction Successful</div>
           </div>
-          <div onClick={handleClose}>Cross Icon</div>
-        </SnackBarInnerContainer>
+          <div onClick={handleClose}><CancelIcon /> </div>
+        </SnackBarInnerContainer> 
       )
     } else {
       return (
         <SnackBarInnerContainer>
-          <div className="single-line-center-start">
-          <div onClick={handleClose}>Alert Icon</div>
+          <div className="row-left-center">
+          <div onClick={handleClose} className={'m-r-10'}>Alert Icon</div>
             Transaction Failed
           </div>
           <div onClick={handleClose}>Cross Icon</div>
@@ -137,7 +136,6 @@ const AnchorTag = styled.a`
   justify-content: flex-start;
   align-items: center;
   margin-top: 4px;
-
   &:hover {
     text-decoration: none;
   }
@@ -151,16 +149,19 @@ const SnackBarInnerContainer = styled.div`
   padding: 0 12px 0 18px;
   justify-content: space-between;
   border-radius: 4px 4px 0 0;
+  background: #3f50b5;
+  color: white;
 `;
 
 const SnackBarBody = styled.div`
-  background: grey;
+  background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(70px);
   border-radius: 0 0 4px 4px;
   padding: 12px 12px 12px 52px;
   font-weight: 600;
   font-size: 14px;
   width: 100%;
+  color: black;
 `;
 
 const SnackBarParent = styled.div`
@@ -173,7 +174,6 @@ const SnackBarParent = styled.div`
   rgba(255, 116, 38, 0.1) 0%,
   rgba(255, 255, 255, 0) 100%);
   color: #ffffff;
-  opacity: 0.88;
   font-weight: 600;
   font-size: 14px;
   line-height: 20px;

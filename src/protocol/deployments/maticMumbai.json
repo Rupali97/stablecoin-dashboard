@@ -1,14 +1,10 @@
 {
-      "Token": {
-            "abi": "Token",
-            "address": "0xd265B941782778B023A494fe4586c54ccb2e130E"
-      },
-      "Token2": {
-            "abi": "Token2",
-            "address": "0xeeff7AFe202361DBB6844cf025caF7C0173544A7"
+      "Token3": {
+            "abi": "Token3",
+            "address": "0x9825cc19Bc319cf4624818342cF0Dc113764844d"
       },
       "MultiSig": {
             "abi": "MultiSig",
-            "address": "0x7267BB0b3047b5F64f458d1bbF063F91bbA4443a"
+            "address": "0xFad5f1a5342Ee6b6014F65AF03a7Ca533146cA59"
       }
 }

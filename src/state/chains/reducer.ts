@@ -1,10 +1,10 @@
 import {createReducer} from '@reduxjs/toolkit';
 
-import {ChainIdInitialState} from '../../utils/chains/constant';
+import {ChainIdInitialState, BlockChaianitialState} from '../../utils/chains/constant';
 
-import {updateChainId} from './actions';
+import {updateChainId, updateBlockchain} from './actions';
 
-export default createReducer(ChainIdInitialState, (builder) =>
+export const chainId = createReducer(ChainIdInitialState, (builder) =>
     builder
       .addCase(updateChainId, (chainsConfig, {payload: {chainId}}) => {
         chainsConfig.active = chainId;
@@ -13,3 +13,11 @@ export default createReducer(ChainIdInitialState, (builder) =>
      chainsConfig.availableNetworks = chains;
    }),*/
 );
+
+export const blockChain = createReducer(BlockChaianitialState, (builder) =>
+    builder
+      .addCase(updateBlockchain, (blockChainConfig, {payload: {chain}}) => {
+        blockChainConfig.active = chain;
+      })
+);
+

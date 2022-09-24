@@ -10,26 +10,26 @@ import Dashbaord from './views/dashboard';
 import Burn from './views/dashboard/Burn';
 import Mint from './views/dashboard/Mint';
 import Stats from './views/dashboard/Stats';
-import TestTron from './views/dashboard/TestTron';
 
 
 function Navigation() {
 
-  const [tronNw, setTronNw] = React.useState('')
   return (
         <BrowserRouter>
-          <Dashboard tronNw={tronNw} />
-          <Routes>
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/dashboard">
-              <Route path={'/dashboard/mint'} element={<Mint isTronNw={(val: string) => setTronNw(val)} />}  />
-              <Route path={'/dashboard/burn'} element={<Burn />} />
-              <Route path={'/dashboard/statistics'} element={<Stats />} />
-              <Route path={'/dashboard/tron'} element={<TestTron />} />
-            </Route>
-            <Route path="/logout" element={<Auth />} />
-    
-          </Routes>
+          <div style={{paddingBottom: '200px', backgroundColor: '#f2f2f2', minHeight: '100vh'}}>
+            <Dashboard />
+            <Routes>
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/dashboard">
+                <Route path={'/dashboard/mint'} element={<Mint />}  />
+                <Route path={'/dashboard/burn'} element={<Burn />} />
+                <Route path={'/dashboard/statistics'} element={<Stats />} />
+              </Route>
+              <Route path="/logout" element={<Auth />} />
+      
+            </Routes>
+          </div>
+          
       </BrowserRouter>
       );
 }

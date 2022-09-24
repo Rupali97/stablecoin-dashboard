@@ -67,8 +67,6 @@ const AppContent: React.FC = ({children}) => {
       });
   }, [ethereum]);
 
-  console.log('core', core, chainId)
-
   if (!window.ethereum) {
     console.log('no window ethereum')
     return <div />
@@ -98,8 +96,6 @@ const AppContent: React.FC = ({children}) => {
 }
 
 function App() {
-
-console.log('env', process.env.REACT_APP_TRONLINK_ACC1)
 
   return (
     <Providers>
