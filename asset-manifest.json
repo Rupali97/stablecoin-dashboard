@@ -5,12 +5,12 @@
     "static/js/1.05f37158.chunk.js": "/stablecoin-dashboard/static/js/1.05f37158.chunk.js",
     "static/js/1.05f37158.chunk.js.map": "/stablecoin-dashboard/static/js/1.05f37158.chunk.js.map",
     "main.css": "/stablecoin-dashboard/static/css/main.45acdf22.chunk.css",
-    "main.js": "/stablecoin-dashboard/static/js/main.39d7de85.chunk.js",
-    "main.js.map": "/stablecoin-dashboard/static/js/main.39d7de85.chunk.js.map",
+    "main.js": "/stablecoin-dashboard/static/js/main.c295d34a.chunk.js",
+    "main.js.map": "/stablecoin-dashboard/static/js/main.c295d34a.chunk.js.map",
     "runtime-main.js": "/stablecoin-dashboard/static/js/runtime-main.bb142dab.js",
     "runtime-main.js.map": "/stablecoin-dashboard/static/js/runtime-main.bb142dab.js.map",
-    "static/js/4.30183838.chunk.js": "/stablecoin-dashboard/static/js/4.30183838.chunk.js",
-    "static/js/4.30183838.chunk.js.map": "/stablecoin-dashboard/static/js/4.30183838.chunk.js.map",
+    "static/js/4.b40ab0db.chunk.js": "/stablecoin-dashboard/static/js/4.b40ab0db.chunk.js",
+    "static/js/4.b40ab0db.chunk.js.map": "/stablecoin-dashboard/static/js/4.b40ab0db.chunk.js.map",
     "static/js/5.e2dd7b1f.chunk.js": "/stablecoin-dashboard/static/js/5.e2dd7b1f.chunk.js",
     "static/js/5.e2dd7b1f.chunk.js.map": "/stablecoin-dashboard/static/js/5.e2dd7b1f.chunk.js.map",
     "static/js/6.ef794f4a.chunk.js": "/stablecoin-dashboard/static/js/6.ef794f4a.chunk.js",
@@ -52,7 +52,7 @@
     "index.html": "/stablecoin-dashboard/index.html",
     "static/css/main.45acdf22.chunk.css.map": "/stablecoin-dashboard/static/css/main.45acdf22.chunk.css.map",
     "static/js/11.c8324f3e.chunk.js.LICENSE.txt": "/stablecoin-dashboard/static/js/11.c8324f3e.chunk.js.LICENSE.txt",
-    "static/js/4.30183838.chunk.js.LICENSE.txt": "/stablecoin-dashboard/static/js/4.30183838.chunk.js.LICENSE.txt",
+    "static/js/4.b40ab0db.chunk.js.LICENSE.txt": "/stablecoin-dashboard/static/js/4.b40ab0db.chunk.js.LICENSE.txt",
     "static/js/5.e2dd7b1f.chunk.js.LICENSE.txt": "/stablecoin-dashboard/static/js/5.e2dd7b1f.chunk.js.LICENSE.txt",
     "static/js/6.ef794f4a.chunk.js.LICENSE.txt": "/stablecoin-dashboard/static/js/6.ef794f4a.chunk.js.LICENSE.txt",
     "static/media/Cipher.png": "/stablecoin-dashboard/static/media/Cipher.cf0cd97b.png",
@@ -64,8 +64,8 @@
   },
   "entrypoints": [
     "static/js/runtime-main.bb142dab.js",
-    "static/js/4.30183838.chunk.js",
+    "static/js/4.b40ab0db.chunk.js",
     "static/css/main.45acdf22.chunk.css",
-    "static/js/main.39d7de85.chunk.js"
+    "static/js/main.c295d34a.chunk.js"
   ]
 }
