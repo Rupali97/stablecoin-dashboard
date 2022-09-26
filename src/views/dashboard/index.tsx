@@ -15,10 +15,10 @@ export const chains = [
     label: 'MaticMumbai',
     chainID: 'MaticMumbai'
   },
-  {
-    label: "Neil",
-    chainID: 'Neil',
-  }
+  // {
+  //   label: "Neil",
+  //   chainID: 'Neil',
+  // }
 ]
 
 // @ts-ignore
