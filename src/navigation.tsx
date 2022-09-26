@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  BrowserRouter,
+  HashRouter,
   Routes,
   Route,
 } from "react-router-dom";
@@ -15,7 +15,7 @@ import Stats from './views/dashboard/Stats';
 function Navigation() {
 
   return (
-        <BrowserRouter>
+        <HashRouter>
           <div style={{paddingBottom: '200px', backgroundColor: '#f2f2f2', minHeight: '100vh'}}>
             <Dashboard />
             <Routes>
@@ -28,7 +28,7 @@ function Navigation() {
             </Routes>
           </div>
           
-      </BrowserRouter>
+      </HashRouter>
       );
 }
 
