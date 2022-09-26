@@ -34,10 +34,10 @@ function Burn() {
   let contractOwners: any = useGetOwners()
   let allTx = Object.entries(allTransactions)?.map((key) => key[1])?.filter((tx) => tx.txDetail._typeOfTx == 1)
 
-  let allTronTxns = useGetAllTronTxns()
-  allTronTxns = allTronTxns.filter((tx) => tx._typeOfTx.toNumber() == 1)
+  // let allTronTxns = useGetAllTronTxns()
+  // allTronTxns = allTronTxns.filter((tx) => tx._typeOfTx.toNumber() == 1)
 
-  console.log('allTronTxns', allTronTxns)
+  // console.log('allTronTxns', allTronTxns)
   
   const [adddress, setAddress] = useState<string>('')
   const [amount, setAmount] = useState<string>('')

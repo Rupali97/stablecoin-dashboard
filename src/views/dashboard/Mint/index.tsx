@@ -69,8 +69,8 @@ function Mint() {
   const [stableCoin, setStableCoin] = useState<string>('')
 
   let allTx = Object.entries(allTransactions)?.map((key) => key[1])?.filter((tx) => tx.txDetail._typeOfTx == 0)
-  let allTronTxns = useGetAllTronTxns()
-  allTronTxns = allTronTxns.filter((tx) => tx._typeOfTx.toNumber() == 0)
+  // let allTronTxns = useGetAllTronTxns()
+  // allTronTxns = allTronTxns.filter((tx) => tx._typeOfTx.toNumber() == 0)
 
   let contractOwners: any = useGetOwners()
 

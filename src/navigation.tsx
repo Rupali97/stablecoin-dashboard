@@ -20,11 +20,9 @@ function Navigation() {
             <Dashboard />
             <Routes>
               <Route path="/auth" element={<Auth />} />
-              <Route path="/dashboard">
-                <Route path={'/dashboard/mint'} element={<Mint />}  />
-                <Route path={'/dashboard/burn'} element={<Burn />} />
-                <Route path={'/dashboard/statistics'} element={<Stats />} />
-              </Route>
+              <Route path={'/mint'} element={<Mint />}  />
+              <Route path={'/burn'} element={<Burn />} />
+              <Route path={'/statistics'} element={<Stats />} />
               <Route path="/logout" element={<Auth />} />
       
             </Routes>

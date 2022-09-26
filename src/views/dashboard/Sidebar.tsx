@@ -40,17 +40,17 @@ export default function Sidebar () {
 
   const routes = [
     {
-      url: '/dashboard/mint',
+      url: '/mint',
       icon: 'construction',
       name: 'Mint the token'
     },
     {
-      url: '/dashboard/burn',
+      url: '/burn',
       icon: 'whatshot',
       name: 'Burn the token'
     },
     {
-      url: '/dashboard/statistics',
+      url: '/statistics',
       icon: 'signal_cellular_alt',
       name: 'Statistics'
     },

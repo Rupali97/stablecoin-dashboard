@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 // import { tronWeb } from "../../views/dashboard/TestTron";
 
-
-
 const useGetAllTronTxns = () => {
 
   const [response, setResponse] = React.useState<any>([])
