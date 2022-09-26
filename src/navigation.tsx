@@ -20,9 +20,9 @@ function Navigation() {
             <Dashboard />
             <Routes>
               <Route path="/auth" element={<Auth />} />
-              <Route path={'/stablecoin-dashboard/mint'} element={<Mint />}  />
-              <Route path={'/stablecoin-dashboard/burn'} element={<Burn />} />
-              <Route path={'/stablecoin-dashboard/statistics'} element={<Stats />} />
+              <Route path={'/mint'} element={<Mint />}  />
+              <Route path={'/burn'} element={<Burn />} />
+              <Route path={'/statistics'} element={<Stats />} />
               <Route path="/logout" element={<Auth />} />
       
             </Routes>
