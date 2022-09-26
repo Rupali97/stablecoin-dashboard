@@ -1,7 +1,7 @@
 import { BigNumber } from "ethers";
 import { useCallback } from "react";
 import { useWallet } from "use-wallet";
-import { addPopup } from "../state/application/actions";
+import { useAddPopup } from "../state/application/hooks";
 import { useTransactionAdder } from "../state/transactions/hooks";
 import { truncateMiddle } from "../utils";
 import { getDisplayBalance } from "../utils/formatBalance";
@@ -13,7 +13,8 @@ const useMultiSig = (to: string, amount: BigNumber, token: string, typeOfTx: Big
   const core = useCore();
   const {chainId} = useWallet()
   const addTransaction = useTransactionAdder();
-
+  const addPopup = useAddPopup()
+  
   return useCallback(
     async (onSuccess: () => void, onFailure: () => void): Promise<void> => {
       
@@ -72,12 +73,9 @@ const useMultiSig = (to: string, amount: BigNumber, token: string, typeOfTx: Big
         console.log('useMultiSig error', e);
         onFailure();
         addPopup({
-          removeAfterMs: 10000,
-          content: {
-            error: {
-              message: formatErrorMessage(e?.data?.message || e?.message),
-              stack: e?.stack,
-            }
+          error: {
+            message: formatErrorMessage(e?.data?.message || e?.message),
+            stack: e?.stack,
           }
         });
       }

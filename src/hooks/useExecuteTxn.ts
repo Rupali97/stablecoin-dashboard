@@ -1,18 +1,18 @@
 import { BigNumber } from "ethers";
 import { useCallback } from "react";
 import { useWallet } from "use-wallet";
-import { addPopup } from "../state/application/actions";
+import { useAddPopup } from "../state/application/hooks";
 
 import { useTransactionUpdater } from "../state/transactions/hooks";
 import { getDisplayBalance } from "../utils/formatBalance";
 import formatErrorMessage from "../utils/formatErrorMessage";
-
 import useCore from "./useCore";
 
 const useExecuteTxn = () => {
   const core = useCore();
   const {chainId} = useWallet()
   const updateTransaction = useTransactionUpdater();
+  const addPopup = useAddPopup()
 
   const executeCallback = async (index: number, typeOfTx: number) => {
       
@@ -67,12 +67,9 @@ const useExecuteTxn = () => {
     } catch (e: any) {
       console.log('useExecuteTxn error', e);
       addPopup({
-        removeAfterMs: 10000,
-        content: {
-          error: {
-            message: formatErrorMessage(e?.data?.message || e?.message),
-            stack: e?.stack,
-          }
+        error: {
+          message: formatErrorMessage(e?.data?.message || e?.message),
+          stack: e?.stack,
         }
       });
     }
