@@ -4,7 +4,7 @@ import {useWallet} from 'use-wallet';
 
 import config from '../../config';
 import {getDefaultProvider} from '../../utils/provider';
-import {useAddPopup, useBlockNumber} from '../application/hooks';
+import {useAddPopup, useBlockNumber, useUpdateLoader} from '../application/hooks';
 import {useGetActiveChainId} from '../chains/hooks';
 import {AppDispatch, AppState} from '../index';
 
@@ -36,6 +36,7 @@ export default function Updater(): null {
 
   const lastBlockNumber = useBlockNumber();
   const activeChainId = useGetActiveChainId();
+  const updateLoader = useUpdateLoader()
 
   const dispatch = useDispatch<AppDispatch>();
   const state = useSelector<AppState, AppState['transactions']>((state) => state.transactions);
@@ -74,7 +75,7 @@ export default function Updater(): null {
                   },
                 }),
               );
-
+              updateLoader(false)
               addPopup(
                 {
                   txn: {

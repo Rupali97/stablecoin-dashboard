@@ -13,6 +13,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Chip from '@material-ui/core/Chip';
 import Divider from '@material-ui/core/Divider';
 import { makeStyles } from '@material-ui/core/styles';
+import {Puff} from "react-loader-spinner"
 
 import Steps from './Steps'
 import Textfield from './Textfield';
@@ -29,11 +30,14 @@ import useConfirm from '../hooks/tron/useConfirm';
 import useExecute from '../hooks/tron/useExecute';
 import useNoOfConfimReq from '../hooks/tron/useNoOfConfimReq';
 import { useGetActiveBlockChain } from '../state/chains/hooks';
+import { useGetLoader, useUpdateLoader } from '../state/application/hooks';
 
 function ConfirmationStep({allTx}) {
       const core = useCore()
       const {myAccount } = core
       const chain = useGetActiveBlockChain()
+      const updateLoader = useUpdateLoader()
+      const currentLoaderState = useGetLoader()
 
       // maticMumbai network
       let testOwners: any = useGetOwners()
@@ -50,6 +54,8 @@ function ConfirmationStep({allTx}) {
 
       const ConfirmTxn = (txIndex: number, _typeOfTx: number) => {
 
+            updateLoader(true)
+
             if(chain != "MaticMumbai"){
                   confirmTronTxnAction(txIndex)  
             }else{
@@ -59,6 +65,7 @@ function ConfirmationStep({allTx}) {
       }
 
       const executeTxn = (txIndex: number, _typeOfTx: number) => {
+            updateLoader(true)
 
             if(chain != "MaticMumbai"){
                   executeTronTxnAction(txIndex)  
@@ -106,7 +113,7 @@ function ConfirmationStep({allTx}) {
                   className={'m-b-15'}
             />
             {
-                  allTx?.sort((a, b) => b.txIndex - a.txIndex ).map(({hash,txDetail}, i) => {
+                  allTx?.sort((a, b) => b.txDetail.txIndex - a.txDetail.txIndex ).map(({hash,txDetail}, i) => {
                         const { _numConfirmations, _typeOfTx, _createdTime, _executed, _value, _token, txIndex, _executedTime, _to} = txDetail
                         return(
                               <Accordion key={i} style={{marginBottom: '16px'}}>
@@ -195,10 +202,19 @@ function ConfirmationStep({allTx}) {
                                                                         onClick={() => ConfirmTxn(txIndex, _typeOfTx)}
                                                                         variant="contained"
                                                                         color="primary"
-
-                                                                        // disabled={!disableConfirm}
+                                                                        disabled={currentLoaderState}
                                                                         size={'large'}
                                                                         >
+                                                                        <Puff
+                                                                              height="30"
+                                                                              width="30"
+                                                                              ariaLabel="progress-bar-loading"
+                                                                              wrapperStyle={{}}
+                                                                              wrapperClass="progress-bar-wrapper"
+                                                                              radius={1}
+                                                                              color="#3F50B5"
+                                                                              visible={currentLoaderState}
+                                                                        />
                                                                         Confirm
                                                                   </Button> :
                                                                   !_executed ?
@@ -207,9 +223,19 @@ function ConfirmationStep({allTx}) {
                                                                         variant="contained"
                                                                         color="primary"
 
-                                                                        // disabled={!disableConfirm}
+                                                                        disabled={currentLoaderState}
                                                                         size={'large'}
                                                                         >
+                                                                        <Puff
+                                                                              height="30"
+                                                                              width="30"
+                                                                              ariaLabel="progress-bar-loading"
+                                                                              wrapperStyle={{}}
+                                                                              wrapperClass="progress-bar-wrapper"
+                                                                              radius={1}
+                                                                              color="#3F50B5"
+                                                                              visible={currentLoaderState}
+                                                                        />
                                                                         Execute
                                                                   </Button> : <div /> :
 

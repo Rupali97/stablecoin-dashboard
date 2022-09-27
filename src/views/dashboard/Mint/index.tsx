@@ -9,7 +9,7 @@ import {
   MenuItem
 } from "@material-ui/core";
 import Web3 from 'web3';
-
+import {Puff} from "react-loader-spinner"
 import { formatToBN, getBalance } from '../../../utils/formatBalance';
 import useCore from '../../../hooks/useCore';
 import ConfirmationStep from '../../../components/ConfirmationStep';
@@ -24,6 +24,7 @@ import useSubmit from '../../../hooks/tron/useSubmit';
 import useGetAllTronTxns from '../../../hooks/tron/useGetAllTronTxns';
 import { useGetActiveBlockChain } from '../../../state/chains/hooks';
 import Textfield from '../../../components/Textfield';
+import { useGetLoader, useUpdateLoader } from '../../../state/application/hooks';
 
 export const stableCoins = [
   // {
@@ -61,6 +62,8 @@ function Mint() {
   const core = useCore()
   const {myAccount } = core
   const allTransactions = useAllTransactions()
+  const currentLoaderState = useGetLoader()
+  const updateLoader = useUpdateLoader()
 
   const chain = useGetActiveBlockChain()
 
@@ -82,7 +85,7 @@ function Mint() {
   const submitTronTxnAction = useSubmit(adddress, formatToBN(amount), stableCoin, BigNumber.from('0'))
 
   const submitTx = async() => {
-
+    updateLoader(true)
     if(chain == 'MaticMumbai'){
       mintTokenAction(() => {},() => {})
     }
@@ -92,10 +95,12 @@ function Mint() {
     }
   }
 
-  const disableMint = adddress && amount && stableCoin && chain && contractOwners?.includes(myAccount)
+  console.log('currentLoaderState', currentLoaderState)
+
+  const disableMint = adddress && amount && stableCoin && chain && contractOwners?.includes(myAccount) && !currentLoaderState
 
   return (
-    <div style={{marginLeft: '260px', marginRight: '20px'}}>
+    <div style={{marginLeft: '260px', marginRight: '20px', position: 'relative',}}>
        <Textfield
           text={'Mint the Stablecoin'}
           fontSize={'24px'}
@@ -152,7 +157,9 @@ function Mint() {
                   ))}
                 </TextField>           
             </Grid>
-            <Grid item xs={9}></Grid>
+            <Grid item xs={6}></Grid>
+            <Grid item xs={3} justifyContent={'center'}>
+            </Grid>
             <Grid item xs={3}>
               <Button
                 onClick={submitTx}
@@ -160,8 +167,22 @@ function Mint() {
                 color="primary"
                 fullWidth
                 disabled={!disableMint}
+                style={{position: 'relative'}}
               >
-                Submit
+                <div>Submit</div>
+                
+                <div style={{position: 'absolute', right: 30}}>
+                <Puff
+                  height="30"
+                  width="30"
+                  ariaLabel="progress-bar-loading"
+                  wrapperStyle={{}}
+                  wrapperClass="progress-bar-wrapper"
+                  radius={1}
+                  color="#3F50B5"
+                  visible={currentLoaderState}
+                />
+                </div>
               </Button>
             </Grid>
             {/* <Grid item xs={4}></Grid> */}
@@ -171,6 +192,7 @@ function Mint() {
 
       </Card>
     
+
       {/* <Card>
         <CardContent>
           <Typography gutterBottom variant="h5" component="h2">

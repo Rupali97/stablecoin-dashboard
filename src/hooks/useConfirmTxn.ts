@@ -2,7 +2,7 @@ import { BigNumber } from "ethers";
 import { useCallback } from "react";
 import { useWallet } from "use-wallet";
 import { addPopup } from "../state/application/actions";
-import { useAddPopup } from "../state/application/hooks";
+import { useAddPopup, useUpdateLoader } from "../state/application/hooks";
 import { useTransactionUpdater } from "../state/transactions/hooks";
 import { getDisplayBalance } from "../utils/formatBalance";
 import formatErrorMessage from "../utils/formatErrorMessage";

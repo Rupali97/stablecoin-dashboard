@@ -121,6 +121,7 @@ export interface ApplicationState {
   popupList: PopupList;
   walletModalOpen: boolean;
   settingsMenuOpen: boolean;
+  isVisible: boolean;
 };
 
 export interface TransactionDetails {

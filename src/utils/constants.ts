@@ -131,6 +131,7 @@ export const INITIAL_APP_STATE: ApplicationState = {
   popupList: [],
   walletModalOpen: false,
   settingsMenuOpen: false,
+  isVisible: false
 };
 
 export const INITIAL_TRANSACTION_STATE: TransactionState = {};

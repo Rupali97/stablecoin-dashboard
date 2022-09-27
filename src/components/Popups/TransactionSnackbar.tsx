@@ -7,12 +7,14 @@ import {TransitionProps} from '@material-ui/core/transitions';
 import CancelIcon from '@material-ui/icons/Cancel';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import WarningIcon from '@material-ui/icons/Warning';
+import CallMadeIcon from '@material-ui/icons/CallMade';
 // import theme from '../../theme';
 // import '../../customCss/Custom-Snackbar.css';
-
+import TrendingFlatIcon from '@material-ui/icons/TrendingFlat';
 import config from '../../config';
 import {PopupContent} from '../../utils/interface';
 import {useGetActiveChainId} from "../../state/chains/hooks";
+import { useUpdateLoader } from '../../state/application/hooks';
 
 interface TxButtonProps {
   notificationCount?: number;
@@ -34,9 +36,11 @@ const CustomizedSnackbars: React.FC<TxButtonProps> = ({
   const isScucess = content?.txn?.success;
   const isLoading = content?.txn?.loading;
   const chainId = useGetActiveChainId();
+  const updateLoader = useUpdateLoader()
 
   useEffect(() => {
     setOpen(true)
+    updateLoader(false)
   }, [isScucess, isLoading])
 
   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
@@ -63,7 +67,7 @@ const CustomizedSnackbars: React.FC<TxButtonProps> = ({
       )
     } else if (isScucess) {
       return (
-        <SnackBarInnerContainer>
+        <SnackBarInnerContainer> 
           <div className="row-left-center">
             <div onClick={handleClose} className={'m-r-10'}><CheckCircleIcon /></div>
             <div>Transaction Successful</div>
@@ -73,12 +77,12 @@ const CustomizedSnackbars: React.FC<TxButtonProps> = ({
       )
     } else {
       return (
-        <SnackBarInnerContainer>
+        <SnackBarInnerContainer style={{background: '#B61500'}}>
           <div className="row-left-center">
-          <div onClick={handleClose} className={'m-r-10'}>Alert Icon</div>
+          <div onClick={handleClose} className={'m-r-10'}><WarningIcon /></div>
             Transaction Failed
           </div>
-          <div onClick={handleClose}>Cross Icon</div>
+          <div onClick={handleClose}><CancelIcon /></div>
         </SnackBarInnerContainer>
       )
     }
@@ -101,8 +105,10 @@ const CustomizedSnackbars: React.FC<TxButtonProps> = ({
               rel="noopener noreferrer"
               target="_blank"
             >
-              <div>View on Explorer</div>
-              <div onClick={handleClose}>ArrowLink Icon</div>
+              <div className={'m-r-5'}>View on Explorer</div>
+              <div onClick={handleClose} style={{display: 'flex', alignItems: 'center'}}>
+                <TrendingFlatIcon />
+              </div>
 
             </AnchorTag>
           )
@@ -116,7 +122,7 @@ const CustomizedSnackbars: React.FC<TxButtonProps> = ({
       {openSnackbar && (
         <Snackbar
           open={openSnackbar}
-          autoHideDuration={3000}
+          autoHideDuration={5000}
           TransitionComponent={SlideTransition}
           onClose={handleClose}
           anchorOrigin={{vertical: 'top', horizontal: 'right'}}

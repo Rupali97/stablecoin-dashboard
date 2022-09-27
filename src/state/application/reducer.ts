@@ -1,6 +1,6 @@
 import {createReducer, nanoid} from '@reduxjs/toolkit';
 
-import {addPopup, removePopup, toggleSettingsMenu, toggleWalletModal, updateBlockNumber,} from './actions';
+import {addPopup, removePopup, toggleSettingsMenu, toggleWalletModal, updateBlockNumber, loaderVisibile} from './actions';
 import {INITIAL_APP_STATE} from '../../utils/constants';
 
 export default createReducer(INITIAL_APP_STATE, (builder) =>
@@ -38,5 +38,9 @@ export default createReducer(INITIAL_APP_STATE, (builder) =>
           p.show = false;
         }
       });
-    }),
+    })
+    .addCase(loaderVisibile, (state, {payload: {isVisible}}) => {
+      console.log(state.isVisible, isVisible)
+      state.isVisible = isVisible;
+    })
 );

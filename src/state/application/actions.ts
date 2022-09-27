@@ -17,3 +17,5 @@ export const addPopup = createAction<{
 }>('app/addPopup');
 
 export const removePopup = createAction<{ key: string }>('app/removePopup');
+
+export const loaderVisibile = createAction<{isVisible: boolean}>('app/updateLoader')

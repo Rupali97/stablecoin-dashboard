@@ -10,6 +10,7 @@ import {
   Grid,
   MenuItem,
 } from "@material-ui/core";
+import {Puff} from "react-loader-spinner"
 import { formatToBN, getBalance } from '../../../utils/formatBalance';
 import { chains, stableCoins } from '../Mint';
 import ConfirmationStep from '../../../components/ConfirmationStep';
@@ -23,16 +24,22 @@ import { useGetActiveBlockChain } from '../../../state/chains/hooks';
 import useSubmit from '../../../hooks/tron/useSubmit';
 import Textfield from '../../../components/Textfield';
 import { useAllTransactions } from '../../../state/transactions/hooks';
+import { useGetLoader, useUpdateLoader } from '../../../state/application/hooks';
+import useGetTokenBalance from '../../../hooks/useGetTokenBalance';
 
 function Burn() {
 
   const core = useCore()
+  console.log('core', core)
   const { myAccount } = core
   const chain = useGetActiveBlockChain()
   const allTransactions = useAllTransactions()
+  const tokenTotalSupply = useGetTokenBalance()
   
   let contractOwners: any = useGetOwners()
   let allTx = Object.entries(allTransactions)?.map((key) => key[1])?.filter((tx) => tx.txDetail._typeOfTx == 1)
+  const currentLoaderState = useGetLoader()
+  const updateLoader = useUpdateLoader()
 
   // let allTronTxns = useGetAllTronTxns()
   // allTronTxns = allTronTxns.filter((tx) => tx._typeOfTx.toNumber() == 1)
@@ -48,6 +55,7 @@ function Burn() {
 
 
   const submitTx = async() => {
+    updateLoader(true)
 
     if(chain == 'MaticMumbai'){
       burnTokenAction(() =>{}, () => {})
@@ -91,7 +99,7 @@ function Burn() {
             </Grid>
             <Grid item xs={6}>
               <TextField
-                helperText="This is the amount of token to be burned"
+                helperText={`This is the amount of token to be burned. Max value: ${tokenTotalSupply}`}
                 required
                 label="Amount"
                 // margin="dense"
@@ -129,8 +137,22 @@ function Burn() {
                 onClick={submitTx}
                 variant="contained"
                 color="primary"
-                fullWidth>
+                fullWidth
+                style={{position: 'relative'}}
+                >
                 Submit
+                <div style={{position: 'absolute', right: 30}}>
+                  <Puff
+                    height="30"
+                    width="30"
+                    ariaLabel="progress-bar-loading"
+                    wrapperStyle={{}}
+                    wrapperClass="progress-bar-wrapper"
+                    radius={1}
+                    color="#3F50B5"
+                    visible={currentLoaderState}
+                  />
+                </div>
               </Button>
             </Grid>
           </Grid>
