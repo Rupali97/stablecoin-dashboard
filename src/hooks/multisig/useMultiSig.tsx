@@ -39,7 +39,7 @@ export const useGetConfirmationCount = () => {
     const {chain} = useNetwork()
 
     const fetchData =  async(txnId: number) => {
-        const contract = core.contracts[`${chain?.id}`].MultiSig
+        const contract = core.contracts[`${chain?.id || core._activeNetwork} `].MultiSig
 
         const res = await contract.getConfirmationCount(txnId);
         console.log('useGetConfirmationCount', res);
