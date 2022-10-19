@@ -37,7 +37,7 @@ function Navigation() {
 
       console.log("navigation data", data)
 
-      if(data.includes("5e00f632fdc170ce840f71a785b6b2a06410d5d1") || data.includes("52b32a98f434c9c8ec7ab931ba6f07752003f9d8")){
+      if(data.includes("5e00f632fdc170ce840f71a785b6b2a06410d5d1") || data.includes("1528c11785fd019a613ffe57f2903bda335fa8")){
         setAdminTxns(prev => [...prev, item])
       }else {
         if(data.includes("40c10f19")){

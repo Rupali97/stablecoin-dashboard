@@ -42,12 +42,12 @@ export default function Sidebar () {
     {
       url: '/mint',
       icon: 'construction',
-      name: 'Mint the token'
+      name: 'Mint token'
     },
     {
       url: '/burn',
       icon: 'whatshot',
-      name: 'Burn the token'
+      name: 'Burn token'
     },
     {
       url: '/freeze',

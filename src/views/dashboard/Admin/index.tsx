@@ -261,12 +261,12 @@ function Admin({adminTxns}) {
                 fontWeight={'bold'}
                 className={'m-b-15'}
               />
-              <Grid item xs={6}>
+              <Grid item xs={2}>
                 {
                   allTokensTotalSupply && allTokensTotalSupply?.map((item, i) => (
                     <div className={"row-spacebetween-center"} key={i}>
                       <Textfield
-                        text={item.symbol}
+                        text={item.symbol + ":"}
                         fontSize={'15px'}
                         fontWeight={'500'}
                         className={'m-b-15'}
@@ -291,7 +291,7 @@ function Admin({adminTxns}) {
 
             <CardContent>
               <Textfield
-                text={'Add the owner'}
+                text={'Add an owner'}
                 fontSize={'20px'}
                 fontWeight={'bold'}
                 className={'m-b-15'}
@@ -329,7 +329,7 @@ function Admin({adminTxns}) {
           <Card style={{marginBottom: '30px'}}>
             <CardContent>
               <Textfield
-                text={'Remove the owner'}
+                text={'Remove an owner'}
                 fontSize={'20px'}
                 fontWeight={'bold'}
                 className={'m-b-15'}
@@ -405,7 +405,7 @@ function Admin({adminTxns}) {
           <Card style={{marginBottom: '30px', maxHeight: '200px', height: '200px'}} className={"scrollable"}>
             <CardContent>
               <Textfield
-                text={'Curernt Owners list'}
+                text={'Current Owners list'}
                 fontSize={'20px'}
                 fontWeight={'bold'}
                 className={'m-b-15'}

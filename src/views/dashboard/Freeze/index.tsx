@@ -58,7 +58,7 @@ function Freeze() {
     <div style={{marginLeft: '260px', marginRight: '20px', position: 'relative'}}>
       <ProgressModal currentLoaderState={currentLoaderState} />
       <Textfield
-        text={'Freeze the wallet'}
+        text={'Freeze a wallet'}
         fontSize={'24px'}
         fontWeight={'bold'}
         className={'m-b-15'}
@@ -68,7 +68,7 @@ function Freeze() {
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <TextField
-                helperText="This is the address to be frozen from using stable coin."
+                helperText="This is the address to be frozen."
                 required
                 label="Address"
                 // margin="dense"
@@ -135,7 +135,7 @@ function Freeze() {
       </Card>
 
       <Textfield
-        text={'Unfreeze the wallet'}
+        text={'Unfreeze a wallet'}
         fontSize={'24px'}
         fontWeight={'bold'}
         className={'m-b-15'}
@@ -145,7 +145,7 @@ function Freeze() {
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <TextField
-                helperText="This is the address to be unfrozen from using stable coin."
+                helperText="This is the address to be unfrozen."
                 required
                 label="Address"
                 // margin="dense"
