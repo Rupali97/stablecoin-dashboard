@@ -1,8 +1,10 @@
 import {useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useWallet} from 'use-wallet';
+import { useNetwork, useAccount } from 'wagmi'
 
 import config from '../../config';
+import useCore from '../../hooks/useCore';
 import {getDefaultProvider} from '../../utils/provider';
 import {useAddPopup, useBlockNumber, useUpdateLoader} from '../application/hooks';
 import {useGetActiveChainId} from '../chains/hooks';
@@ -14,6 +16,7 @@ export function shouldCheck(
   lastBlockNumber: number,
   tx: { addedTime: number; receipt?: {}; lastCheckedBlockNumber?: number },
 ): boolean {
+  console.log('shouldCheck', lastBlockNumber, tx)
   if (tx.receipt) return false;
   if (!tx.lastCheckedBlockNumber) return true;
   const blocksSinceCheck = lastBlockNumber - tx.lastCheckedBlockNumber;
@@ -32,7 +35,16 @@ export function shouldCheck(
 }
 
 export default function Updater(): null {
-  const {chainId, ethereum} = useWallet();
+  // const {chainId, ethereum} = useWallet();
+  const core = useCore()
+
+  const { chain} = useNetwork()
+
+  let chainId
+
+  if(chain){
+    chainId = chain.id
+  }
 
   const lastBlockNumber = useBlockNumber();
   const activeChainId = useGetActiveChainId();
@@ -47,46 +59,64 @@ export default function Updater(): null {
   const addPopup = useAddPopup();
 
   useEffect(() => {
-    if (!chainId || !ethereum || !lastBlockNumber) {
-      return;
+    if (!chainId || !window.ethereum || !lastBlockNumber) {
+      {
+        console.log('updater if failed', !chainId, !window.ethereum, !lastBlockNumber, lastBlockNumber)
+        return;
+      }
     }
 
     const provider = getDefaultProvider(config[activeChainId]);
-    Object.keys(transactions)
-      .filter((hash) => shouldCheck(lastBlockNumber, transactions[hash]))
-      .forEach((hash) => {
+
+    Object.entries(transactions)
+      .filter((tx, i) => shouldCheck(lastBlockNumber, {addedTime: Date.now()}))
+      .forEach((tx, i) => {
+
+        const hash = tx[1].hash[tx[1].hash.length - 1]
+
         provider
           .getTransactionReceipt(hash)
           .then((receipt) => {
             if (receipt) {
+              console.log("receipt if")
               dispatch(
                 finalizeTransaction({
-                  chainId,
                   hash,
-                  receipt: {
-                    blockHash: receipt.blockHash,
-                    blockNumber: receipt.blockNumber,
-                    contractAddress: receipt.contractAddress,
-                    from: receipt.from,
-                    status: receipt.status,
-                    to: receipt.to,
-                    transactionHash: receipt.transactionHash,
-                    transactionIndex: receipt.transactionIndex,
-                  },
+                  chainId,
+                  txIndex: Number(tx[0]),
+                  from: receipt.from,
+                  creation: {
+                    receipt: {
+                      blockHash: receipt.blockHash,
+                      blockNumber: receipt.blockNumber,
+                      contractAddress: receipt.contractAddress,
+                      from: receipt.from,
+                      status: receipt.status,
+                      to: receipt.to,
+                      transactionHash: receipt.transactionHash,
+                      transactionIndex: receipt.transactionIndex,
+                    }
+                  }
+
                 }),
               );
-              updateLoader(false)
-              addPopup(
-                {
-                  txn: {
-                    hash,
-                    success: receipt.status === 1,
-                    summary: transactions[hash]?.summary,
-                  },
-                },
-                hash,
-              );
+              // console.log("loadertest upif")
+              
+              // updateLoader(false)
+              // addPopup(
+              //   {
+              //     txn: {
+              //       hash,
+              //       success: receipt.status === 1,
+              //       summary: transactions[tx[1].txDetail.txIndex]?.summary,
+              //     },
+              //   },
+              //   hash,
+              // );
             } else {
+              console.log("receipt else")
+              console.log("loader upelse")
+              updateLoader(false)
               dispatch(checkedTransaction({chainId, hash, blockNumber: lastBlockNumber}));
             }
           })
@@ -94,7 +124,7 @@ export default function Updater(): null {
             console.error(`failed to check transaction hash: ${hash}`, error);
           });
       });
-  }, [chainId, ethereum, transactions, lastBlockNumber, dispatch, addPopup, activeChainId]);
+  }, [chainId, window.ethereum, transactions, lastBlockNumber, dispatch, addPopup, activeChainId]);
 
   return null;
 }

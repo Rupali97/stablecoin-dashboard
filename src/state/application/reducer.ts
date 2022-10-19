@@ -7,9 +7,14 @@ export default createReducer(INITIAL_APP_STATE, (builder) =>
   builder
     .addCase(updateBlockNumber, (state, action) => {
       const {chainId, blockNumber} = action.payload;
+      // console.log('reducer state action', state, action)
+ 
       if (typeof state.blockNumber[chainId] !== 'number') {
+        console.log('reducer update if', )
         state.blockNumber[chainId] = blockNumber;
       } else {
+        console.log('reducer update else', )
+
         state.blockNumber[chainId] = Math.max(blockNumber, state.blockNumber[chainId]);
       }
     })

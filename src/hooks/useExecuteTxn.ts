@@ -1,71 +1,53 @@
 import { BigNumber } from "ethers";
 import { useCallback } from "react";
 import { useWallet } from "use-wallet";
-import { useAddPopup } from "../state/application/hooks";
+import { useNetwork } from 'wagmi'
+import {useDispatch, useSelector} from 'react-redux';
 
+import { useAddPopup, useUpdateLoader } from "../state/application/hooks";
 import { useTransactionUpdater } from "../state/transactions/hooks";
 import { getDisplayBalance } from "../utils/formatBalance";
 import formatErrorMessage from "../utils/formatErrorMessage";
 import useCore from "./useCore";
+import {AppDispatch, AppState} from "../state/index";
+import { saveTxn } from "../state/transactions/actions";
 
 const useExecuteTxn = () => {
   const core = useCore();
-  const {chainId} = useWallet()
+  const { chain} = useNetwork()
   const updateTransaction = useTransactionUpdater();
   const addPopup = useAddPopup()
+  const dispatch = useDispatch<AppDispatch>();
+  const updateLoader = useUpdateLoader()
 
-  const executeCallback = async (index: number, typeOfTx: number) => {
+  const executeCallback = async (index: number, typeOfTx: string) => {
       
     try {
-      const contract = await core.contracts[`${chainId}`].MultiSig;
+      const contract = await core.contracts[`${chain?.id}`].MultiSig;
       const response = await contract.executeTransaction(index)
       const tx = await response.wait();
 
     setTimeout(async() => {
       if (tx?.status === 1){
-        const txnsCount = await contract.getTransactionCount()
-        const txDetail = await contract.getTransaction(txnsCount - 1)
-  
-        if(typeOfTx == 0){  
-          updateTransaction(response, 
-            {
-              _numConfirmations: txDetail._numConfirmations.toNumber(),
-              _typeOfTx: txDetail._typeOfTx.toNumber(),
-              _createdTime: txDetail._createdTime.toNumber(),
-              _executed: txDetail._executed,
-              _value: txDetail._value,
-              _token: txDetail._token,
-              txIndex: txDetail.txIndex.toNumber(),
-              _executedTime: txDetail._executedTime.toNumber(),
-              _to: txDetail._to,
-            }, 
-          {
-            summary: `Execute mint transaction id ${index}`,
-          });
-        }
-        else {
-  
-          updateTransaction(response, 
-            {
-              _numConfirmations: txDetail._numConfirmations.toNumber(),
-              _typeOfTx: txDetail._typeOfTx.toNumber(),
-              _createdTime: txDetail._createdTime.toNumber(),
-              _executed: txDetail._executed,
-              _value: txDetail._value,
-              _token: txDetail._token,
-              txIndex: txDetail.txIndex.toNumber(),
-              _executedTime: txDetail._executedTime.toNumber(),
-              _to: txDetail._to,
-            }, 
-            {
-            summary: `Execute burn transaction id ${index}`,
-          });
-        }
+        updateLoader(false)
+        dispatch(saveTxn({txIndex: index, hash: tx.transactionHash, chainId: chain?.id || core._activeNetwork}))
+        let summary = `Executed ID ${index}`
+
+        addPopup({
+          txn: {
+            hash: tx.transactionHash,
+            success: true,
+            summary
+          }
+        });
+       
       }
-    }, 4000)
+    }, 1000)
 
     } catch (e: any) {
       console.log('useExecuteTxn error', e);
+      updateLoader(false)
+
       addPopup({
         error: {
           message: formatErrorMessage(e?.data?.message || e?.message),

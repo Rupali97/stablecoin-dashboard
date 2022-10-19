@@ -47,7 +47,7 @@ export type PoolTokenRateState = {
 };
 
 export type IABIS = {
-  [key: string]: any[];
+  [key: string]: any;
 };
 
 export type Deployments = {

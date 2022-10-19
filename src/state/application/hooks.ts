@@ -1,14 +1,21 @@
 import {useWallet} from 'use-wallet';
 import {useCallback, useMemo} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
+import { useNetwork } from 'wagmi'
 
 import {addPopup, removePopup, toggleSettingsMenu, toggleWalletModal,loaderVisibile} from './actions';
 import {AppState} from '../index';
 import {PopupContent} from '../../utils/interface';
 
 export function useBlockNumber(): number | undefined {
-  const {chainId} = useWallet();
-  return useSelector((state: AppState) => state.application.blockNumber[chainId ?? -1]);
+  // const {chainId} = useWallet();
+  const { chain} = useNetwork()
+
+  const test = useSelector((state: AppState) => state)
+
+  console.log('useBlockNumber', chain?.id, test, test.application.blockNumber[chain?.id ?? -1])
+
+  return useSelector((state: AppState) => state.application.blockNumber[chain?.id ?? -1]);
 }
 
 export function useWalletModalOpen(): boolean {

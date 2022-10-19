@@ -3,6 +3,9 @@ import { Outlet } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { useWallet } from "use-wallet";
 import {Button, MenuItem, Snackbar, TextField} from '@material-ui/core'
+import { useAccount, useSwitchNetwork, useNetwork } from 'wagmi'
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
 import styles from '../../styles/adminStyle.js'
 import Sidebar from './Sidebar';
 import { noOp } from '../../utils/constants';
@@ -25,35 +28,49 @@ export const chains = [
 const useStyles = makeStyles(styles);
 function Dashbaord() {
 
-  useEffect(() => {
-    connectWalletOnPageLoad()
-  },[])
+  const { address: account, isConnecting, isDisconnected, connector } = useAccount()
+  const { data, error, isLoading, pendingChainId, switchNetwork, status, isSuccess } = useSwitchNetwork()
+  const { chain, chains,  } = useNetwork()
+  const { isConnected } = useAccount()
 
-  const { connect, connector, account } = useWallet();
-  const { tronLink } = window;
-  const chain = useGetActiveBlockChain()
-  const setChain = useHandleBlokchainChange()
+  console.log('isConnected', isConnected)
+
+  console.log('connector', connector)
+  console.log('chain', chain)
+
+  // useEffect(() => {
+  //   connectWalletOnPageLoad()
+  // },[])
+
+  // const { connect, connector, account } = useWallet();
+  // const { tronLink } = window;
+  // const chain = useGetActiveBlockChain()
+  // const setChain = useHandleBlokchainChange()
 
   const [connectMetamask, setConnectMetamask] = useState(true)
 
-  const connectWalletOnPageLoad = async () => {
-    if (localStorage?.getItem('isWalletConnected') === 'true') {
-      try {
-        await connect('injected')
-      } catch (ex) {
-        console.log(ex)
-      }
-    }
-  }
+  // const connectWalletOnPageLoad = async () => {
+  //   if (localStorage?.getItem('isWalletConnected') === 'true') {
+  //     try {
+  //       await connect('injected')
+  //     } catch (ex) {
+  //       console.log(ex)
+  //     }
+  //   }
+  // }
 
-  const handleChainChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setChain(event.target.value);
+  // const handleChainChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setChain(event.target.value);
 
-  };
+  // };
 
   return (
  
-    <div>
+    <div style={{padding: '15px 15px 40px 0'}}>
+      <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+        <ConnectButton />
+      </div>
+
       {
         !account && 
         <Snackbar
@@ -66,7 +83,7 @@ function Dashbaord() {
             message="Please connect to the Metamask on MumbaiTestnet"
           />
       }
-      <div style={{padding: '28px', display: 'flex', justifyContent: 'flex-end'}}>
+      {/* <div style={{padding: '28px', display: 'flex', justifyContent: 'flex-end'}}>
         <TextField
           required
           id="standard-select-currency"
@@ -120,7 +137,7 @@ function Dashbaord() {
             </Button>
           )
         }
-      </div>
+      </div> */}
 
       <Sidebar />
       <Outlet />

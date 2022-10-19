@@ -1,9 +1,25 @@
-import { HashRouter as Router } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useWallet, UseWalletProvider } from 'use-wallet';
 import { SnackbarProvider } from "notistack";
 import {Provider} from "react-redux";
-
 import dotenv from 'dotenv'
+import '@rainbow-me/rainbowkit/styles.css';
+import {
+  getDefaultWallets,
+  RainbowKitProvider,
+  connectorsForWallets,
+  wallet
+} from '@rainbow-me/rainbowkit';
+import {
+  chain,
+  configureChains,
+  createClient,
+  WagmiConfig,
+} from 'wagmi';
+import { alchemyProvider } from 'wagmi/providers/alchemy';
+import { publicProvider } from 'wagmi/providers/public';
+import { useAccount, useSwitchNetwork, useNetwork } from 'wagmi'
+
 import config, { getSupportedChains } from './config';
 import ProtocolProvider from './context/Provider';
 // import ModalsProvider from './context/Modals'
@@ -14,9 +30,56 @@ import store from './state';
 import Updaters from './state/Updaters';
 import ModalsProvider from './context/Modals'
 import Popups from './components/Popups';
-import { useGetUpdateActiveChainId } from './state/chains/hooks';
-import { useEffect } from 'react';
+import { useGetActiveChainId, useGetUpdateActiveChainId } from './state/chains/hooks';
+import { ethers } from 'ethers';
 dotenv.config()
+
+
+// Rainbowkit starts
+const { chains, provider } = configureChains(
+  [chain.mainnet, chain.polygon, chain.polygonMumbai, chain.goerli],
+  [
+    // alchemyProvider({ apiKey: 'qBs28Tonpldv529ErHD5Lhow4a9rrrCe' }),
+    publicProvider()
+  ]
+);
+
+const connectors = connectorsForWallets([
+  {
+    groupName: 'Recommended',
+    wallets: [
+      wallet.injected({ chains }),
+      wallet.rainbow({ chains }),
+      wallet.walletConnect({ chains }),
+      wallet.metaMask({chains}),
+      wallet.ledger({chains})
+    ],
+  },
+]);
+
+const wagmiClient = createClient({
+  autoConnect: true,
+  connectors,
+  provider,
+})
+
+const WalletProvider = ({ children }: any) => {
+  return (
+    <WagmiConfig client={wagmiClient}>
+      <RainbowKitProvider chains={chains} coolMode={true}>
+        <Updaters/>
+        <ProtocolProvider>
+          <AppContent>{children}</AppContent>
+        </ProtocolProvider>
+      </RainbowKitProvider>
+    </WagmiConfig>
+  );
+}
+
+
+
+// Rainbow kit code ends
+
 
 const Providers: React.FC = ({children}) => {
   return (
@@ -27,45 +90,58 @@ const Providers: React.FC = ({children}) => {
   );
 };
 
-const WalletProvider = ({ children }: any) => {
+// const WalletProvider = ({ children }: any) => {
 
-  return (
-    <UseWalletProvider
-      // chainId={config.chainId}
-      connectors={{
-        injected: {
-          chainId: getSupportedChains(),
-        },
-        walletconnect: {
-          chainId: config.chainId,
-          rpcUrl: config.defaultProvider
-        }
-      }}
-      >
-        <Updaters/>
-        <ProtocolProvider>
-          <AppContent>{children}</AppContent>
-        </ProtocolProvider>
+//   return (
+//     <UseWalletProvider
+//       // chainId={config.chainId}
+//       connectors={{
+//         injected: {
+//           chainId: getSupportedChains(),
+//         },
+//         walletconnect: {
+//           chainId: config.chainId,
+//           rpcUrl: config.defaultProvider
+//         }
+//       }}
+//       >
+//         <Updaters/>
+//         <ProtocolProvider>
+//           <AppContent>{children}</AppContent>
+//         </ProtocolProvider>
 
-    </UseWalletProvider>
-  );
-};
+//     </UseWalletProvider>
+//   );
+// };
 
 const AppContent: React.FC = ({children}) => {
 
   const core = useCore()
+  const { chain } = useNetwork()
+  const { isConnected } = useAccount()
 
-  const {ethereum, chainId} = useWallet();
+  const newprovider = new ethers.providers.Web3Provider(window.ethereum, "any");
+
+  newprovider.on("network", (newNetwork, oldNetwork) => {
+    // When a Provider makes its initial connection, it emits a "network"
+    // event with a null oldNetwork along with the newNetwork. So, if the
+    // oldNetwork exists, it represents a changing network
+    if (oldNetwork) {
+        window.location.reload();
+    }
+  });
+
+  console.log('core', core)
+
+  // const {ethereum, chainId} = useWallet();
   const setChainId = useGetUpdateActiveChainId();
 
+
   useEffect(() => {
-    if (ethereum)
+    if (isConnected) 
       // @ts-ignore
-      ethereum.on('chainChanged', (chainId) => {
-        console.log('chain changed', chainId);
-        setChainId(chainId);
-      });
-  }, [ethereum]);
+      setChainId(chain.id)
+  }, [isConnected]);
 
   if (!window.ethereum) {
     console.log('no window ethereum')

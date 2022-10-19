@@ -1,32 +1,27 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useWallet } from "use-wallet";
+import { useNetwork } from 'wagmi'
+
 import { getDisplayBalance } from "../utils/formatBalance";
 import useCore from "./useCore";
 
 
-const useGetTokenBalance = () => {
+const useGetTokenBalance = (address: string, stableCoin: string) => {
   const core = useCore();
-  const {chainId} = useWallet()
+  // const {chainId} = useWallet()
+  const { chain} = useNetwork()
 
   const [response, setResponse] = React.useState('')
 
   const fetchData = useCallback(async () => {
-        const contract = await core.contracts[`${chainId}`].Token3;
-        const res = await contract.totalSupply()
-        const bal = getDisplayBalance(res)
-        setResponse(bal)
-  }, [chainId]) 
+    const contract = await core.contracts[`${chain?.id}`][stableCoin];
+    const res = await contract.balanceOf(address)
+    console.log("useGetTokenBalance res", res)
+    const bal = getDisplayBalance(res)
+    setResponse(bal)
+  }, [chain]) 
 
-  useEffect(() => {
-
-    if(core){
-        fetchData()
-            .catch((err) => setResponse(''))
-    }
-
-  }, [fetchData])
-
-  return response
+  return {response, fetchData}
 
 }
 

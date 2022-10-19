@@ -3,7 +3,7 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "_newOwner",
+				"name": "owner",
 				"type": "address"
 			}
 		],
@@ -16,11 +16,11 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "_txIndex",
+				"name": "_required",
 				"type": "uint256"
 			}
 		],
-		"name": "confirmTransaction",
+		"name": "changeRequirement",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -34,7 +34,7 @@
 			},
 			{
 				"internalType": "uint256",
-				"name": "_numConfirmationsRequired",
+				"name": "_required",
 				"type": "uint256"
 			}
 		],
@@ -47,18 +47,31 @@
 			{
 				"indexed": true,
 				"internalType": "address",
-				"name": "owner",
+				"name": "sender",
 				"type": "address"
 			},
 			{
 				"indexed": true,
 				"internalType": "uint256",
-				"name": "txIndex",
+				"name": "transactionId",
 				"type": "uint256"
 			}
 		],
-		"name": "ConfirmTransaction",
+		"name": "Confirmation",
 		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"name": "confirmTransaction",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"anonymous": false,
@@ -72,13 +85,7 @@
 			{
 				"indexed": false,
 				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "balance",
+				"name": "value",
 				"type": "uint256"
 			}
 		],
@@ -89,7 +96,7 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "_txIndex",
+				"name": "transactionId",
 				"type": "uint256"
 			}
 		],
@@ -103,25 +110,58 @@
 		"inputs": [
 			{
 				"indexed": true,
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			},
-			{
-				"indexed": true,
 				"internalType": "uint256",
-				"name": "txIndex",
+				"name": "transactionId",
 				"type": "uint256"
 			}
 		],
-		"name": "ExecuteTransaction",
+		"name": "Execution",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"name": "ExecutionFailure",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "OwnerAddition",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "OwnerRemoval",
 		"type": "event"
 	},
 	{
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "_oldOwner",
+				"name": "owner",
 				"type": "address"
 			}
 		],
@@ -133,8 +173,58 @@
 	{
 		"inputs": [
 			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "replaceOwner",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
 				"internalType": "uint256",
-				"name": "_txIndex",
+				"name": "required",
+				"type": "uint256"
+			}
+		],
+		"name": "RequirementChange",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"name": "Revocation",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "transactionId",
 				"type": "uint256"
 			}
 		],
@@ -148,88 +238,108 @@
 		"inputs": [
 			{
 				"indexed": true,
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			},
-			{
-				"indexed": true,
 				"internalType": "uint256",
-				"name": "txIndex",
+				"name": "transactionId",
 				"type": "uint256"
 			}
 		],
-		"name": "RevokeConfirmation",
+		"name": "Submission",
 		"type": "event"
 	},
 	{
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "_to",
+				"name": "destination",
 				"type": "address"
 			},
 			{
-				"internalType": "uint256",
-				"name": "_value",
-				"type": "uint256"
-			},
-			{
-				"internalType": "contract IERC20BurnerMinter",
-				"name": "_token",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_typeOfTx",
-				"type": "uint256"
-			}
-		],
-		"name": "submitTransaction",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "uint256",
-				"name": "txIndex",
-				"type": "uint256"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"indexed": false,
 				"internalType": "uint256",
 				"name": "value",
 				"type": "uint256"
 			},
 			{
-				"indexed": false,
-				"internalType": "contract IERC20BurnerMinter",
-				"name": "token",
-				"type": "address"
+				"internalType": "bytes",
+				"name": "data",
+				"type": "bytes"
 			}
 		],
-		"name": "SubmitTransaction",
-		"type": "event"
+		"name": "submitTransaction",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"stateMutability": "payable",
 		"type": "receive"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "confirmations",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"name": "getConfirmationCount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "count",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"name": "getConfirmations",
+		"outputs": [
+			{
+				"internalType": "address[]",
+				"name": "_confirmations",
+				"type": "address[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
 	},
 	{
 		"inputs": [],
@@ -247,69 +357,21 @@
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "_txIndex",
-				"type": "uint256"
-			}
-		],
-		"name": "getTransaction",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "_to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_value",
-				"type": "uint256"
-			},
-			{
-				"internalType": "contract IERC20BurnerMinter",
-				"name": "_token",
-				"type": "address"
-			},
-			{
 				"internalType": "bool",
-				"name": "_executed",
+				"name": "pending",
 				"type": "bool"
 			},
 			{
-				"internalType": "uint256",
-				"name": "_numConfirmations",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_typeOfTx",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_createdTime",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_executedTime",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "txIndex",
-				"type": "uint256"
+				"internalType": "bool",
+				"name": "executed",
+				"type": "bool"
 			}
 		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
 		"name": "getTransactionCount",
 		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "count",
 				"type": "uint256"
 			}
 		],
@@ -320,13 +382,42 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "from",
 				"type": "uint256"
 			},
 			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
+				"internalType": "uint256",
+				"name": "to",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "pending",
+				"type": "bool"
+			},
+			{
+				"internalType": "bool",
+				"name": "executed",
+				"type": "bool"
+			}
+		],
+		"name": "getTransactionIds",
+		"outputs": [
+			{
+				"internalType": "uint256[]",
+				"name": "_transactionIds",
+				"type": "uint256[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
 			}
 		],
 		"name": "isConfirmed",
@@ -361,7 +452,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "numConfirmationsRequired",
+		"name": "MAX_OWNER_COUNT",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -393,12 +484,12 @@
 	},
 	{
 		"inputs": [],
-		"name": "token",
+		"name": "required",
 		"outputs": [
 			{
-				"internalType": "contract IERC20BurnerMinter",
+				"internalType": "uint256",
 				"name": "",
-				"type": "address"
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -429,7 +520,7 @@
 		"outputs": [
 			{
 				"internalType": "address",
-				"name": "to",
+				"name": "destination",
 				"type": "address"
 			},
 			{
@@ -438,39 +529,14 @@
 				"type": "uint256"
 			},
 			{
-				"internalType": "contract IERC20BurnerMinter",
-				"name": "token",
-				"type": "address"
+				"internalType": "bytes",
+				"name": "data",
+				"type": "bytes"
 			},
 			{
 				"internalType": "bool",
 				"name": "executed",
 				"type": "bool"
-			},
-			{
-				"internalType": "uint256",
-				"name": "numConfirmations",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "typeOfTx",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "createdTime",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "executedTime",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "txIndex",
-				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",

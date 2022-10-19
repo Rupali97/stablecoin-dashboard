@@ -1,6 +1,6 @@
 import {createAction} from '@reduxjs/toolkit';
 import { BigNumber } from 'ethers';
-import { DashboardTxnDetails } from './reducer';
+import { DashboardTxnDetails, TransactionDetails } from './reducer';
 
 export interface SerializableTransactionReceipt {
   to: string;
@@ -11,12 +11,14 @@ export interface SerializableTransactionReceipt {
   transactionHash: string;
   blockNumber: number;
   status?: number;
+  
 }
 
 export const addTransaction = createAction<{
+  txIndex: number;
   chainId: number;
   hash: string;
-  from: string;
+  // from: string;
   txDetail: {
     _numConfirmations: any, 
     _typeOfTx: any, 
@@ -28,9 +30,13 @@ export const addTransaction = createAction<{
     _executedTime: any, 
     _to: string,
   },
-  approval?: { tokenAddress: string; spender: string };
-  summary?: string;
-  blockchain?: string;
+  creation?: TransactionDetails,
+  confirmation?: TransactionDetails,
+  execution?: TransactionDetails,
+  // approval?: { tokenAddress: string; spender: string };
+  // summary?: string;
+  // blockchain?: string;
+
 }>('transactions/addTransaction');
 
 export const updateTransaction = createAction<{
@@ -61,7 +67,12 @@ export const clearAllTransactions = createAction<{ chainId: number }>(
 export const finalizeTransaction = createAction<{
   chainId: number;
   hash: string;
-  receipt: SerializableTransactionReceipt;
+  // receipt: SerializableTransactionReceipt;
+  txIndex: number;
+  from: string;
+  creation: TransactionDetails,
+  confirmation?: { [txHash: string]: TransactionDetails; },
+  execution?: { [txHash: string]: TransactionDetails; },
 }>('transactions/finalizeTransaction');
 
 export const checkedTransaction = createAction<{
@@ -70,3 +81,10 @@ export const checkedTransaction = createAction<{
   blockNumber: number;
 }>('transactions/checkedTransaction');
 
+
+export const saveTxn = createAction<{
+  txIndex: number;
+  hash: string;
+  chainId: number;
+
+}>('transactions/saveTxn')

@@ -9,14 +9,14 @@ import {
   MenuItem
 } from "@material-ui/core";
 import Web3 from 'web3';
-import {Puff} from "react-loader-spinner"
+import { useNetwork } from 'wagmi'
 import { formatToBN, getBalance } from '../../../utils/formatBalance';
 import useCore from '../../../hooks/useCore';
 import ConfirmationStep from '../../../components/ConfirmationStep';
 import { useWallet } from 'use-wallet';
-import { BigNumber, utils } from 'ethers';
+import { BigNumber, ethers, utils } from 'ethers';
 import useGetOwners from '../../../hooks/useGetOwners';
-import useMultiSig from '../../../hooks/useMultiSig';
+import useSubmitTransaction from '../../../hooks/useSubmitTransaction';
 import { useAllTransactions, useClearAllTransactions } from '../../../state/transactions/hooks';
 import useGetAllMultiSigTxns from '../../../hooks/useGetAllMultiSigTxns';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
@@ -25,6 +25,7 @@ import useGetAllTronTxns from '../../../hooks/tron/useGetAllTronTxns';
 import { useGetActiveBlockChain } from '../../../state/chains/hooks';
 import Textfield from '../../../components/Textfield';
 import { useGetLoader, useUpdateLoader } from '../../../state/application/hooks';
+import Test from '../Test';
 
 export const stableCoins = [
   // {
@@ -36,8 +37,9 @@ export const stableCoins = [
   //   chain: 'MaticMumbai'
   // },
   {
-    label: 'Token3',
-    chain: 'MaticMumbai'
+    label: 'USD-A',
+    chain: 'MaticMumbai',
+    address: "0x125eDC5cd0eA0453D0485153F7F200C323882B4e"
   },
   {
     label: "T20",
@@ -57,31 +59,43 @@ export const chains = [
   }
 ]
 
-function Mint() {
+function Mint({mintTxns}) {
 
   const core = useCore()
-  const {myAccount } = core
-  const allTransactions = useAllTransactions()
+  const {myAccount, provider, _activeNetwork, tokens } = core
+
+  // const allTransactions = useAllTransactions()
   const currentLoaderState = useGetLoader()
   const updateLoader = useUpdateLoader()
+  const { chain: chainName} = useNetwork()
 
   const chain = useGetActiveBlockChain()
+
+  const multiSigTxns = useGetAllMultiSigTxns()
+
+  console.log('multiSigTxns', multiSigTxns)
+  console.log('mintTxns', mintTxns)
+
+  // const {clearAllTransactions} = useClearAllTransactions();
+  // clearAllTransactions()
 
   const [adddress, setAddress] = useState<string>('')
   const [amount, setAmount] = useState<string>('')
   const [stableCoin, setStableCoin] = useState<string>('')
 
-  let allTx = Object.entries(allTransactions)?.map((key) => key[1])?.filter((tx) => tx.txDetail._typeOfTx == 0)
+  // let allTx = Object.entries(allTransactions)?.map((key) => key[1])?.filter((tx) => tx.txDetail._typeOfTx == 0)
   // let allTronTxns = useGetAllTronTxns()
   // allTronTxns = allTronTxns.filter((tx) => tx._typeOfTx.toNumber() == 0)
 
   let contractOwners: any = useGetOwners()
 
+  console.log('contractOwners', contractOwners)
+
   const handleCoinChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setStableCoin(event.target.value);
   };
 
-  const mintTokenAction = useMultiSig(adddress, formatToBN(amount), stableCoin, BigNumber.from('0'))
+  const mintTokenAction = useSubmitTransaction("mint", adddress, amount, stableCoin)
   const submitTronTxnAction = useSubmit(adddress, formatToBN(amount), stableCoin, BigNumber.from('0'))
 
   const submitTx = async() => {
@@ -95,20 +109,20 @@ function Mint() {
     }
   }
 
-  console.log('currentLoaderState', currentLoaderState)
-
   const disableMint = adddress && amount && stableCoin && chain && contractOwners?.includes(myAccount) && !currentLoaderState
 
   return (
     <div style={{marginLeft: '260px', marginRight: '20px', position: 'relative',}}>
-       <Textfield
-          text={'Mint the Stablecoin'}
-          fontSize={'24px'}
-          fontWeight={'bold'}
-          className={'m-b-15'}
-          />
+      <Test />
+      
       <Card style={{marginBottom: '30px'}}>
-        <CardContent>
+        <CardContent className='p15'>
+          <Textfield
+            text={'Mint the Stablecoin'}
+            fontSize={'24px'}
+            fontWeight={'bold'}
+            className={'m-b-15'}
+            />
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
@@ -150,15 +164,15 @@ function Mint() {
                   // variant="outlined"
                   size='small'
                 >
-                  {stableCoins.filter((c) => c.chain === chain).map((option) => (
-                    <MenuItem key={option.label} value={option.label}>
-                      {option.label}
+                  {Object.entries(tokens[chainName?.id || _activeNetwork]).map((option) => (
+                    <MenuItem key={option[1].symbol} value={option[1].address}>
+                      {option[1].symbol}
                     </MenuItem>
                   ))}
                 </TextField>           
             </Grid>
             <Grid item xs={6}></Grid>
-            <Grid item xs={3} justifyContent={'center'}>
+            <Grid item xs={3}>
             </Grid>
             <Grid item xs={3}>
               <Button
@@ -170,19 +184,7 @@ function Mint() {
                 style={{position: 'relative'}}
               >
                 <div>Submit</div>
-                
-                <div style={{position: 'absolute', right: 30}}>
-                <Puff
-                  height="30"
-                  width="30"
-                  ariaLabel="progress-bar-loading"
-                  wrapperStyle={{}}
-                  wrapperClass="progress-bar-wrapper"
-                  radius={1}
-                  color="#3F50B5"
-                  visible={currentLoaderState}
-                />
-                </div>
+
               </Button>
             </Grid>
             {/* <Grid item xs={4}></Grid> */}
@@ -206,9 +208,10 @@ function Mint() {
         <ConfirmationStep allTx={allTronTxns} />
 
       } */}
-      <ConfirmationStep allTx={allTx} /> 
+      <ConfirmationStep allTransactions={mintTxns} /> 
     </div>
   )
 }
 
 export default Mint
+

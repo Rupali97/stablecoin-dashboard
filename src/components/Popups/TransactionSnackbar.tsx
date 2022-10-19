@@ -40,10 +40,12 @@ const CustomizedSnackbars: React.FC<TxButtonProps> = ({
 
   useEffect(() => {
     setOpen(true)
+    console.log("loadertest CustomizedSnackbars")
     updateLoader(false)
   }, [isScucess, isLoading])
 
   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    window.location.reload()
     if (reason === 'clickaway') return;
 
     setOpen(false);
@@ -155,7 +157,7 @@ const SnackBarInnerContainer = styled.div`
   padding: 0 12px 0 18px;
   justify-content: space-between;
   border-radius: 4px 4px 0 0;
-  background: #3f50b5;
+  background: #3f046d;
   color: white;
 `;
 

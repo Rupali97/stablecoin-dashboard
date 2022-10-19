@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   TextField,
   Typography,
@@ -10,11 +10,12 @@ import {
   Grid,
   MenuItem,
 } from "@material-ui/core";
-import {Puff} from "react-loader-spinner"
+import { useAccount, useNetwork } from 'wagmi'
+
 import { formatToBN, getBalance } from '../../../utils/formatBalance';
 import { chains, stableCoins } from '../Mint';
 import ConfirmationStep from '../../../components/ConfirmationStep';
-import useMultiSig from '../../../hooks/useMultiSig';
+import useSubmitTransaction from '../../../hooks/useSubmitTransaction';
 import useGetAllMultiSigTxns from '../../../hooks/useGetAllMultiSigTxns';
 import useGetOwners from '../../../hooks/useGetOwners';
 import useCore from '../../../hooks/useCore';
@@ -26,33 +27,42 @@ import Textfield from '../../../components/Textfield';
 import { useAllTransactions } from '../../../state/transactions/hooks';
 import { useGetLoader, useUpdateLoader } from '../../../state/application/hooks';
 import useGetTokenBalance from '../../../hooks/useGetTokenBalance';
+import useGetTokenDetails from '../../../hooks/useGetTokenDetails';
 
-function Burn() {
+function Burn({burnTxns}) {
+  const {tokens, _activeNetwork} = useCore()
+  const { chain: chainName} = useNetwork()
 
-  const core = useCore()
-  console.log('core', core)
-  const { myAccount } = core
+  // const { myAccount } = core
+  const { address: myAccount } = useAccount()
+
+  console.log("BurnmyAccount", myAccount)
   const chain = useGetActiveBlockChain()
-  const allTransactions = useAllTransactions()
-  const tokenTotalSupply = useGetTokenBalance()
   
   let contractOwners: any = useGetOwners()
-  let allTx = Object.entries(allTransactions)?.map((key) => key[1])?.filter((tx) => tx.txDetail._typeOfTx == 1)
+  // let allTx = Object.entries(allTransactions)?.map((key) => key[1])?.filter((tx) => tx.txDetail._typeOfTx == 1)
   const currentLoaderState = useGetLoader()
   const updateLoader = useUpdateLoader()
 
   // let allTronTxns = useGetAllTronTxns()
   // allTronTxns = allTronTxns.filter((tx) => tx._typeOfTx.toNumber() == 1)
-
-  // console.log('allTronTxns', allTronTxns)
   
   const [adddress, setAddress] = useState<string>('')
   const [amount, setAmount] = useState<string>('')
   const [stableCoin, setStableCoin] = useState<string>('')
+  const [stableCoinDetails, setStableCoinDetails] = useState<any>()
   
-  const burnTokenAction = useMultiSig(adddress, formatToBN(amount), stableCoin, BigNumber.from('1'))
+  const burnTokenAction = useSubmitTransaction("burnFrom", adddress, amount, stableCoin)
   const submitTronTxnAction = useSubmit(adddress, formatToBN(amount), stableCoin, BigNumber.from('1'))
+  const {fetch} = useGetTokenDetails();
+  
+  useEffect(() => {
+    getTokenDetails()
+  }, [stableCoin, myAccount])
 
+  useEffect(() => {
+    console.log("useEffectBurnburnTxns", burnTxns)
+  }, [burnTxns])
 
   const submitTx = async() => {
     updateLoader(true)
@@ -65,22 +75,35 @@ function Burn() {
     }
   }
  
-  const handleCoinChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoinChange = async(event: React.ChangeEvent<HTMLInputElement>) => {
     setStableCoin(event.target.value);
   };
 
-  const disableSubmitBtn = amount && stableCoin && chain && contractOwners?.includes(myAccount)
+  const getTokenDetails = async() => {
+    console.log("getTokenDetails stableCoin", stableCoin)
+    let tokenDetails = await fetch(stableCoin)
+    console.log("getTokenDetails tokenDetails", tokenDetails)
+    setStableCoinDetails(tokenDetails)
+  }
+
+  const disableSubmitBtn = amount && Number(amount) <= Number(getBalance(stableCoinDetails?.value.balance))  && stableCoin && chain && contractOwners?.includes(myAccount)
+
+  
+  // console.log("burnTxns", burnTxns)
+
+  console.log("stableCoinDetails", stableCoinDetails)
 
   return (
     <div style={{marginLeft: '260px', marginRight: '20px'}}>
-    <Textfield
-      text={'Burn the Stablecoin'}
-      fontSize={'24px'}
-      fontWeight={'bold'}
-      className={'m-b-15'}
-      />
+    
       <Card style={{marginBottom: '15px'}}>
-        <CardContent>
+        <CardContent className='p15'>
+          <Textfield
+            text={'Burn the Stablecoin'}
+            fontSize={'24px'}
+            fontWeight={'bold'}
+            className={'m-b-15'}
+            />
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
@@ -99,7 +122,7 @@ function Burn() {
             </Grid>
             <Grid item xs={6}>
               <TextField
-                helperText={`This is the amount of token to be burned. Max value: ${tokenTotalSupply}`}
+                helperText={`This is the amount of token to be burned. ${stableCoin && `Max value: ${getBalance(stableCoinDetails?.value.balance)}`} `}
                 required
                 label="Amount"
                 // margin="dense"
@@ -123,9 +146,9 @@ function Burn() {
                 // variant="outlined"
                 size='small'
               >
-                {stableCoins.filter((c) => c.chain === chain).map((option) => (
-                  <MenuItem key={option.label} value={option.label}>
-                    {option.label}
+                {Object.entries(tokens[chainName?.id || _activeNetwork]).map((option) => (
+                  <MenuItem key={option[1].symbol} value={option[1].address}>
+                    {option[1].symbol}
                   </MenuItem>
                 ))}
               </TextField>  
@@ -141,18 +164,6 @@ function Burn() {
                 style={{position: 'relative'}}
                 >
                 Submit
-                <div style={{position: 'absolute', right: 30}}>
-                  <Puff
-                    height="30"
-                    width="30"
-                    ariaLabel="progress-bar-loading"
-                    wrapperStyle={{}}
-                    wrapperClass="progress-bar-wrapper"
-                    radius={1}
-                    color="#3F50B5"
-                    visible={currentLoaderState}
-                  />
-                </div>
               </Button>
             </Grid>
           </Grid>
@@ -162,13 +173,7 @@ function Burn() {
 
       </Card>
       
-      {/* {
-        chain == "MaticMumbai" ?
-        <ConfirmationStep allTx={allTx} /> :
-        <ConfirmationStep allTx={allTronTxns} />
-
-      } */}
-      <ConfirmationStep allTx={allTx} /> 
+      <ConfirmationStep allTransactions={burnTxns} /> 
       
     </div>
   )

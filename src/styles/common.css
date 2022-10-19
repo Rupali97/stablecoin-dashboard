@@ -30,6 +30,10 @@
       margin-bottom: 15px;
 }
 
+.p15{
+      padding: 25px !important;
+}
+
 .flip180 {
       transform: rotate(90deg);
 }
@@ -49,6 +53,12 @@
       justify-content: center;
 }
 
+.row-spacebetween-center{
+      display: flex;
+      align-items: center;
+      justify-content: space-between; 
+}
+
 .orange-bold{
       color: #ed7117;
       font-weight: bold;
@@ -65,4 +75,24 @@
 .progress-bar-wrapper{
       margin-right: 10px;
 
+}
+
+.MuiButton-root:disabled  {
+      background-color: #afa4b7 !important;
+      color: #fff !important;
+}
+
+.MuiButton-root {
+      background-color: #3f046d !important;
+      color: #fff !important;
+}
+
+.MuiStepContent-root {
+      display: contents !important;
+}
+
+.scrollable {
+      /* overflow-x: hidden; */
+      overflow: auto;
+      height: 140px;
 }

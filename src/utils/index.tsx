@@ -1,4 +1,5 @@
 import { BigNumber } from 'ethers';
+import useCore from '../hooks/useCore';
 
 export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -44,3 +45,4 @@ export const InputValidation = function (
     }
   }
 };
+

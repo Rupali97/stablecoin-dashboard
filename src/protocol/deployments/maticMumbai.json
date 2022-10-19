@@ -1,10 +1,10 @@
 {
-      "Token3": {
-            "abi": "Token3",
-            "address": "0x9825cc19Bc319cf4624818342cF0Dc113764844d"
+      "USDA": {
+            "abi": "USDA",
+            "address": "0x125eDC5cd0eA0453D0485153F7F200C323882B4e"
       },
       "MultiSig": {
             "abi": "MultiSig",
-            "address": "0xFad5f1a5342Ee6b6014F65AF03a7Ca533146cA59"
+            "address": "0x5e00f632fdC170Ce840F71A785B6b2a06410d5D1"
       }
 }

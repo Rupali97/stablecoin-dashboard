@@ -1,5 +1,7 @@
 import {useWallet} from 'use-wallet';
 import React, {createContext, useEffect, useState} from 'react';
+import { useProvider } from 'wagmi'
+import { useAccount } from 'wagmi'
 
 import config from '../../config';
 import {Protocol} from '../../protocol';
@@ -20,22 +22,24 @@ interface IProps {
 export const ProtocolProvider = (props: IProps) => {
   const {children} = props;
   const chainId = useGetActiveChainId();
-  const {ethereum, account} = useWallet();
+  // const {ethereum} = useWallet();
   const [core, setCore] = useState<Protocol>();
   const dispatch = useDispatch();
+  const provider = useProvider()
+  const { address: account } = useAccount()
 
-
+  // console.log('ethereum', ethereum)
   useEffect(() => {
     if (!core && config) {
       const newCore = new Protocol(config, chainId);
       if (account) {
-        newCore.unlockWallet(ethereum, account);
+        newCore.unlockWallet(window.ethereum, account);
       }
       setCore(newCore);
     } else if (account && core) {
-      core.unlockWallet(ethereum, account);
+      core.unlockWallet(window.ethereum, account);
     }
-  }, [account, core, dispatch, ethereum, chainId]);
+  }, [account, core, dispatch, window.ethereum, chainId]);
 
   // @ts-ignore
   return <Context.Provider value={{core}}>{children}</Context.Provider>;

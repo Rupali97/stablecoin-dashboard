@@ -1,27 +1,25 @@
 import {Configuration} from '../utils/interface';
 
 const configurations: { [env: string]: Configuration } = {
-    80001: {
-        networkName: 'Matic Mumbai Testnet',
-        networkDisplayName: 'Polygon testnet',
-        chainId: 80001,
-        etherscanUrl: 'https://mumbai.polygonscan.com',
+    5: {
+        networkName: 'Goerli Testnet',
+        networkDisplayName: 'Goerli testnet',
+        chainId: 5,
+        etherscanUrl: 'https://goerli.etherscan.io',
         defaultProvider:
-          'https://matic-mumbai.chainstacklabs.com',
-        deployments: require('../protocol/deployments/maticMumbai.json'),
+          'https://goerli.infura.io/v3/3a9a6018905e45669f505505420d81d6',
+        deployments: require('../protocol/deployments/goerli.json'),
         refreshInterval: 10000,
         gasLimitMultiplier: 1.1,
-        blockchainToken: 'MATIC',
-        blockchainTokenName: 'MATIC',
+        blockchainToken: 'ETH',
+        blockchainTokenName: 'ETH',
         blockchainTokenDecimals: 18,
         networkSetupDocLink: 'https://docs.polygon.technology/docs/develop/metamask/config-polygon-on-metamask/',
         supportedTokens: [
-          "USDA"
+          "USDB"
         ], 
         decimalOverrides: {
-          'ARTH-DP': 18,
-          USDC: 6,
-          "DBT": 18
+
         },
       },
 }

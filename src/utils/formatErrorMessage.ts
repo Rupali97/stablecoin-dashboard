@@ -11,7 +11,10 @@ const formatErrorMessage = (message: string): string => {
   if (message.includes('lock expired')) return 'The lock has expired.';
   if (message.includes("the lock didn't expire")) return 'The lock did not expire.';
   if (message.includes("fallback not initiated")) return 'Emergency withdraw is not enabled.';
-  if (message.includes("amount < left")) return 'Amount has to be more than the current rewards. Else try after the reward period has finished.'
+  if (message.includes("amount < left")) return 'Amount has to be more than the current rewards. Else try after the reward period has finished.';
+  if (message.includes("transaction is already confirmed")) return "Transaction is already confirmed by you.";
+  if (message.includes("owner does not exist")) return "Not owner";
+
 
   // Fail safes like overflows etc.;
   return 'Error Occured, Please try again later.';

@@ -50,14 +50,19 @@ export default function Sidebar () {
       name: 'Burn the token'
     },
     {
-      url: '/statistics',
-      icon: 'signal_cellular_alt',
-      name: 'Statistics'
+      url: '/freeze',
+      icon: 'ac_unit',
+      name: 'Freeze'
+    },
+    {
+      url: '/admin',
+      icon: 'supervisor_account',
+      name: 'Admin'
     },
     // {
-    //   url: '/logout',
-    //   icon: 'power_settings_new',
-    //   name: 'Logout'
+    //   url: '/statistics',
+    //   icon: 'signal_cellular_alt',
+    //   name: 'Statistics'
     // },
   ]
 
@@ -66,7 +71,7 @@ export default function Sidebar () {
       {
         routes.map(r => {
           return (
-            <NavLink to={r.url} className={({isActive}) => isActive ? `active ${classes.item}` : classes.item}>
+            <NavLink key={r.name} to={r.url} className={({isActive}) => isActive ? `active ${classes.item}` : classes.item}>
               <ListItem button className={classes.itemLink}>
                 <Icon className={classNames(classes.itemIcon)}>{r.icon}</Icon>
                 <ListItemText primary={r.name} className={classNames(classes.itemText)} disableTypography={true} />

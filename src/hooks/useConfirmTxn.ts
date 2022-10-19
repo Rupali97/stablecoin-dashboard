@@ -1,86 +1,63 @@
 import { BigNumber } from "ethers";
 import { useCallback } from "react";
-import { useWallet } from "use-wallet";
+import {useDispatch, useSelector} from 'react-redux';
+import { useNetwork } from 'wagmi'
 import { addPopup } from "../state/application/actions";
 import { useAddPopup, useUpdateLoader } from "../state/application/hooks";
 import { useTransactionUpdater } from "../state/transactions/hooks";
 import { getDisplayBalance } from "../utils/formatBalance";
 import formatErrorMessage from "../utils/formatErrorMessage";
 import useCore from "./useCore";
+import { saveTxn } from "../state/transactions/actions";
+import {AppDispatch, AppState} from "../state/index";
  
 const useConfirmTxn = () => {
   const core = useCore();
-  const {chainId} = useWallet()
+  const { chain} = useNetwork()
   const updateTransaction = useTransactionUpdater();
   const addPopup = useAddPopup()
+  const dispatch = useDispatch<AppDispatch>();
+  const updateLoader = useUpdateLoader()
 
-  const confirmCallback = async (index: number, typeOfTx) => {
+  const confirmCallback = async (index: number, typeOfTx: string) => {
       
     try {
-      const contract = await core.contracts[`${chainId}`].MultiSig;
+      const contract = await core.contracts[`${chain?.id}`].MultiSig;
       const response = await contract.confirmTransaction(index)
       console.log('useConfirmTxn response', response)
-
+ 
       const tx = await response.wait();
       console.log('useConfirmTxn tx', tx)
 
-    setTimeout(async() => {
-      if (tx?.status === 1){
-        const txnsCount = await contract.getTransactionCount()
-        console.log('useConfirmTxn txnsCount', txnsCount, tx?.status === 1)
-  
-        const txDetail = await contract.getTransaction(txnsCount - 1)
-        console.log('useConfirmTxn txDetail', txDetail)
-  
-        if(typeOfTx == 0){
-          console.log('useConfirmTxn inside if 0')
-  
-          updateTransaction(response, 
-            {
-              _numConfirmations: txDetail._numConfirmations.toNumber(),
-              _typeOfTx: txDetail._typeOfTx.toNumber(),
-              _createdTime: txDetail._createdTime.toNumber(),
-              _executed: txDetail._executed,
-              _value: txDetail._value,
-              _token: txDetail._token,
-              txIndex: txDetail.txIndex.toNumber(),
-              _executedTime: txDetail._executedTime.toNumber(),
-              _to: txDetail._to,
-            }, 
-          {
-            summary: `Confirm mint transaction id ${index}`,
+      setTimeout(async() => {
+        if (tx?.status === 1){
+          updateLoader(false)
+          dispatch(saveTxn({txIndex: index, hash: tx.transactionHash, chainId: chain?.id || core._activeNetwork}))
+          let summary = `Confirmed ID ${index}`
+          
+          addPopup({
+            txn: {
+              hash: tx.transactionHash,
+              success: true,
+              summary
+            }
           });
-        }else {
-          console.log('useConfirmTxn inside else')
-  
-          updateTransaction(response, 
-            {
-              _numConfirmations: txDetail._numConfirmations.toNumber(),
-              _typeOfTx: txDetail._typeOfTx.toNumber(),
-              _createdTime: txDetail._createdTime.toNumber(),
-              _executed: txDetail._executed,
-              _value: txDetail._value,
-              _token: txDetail._token,
-              txIndex: txDetail.txIndex.toNumber(),
-              _executedTime: txDetail._executedTime.toNumber(),
-              _to: txDetail._to,
-            }, 
-            {
-            summary: `Confirm burn transaction id ${index}`,
-          });
+
         }
-      }
-    }, 4000)
+      }, 1000)
 
     } catch (e: any) {
-      console.log('useConfirmTxn error', e);
+      console.log('useConfirmTxn error', e.reason);
+      updateLoader(false)
+
       addPopup({
         error: {
-          message: formatErrorMessage(e?.data?.message || e?.message),
+          message: formatErrorMessage(e?.data?.message || e?.message || e?.reason),
           stack: e?.stack,
         }
       });
     }
+
   }
 
   return confirmCallback

@@ -6,7 +6,7 @@ import { getDisplayBalance } from "../../utils/formatBalance";
 
 const useNoOfConfimReq = () => {
   
-    const [response, setResponse] = useState('')
+    const [response, setResponse] = useState<number>(0)
   
     const fetchData = useCallback(async () => {
         const trc20TokenAddress = "TQFw44XRvTyZ9VqxiQwcJ8udYMJ4p5MWUE"; 
@@ -21,7 +21,7 @@ const useNoOfConfimReq = () => {
   
     useEffect(() => {
         fetchData()
-            .catch((err) => setResponse(''))
+            .catch((err) => setResponse(0))
   
     }, [fetchData])
   
