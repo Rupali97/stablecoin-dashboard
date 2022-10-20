@@ -55,7 +55,7 @@ const useMultiSig = (typeOfTx: string, to: string, amount: string, destinationAd
         }
 
         const contract = await core.contracts[`${chain?.id}`].MultiSig;
-        const response = await contract.submitTransaction(destinationAdrs, formatToBN(0), data)        
+        const response = await contract.submitTransaction(core.contracts[`${chain?.id}`][destinationAdrs].address , formatToBN(0), data)        
         const tx = await response.wait();
 
         setTimeout(async() => {

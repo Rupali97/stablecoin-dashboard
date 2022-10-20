@@ -54,11 +54,12 @@ function Burn({burnTxns}) {
   
   const burnTokenAction = useSubmitTransaction("burnFrom", adddress, amount, stableCoin)
   const submitTronTxnAction = useSubmit(adddress, formatToBN(amount), stableCoin, BigNumber.from('1'))
-  const {fetch} = useGetTokenDetails();
+  const {fetchData} = useGetTokenBalance();
   
   useEffect(() => {
-    getTokenDetails()
-  }, [stableCoin, myAccount])
+    if(adddress.length > 0 && stableCoin.length > 0)
+      getTokenDetails()
+  }, [stableCoin, adddress])
 
   useEffect(() => {
     console.log("useEffectBurnburnTxns", burnTxns)
@@ -80,13 +81,13 @@ function Burn({burnTxns}) {
   };
 
   const getTokenDetails = async() => {
-    console.log("getTokenDetails stableCoin", stableCoin)
-    let tokenDetails = await fetch(stableCoin)
-    console.log("getTokenDetails tokenDetails", tokenDetails)
+    console.log("getTokenDetails stableCoin", stableCoin, adddress)
+    let tokenDetails = await fetchData(adddress, stableCoin)
+    console.log("getTokenDetails", tokenDetails)
     setStableCoinDetails(tokenDetails)
   }
 
-  const disableSubmitBtn = amount && Number(amount) <= Number(getBalance(stableCoinDetails?.value.balance))  && stableCoin && chain && contractOwners?.includes(myAccount)
+  const disableSubmitBtn = amount && Number(amount) <= Number(stableCoinDetails)  && !!stableCoin && chain && contractOwners?.includes(myAccount)
 
   
   // console.log("burnTxns", burnTxns)
@@ -122,7 +123,7 @@ function Burn({burnTxns}) {
             </Grid>
             <Grid item xs={6}>
               <TextField
-                helperText={`This is the amount of token to be burned. ${stableCoin && `Max value: ${getBalance(stableCoinDetails?.value.balance)}`} `}
+                helperText={`This is the amount of token to be burned. ${stableCoin && `Max value: ${stableCoinDetails}`} `}
                 required
                 label="Amount"
                 // margin="dense"
@@ -147,7 +148,7 @@ function Burn({burnTxns}) {
                 size='small'
               >
                 {Object.entries(tokens[chainName?.id || _activeNetwork]).map((option) => (
-                  <MenuItem key={option[1].symbol} value={option[1].address}>
+                  <MenuItem key={option[1].symbol} value={option[1].symbol}>
                     {option[1].symbol}
                   </MenuItem>
                 ))}

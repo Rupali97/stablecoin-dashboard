@@ -6,22 +6,23 @@ import { getDisplayBalance } from "../utils/formatBalance";
 import useCore from "./useCore";
 
 
-const useGetTokenBalance = (address: string, stableCoin: string) => {
+const useGetTokenBalance = () => {
   const core = useCore();
   // const {chainId} = useWallet()
   const { chain} = useNetwork()
 
-  const [response, setResponse] = React.useState('')
-
-  const fetchData = useCallback(async () => {
-    const contract = await core.contracts[`${chain?.id}`][stableCoin];
+  let balance
+  const fetchData = async (address: string, stableCoin: string) => {
+    const contract = await core.contracts[`${chain?.id || core._activeNetwork}`][stableCoin];
     const res = await contract.balanceOf(address)
     console.log("useGetTokenBalance res", res)
-    const bal = getDisplayBalance(res)
-    setResponse(bal)
-  }, [chain]) 
+    balance = getDisplayBalance(res)
 
-  return {response, fetchData}
+    return balance
+  }
+
+
+  return {fetchData}
 
 }
 

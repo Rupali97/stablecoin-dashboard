@@ -82,6 +82,7 @@ function Mint({mintTxns}) {
   const [adddress, setAddress] = useState<string>('')
   const [amount, setAmount] = useState<string>('')
   const [stableCoin, setStableCoin] = useState<string>('')
+  const [allTransactions, setAllTransactions] = useState<any>([])
 
   // let allTx = Object.entries(allTransactions)?.map((key) => key[1])?.filter((tx) => tx.txDetail._typeOfTx == 0)
   // let allTronTxns = useGetAllTronTxns()
@@ -90,6 +91,10 @@ function Mint({mintTxns}) {
   let contractOwners: any = useGetOwners()
 
   console.log('contractOwners', contractOwners)
+
+  useEffect(() => {
+    setAllTransactions(mintTxns)
+  }, [mintTxns])
 
   const handleCoinChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setStableCoin(event.target.value);
@@ -165,7 +170,7 @@ function Mint({mintTxns}) {
                   size='small'
                 >
                   {Object.entries(tokens[chainName?.id || _activeNetwork]).map((option) => (
-                    <MenuItem key={option[1].symbol} value={option[1].address}>
+                    <MenuItem key={option[1].symbol} value={option[1].symbol}>
                       {option[1].symbol}
                     </MenuItem>
                   ))}
@@ -208,7 +213,7 @@ function Mint({mintTxns}) {
         <ConfirmationStep allTx={allTronTxns} />
 
       } */}
-      <ConfirmationStep allTransactions={mintTxns} /> 
+      <ConfirmationStep allTransactions={allTransactions} /> 
     </div>
   )
 }

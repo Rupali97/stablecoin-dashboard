@@ -62,9 +62,9 @@ function Admin({adminTxns}) {
   // const addOwnerAction = useAddOwner(adddressToAdd);
   // const removeOwnerAction = useRemoveOwner(adddressRemove);
   // const noConfirmAction = useChangeRequirement(noOfConfirmations);
-  const addOwnerAction = useSubmitTransaction("addOwner", adddressToAdd, '0', contracts[chainName?.id || _activeNetwork].MultiSig.address)
-  const removeOwnerAction = useSubmitTransaction("removeOwner", adddressRemove, '0', contracts[chainName?.id || _activeNetwork].MultiSig.address)
-  const noConfirmAction = useSubmitTransaction("changeRequirement", "",noOfConfirmations,  contracts[chainName?.id || _activeNetwork].MultiSig.address)
+  const addOwnerAction = useSubmitTransaction("addOwner", adddressToAdd, '0', "MultiSig")
+  const removeOwnerAction = useSubmitTransaction("removeOwner", adddressRemove, '0', "MultiSig")
+  const noConfirmAction = useSubmitTransaction("changeRequirement", "",noOfConfirmations,  "MultiSig")
   const setConfirmationCount = useGetConfirmationCount()
   const setIsExecuted = useGetSingleTransaction()
   let confirmReq = useGetRequiredCount()

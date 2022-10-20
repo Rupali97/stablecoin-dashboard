@@ -9,6 +9,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
 import {Puff} from "react-loader-spinner"
+import { useUpdateLoader } from '../state/application/hooks';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -59,17 +60,19 @@ const DialogActions = withStyles((theme: Theme) => ({
 
 export default function ProgressModal({currentLoaderState}) {
   const [open, setOpen] = React.useState(currentLoaderState);
+  const updateLoader = useUpdateLoader()
 
   const handleClickOpen = () => {
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
+    updateLoader(false)
   };
 
   return (
     <div>
-      <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={currentLoaderState} fullWidth >
+      <Dialog  onClose={handleClose} aria-labelledby="customized-dialog-title" open={currentLoaderState} fullWidth >
         <DialogTitle id="customized-dialog-title" onClose={handleClose}>
           Please wait..! 
         </DialogTitle>

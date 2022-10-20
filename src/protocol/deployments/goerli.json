@@ -1,10 +1,10 @@
 {
     "USDB": {
           "abi": "USDB",
-          "address": "0x2368d75759E3BD06170D43d318d3d6F077eFa516"
+          "address": "0xB623F32887B3A66c7a01935383C4e846aD621424"
     },
     "MultiSig": {
           "abi": "MultiSig",
-          "address": "0x971528C11785fD019a613fFE57f2903Bda335fA8"
+          "address": "0xC44b6C05DF88E383547e0f484ea374B36C337fcd"
     }
 }

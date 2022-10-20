@@ -124,7 +124,7 @@ export default function Updater(): null {
             console.error(`failed to check transaction hash: ${hash}`, error);
           });
       });
-  }, [chainId, window.ethereum, transactions, lastBlockNumber, dispatch, addPopup, activeChainId]);
+  }, [chainId, window.ethereum, transactions, lastBlockNumber, dispatch, addPopup]);
 
   return null;
 }

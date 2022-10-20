@@ -200,6 +200,8 @@ function ConfirmationStep({allTransactions}) {
                         let confirmData = [] 
                         if(item[1].hash.length > 1) {
                               confirmData = await getTxnHash(item[1].hash.filter((arr, i) => i != 0), 1)
+                        }else {
+                              confirmData = await getTxnHash(item[1].hash, 1)
                         }
 
                         console.log("confirmData", confirmData)
