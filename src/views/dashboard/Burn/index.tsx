@@ -29,16 +29,16 @@ import { useGetLoader, useUpdateLoader } from '../../../state/application/hooks'
 import useGetTokenBalance from '../../../hooks/useGetTokenBalance';
 import useGetTokenDetails from '../../../hooks/useGetTokenDetails';
 
-function Burn({burnTxns}) {
-  const {tokens, _activeNetwork} = useCore()
-  const { chain: chainName} = useNetwork()
+function Burn({ burnTxns }) {
+  const { tokens, _activeNetwork } = useCore()
+  const { chain: chainName } = useNetwork()
 
   // const { myAccount } = core
   const { address: myAccount } = useAccount()
 
   console.log("BurnmyAccount", myAccount)
   const chain = useGetActiveBlockChain()
-  
+
   let contractOwners: any = useGetOwners()
   // let allTx = Object.entries(allTransactions)?.map((key) => key[1])?.filter((tx) => tx.txDetail._typeOfTx == 1)
   const currentLoaderState = useGetLoader()
@@ -46,18 +46,18 @@ function Burn({burnTxns}) {
 
   // let allTronTxns = useGetAllTronTxns()
   // allTronTxns = allTronTxns.filter((tx) => tx._typeOfTx.toNumber() == 1)
-  
+
   const [adddress, setAddress] = useState<string>('')
   const [amount, setAmount] = useState<string>('')
   const [stableCoin, setStableCoin] = useState<string>('')
   const [stableCoinDetails, setStableCoinDetails] = useState<any>()
-  
-  const burnTokenAction = useSubmitTransaction("burnFrom", adddress, amount, stableCoin)
+
+  const burnTokenAction = useSubmitTransaction("burn", adddress, amount, stableCoin)
   const submitTronTxnAction = useSubmit(adddress, formatToBN(amount), stableCoin, BigNumber.from('1'))
-  const {fetchData} = useGetTokenBalance();
-  
+  const { fetchData } = useGetTokenBalance();
+
   useEffect(() => {
-    if(adddress.length > 0 && stableCoin.length > 0)
+    if (adddress.length > 0 && stableCoin.length > 0)
       getTokenDetails()
   }, [stableCoin, adddress])
 
@@ -65,46 +65,46 @@ function Burn({burnTxns}) {
     console.log("useEffectBurnburnTxns", burnTxns)
   }, [burnTxns])
 
-  const submitTx = async() => {
+  const submitTx = async () => {
     updateLoader(true)
 
-    if(chain == 'MaticMumbai'){
-      burnTokenAction(() =>{}, () => {})
+    if (chain == 'MaticMumbai') {
+      burnTokenAction(() => { }, () => { })
     }
-    if(chain == "Neil"){
+    if (chain == "Neil") {
       submitTronTxnAction()
     }
   }
- 
-  const handleCoinChange = async(event: React.ChangeEvent<HTMLInputElement>) => {
+
+  const handleCoinChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setStableCoin(event.target.value);
   };
 
-  const getTokenDetails = async() => {
+  const getTokenDetails = async () => {
     console.log("getTokenDetails stableCoin", stableCoin, adddress)
     let tokenDetails = await fetchData(adddress, stableCoin)
     console.log("getTokenDetails", tokenDetails)
     setStableCoinDetails(tokenDetails)
   }
 
-  const disableSubmitBtn = amount && Number(amount) <= Number(stableCoinDetails)  && !!stableCoin && chain && contractOwners?.includes(myAccount)
+  const disableSubmitBtn = amount && Number(amount) <= Number(stableCoinDetails) && !!stableCoin && chain && contractOwners?.includes(myAccount)
 
-  
+
   // console.log("burnTxns", burnTxns)
 
   console.log("stableCoinDetails", stableCoinDetails)
 
   return (
-    <div style={{marginLeft: '260px', marginRight: '20px'}}>
-    
-      <Card style={{marginBottom: '15px'}}>
+    <div style={{ marginLeft: '260px', marginRight: '20px' }}>
+
+      <Card style={{ marginBottom: '15px' }}>
         <CardContent className='p15'>
           <Textfield
             text={'Burn the Stablecoin'}
             fontSize={'24px'}
             fontWeight={'bold'}
             className={'m-b-15'}
-            />
+          />
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
@@ -114,11 +114,11 @@ function Burn({burnTxns}) {
                 label="Address"
                 // margin="dense"
                 type="text"
-                onChange={(e:any) => setAddress(e.target.value)}
+                onChange={(e: any) => setAddress(e.target.value)}
                 value={adddress}
                 fullWidth
                 size='small'
-                // variant="outlined"
+              // variant="outlined"
               />
             </Grid>
             <Grid item xs={6}>
@@ -128,11 +128,11 @@ function Burn({burnTxns}) {
                 label="Amount"
                 // margin="dense"
                 type="text"
-                onChange={(e:any) => setAmount(e.target.value)}
+                onChange={(e: any) => setAmount(e.target.value)}
                 value={amount}
                 fullWidth
                 size='small'
-                // variant="outlined"
+              // variant="outlined"
               />
             </Grid>
             <Grid item xs={6}>
@@ -152,7 +152,7 @@ function Burn({burnTxns}) {
                     {option[1].symbol}
                   </MenuItem>
                 ))}
-              </TextField>  
+              </TextField>
             </Grid>
             <Grid item xs={9}></Grid>
             <Grid item xs={3}>
@@ -162,20 +162,20 @@ function Burn({burnTxns}) {
                 variant="contained"
                 color="primary"
                 fullWidth
-                style={{position: 'relative'}}
-                >
+                style={{ position: 'relative' }}
+              >
                 Submit
               </Button>
             </Grid>
           </Grid>
-         
-         
+
+
         </CardContent>
 
       </Card>
-      
-      <ConfirmationStep allTransactions={burnTxns} /> 
-      
+
+      <ConfirmationStep allTransactions={burnTxns} />
+
     </div>
   )
 }

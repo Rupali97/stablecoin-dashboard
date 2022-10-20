@@ -1,10 +1,10 @@
 {
     "USDB": {
-          "abi": "USDB",
-          "address": "0xD61a7AE9301db80F31161435188acCd7F5F532Ab"
+          "abi": "StablecoinImpl",
+          "address": "0x3B31F8c01e68B054378698ED9DEA2a2238ed4Fd2"
     },
     "MultiSig": {
           "abi": "MultiSig",
-          "address": "0x70B0D5E21A74d0Ee87a48e18EA561758Ba397016"
+          "address": "0xD1bc45D2f73aa7Eac008d66B5FF5b0b89a1842D3"
     }
 }

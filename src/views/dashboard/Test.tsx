@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 import { useGetTransactions } from "../../hooks/multisig/useMultiSig"
-import USDA from "../../protocol/deployments/abi/USDA.json"
+import USDA from "../../protocol/deployments/abi/StablecoinImpl.json"
 import MultiSig from "../../protocol/deployments/abi/MultiSig.json"
 
 
@@ -14,9 +14,9 @@ function Test() {
 
     console.log('Test', data)
 
-    return(
+    return (
         <div>
-            
+
         </div>
     )
 }
