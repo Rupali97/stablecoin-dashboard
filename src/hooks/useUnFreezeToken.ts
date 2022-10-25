@@ -6,15 +6,17 @@ import { useAddPopup, useUpdateLoader } from "../state/application/hooks";
 import { getDisplayBalance } from "../utils/formatBalance";
 import useCore from "./useCore";
 
-const useUnFreezeToken = (to: string, stableCoin: string) => {
+const useUnFreezeToken = () => {
   const core = useCore();
   const { chain } = useNetwork();
   const updateLoader = useUpdateLoader();
   const addPopup = useAddPopup();
 
-  return useCallback(async () => {
+  const unfreeze = async (to: string, stableCoin: string) => {
     try {
-      const contract = await core.contracts[`${chain?.id}`][stableCoin];
+      const contract = await core.contracts[`${chain?.id || core._activeNetwork}`][stableCoin];
+      console.log("contract", contract, stableCoin)
+
       const res = await contract.unfreeze(to);
       const tx = await res.wait();
 
@@ -39,7 +41,9 @@ const useUnFreezeToken = (to: string, stableCoin: string) => {
         },
       });
     }
-  }, [to]);
+  }
+
+  return unfreeze
 };
 
 export default useUnFreezeToken;

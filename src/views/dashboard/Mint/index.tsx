@@ -71,11 +71,6 @@ function Mint({mintTxns}) {
 
   const chain = useGetActiveBlockChain()
 
-  const multiSigTxns = useGetAllMultiSigTxns()
-
-  console.log('multiSigTxns', multiSigTxns)
-  console.log('mintTxns', mintTxns)
-
   // const {clearAllTransactions} = useClearAllTransactions();
   // clearAllTransactions()
 
@@ -117,9 +112,7 @@ function Mint({mintTxns}) {
   const disableMint = adddress && amount && stableCoin && chain && contractOwners?.includes(myAccount) && !currentLoaderState
 
   return (
-    <div style={{marginLeft: '260px', marginRight: '20px', position: 'relative',}}>
-      <Test />
-      
+    <div style={{marginLeft: '260px', marginRight: '20px', position: 'relative',}}>      
       <Card style={{marginBottom: '30px'}}>
         <CardContent className='p15'>
           <Textfield
@@ -169,11 +162,15 @@ function Mint({mintTxns}) {
                   // variant="outlined"
                   size='small'
                 >
-                  {Object.entries(tokens[chainName?.id || _activeNetwork]).map((option) => (
+                  
+                  {
+                  tokens[chainName?.id || _activeNetwork] ? Object.entries(tokens[chainName?.id || _activeNetwork])?.map((option) => (
                     <MenuItem key={option[1].symbol} value={option[1].symbol}>
                       {option[1].symbol}
                     </MenuItem>
-                  ))}
+                  )):
+                  <MenuItem>No coins available on this chain</MenuItem>
+                  }
                 </TextField>           
             </Grid>
             <Grid item xs={6}></Grid>

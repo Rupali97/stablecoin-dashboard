@@ -4,17 +4,19 @@ import { useNetwork } from "wagmi";
 import { useAddPopup, useUpdateLoader } from "../state/application/hooks";
 
 import { getDisplayBalance } from "../utils/formatBalance";
+import formatErrorMessage from "../utils/formatErrorMessage";
 import useCore from "./useCore";
-
-const useFreezeToken = (to: string, stableCoin: string) => {
+ 
+const useFreezeToken = () => {
   const core = useCore();
   const { chain } = useNetwork();
   const updateLoader = useUpdateLoader();
   const addPopup = useAddPopup();
 
-  return useCallback(async () => {
+  const freeze = async (to: string, stableCoin: string) => {
     try {
-      const contract = await core.contracts[`${chain?.id}`].USDB;
+      const contract = await core.contracts[`${chain?.id || core._activeNetwork}`][stableCoin];
+      console.log("contract", contract)
       const res = await contract.freeze(to);
       const tx = await res.wait();
 
@@ -35,12 +37,13 @@ const useFreezeToken = (to: string, stableCoin: string) => {
       console.log("useFreezeToken error", e);
       addPopup({
         error: {
-          message: e?.data?.message || e?.message,
+          message: formatErrorMessage(e?.data?.message || e?.message),
           stack: e?.stack,
         },
       });
     }
-  }, [to]);
-};
+  }
 
+  return freeze
+}
 export default useFreezeToken;

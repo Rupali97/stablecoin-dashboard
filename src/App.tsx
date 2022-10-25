@@ -16,7 +16,6 @@ import {
   createClient,
   WagmiConfig,
 } from 'wagmi';
-import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 import { useAccount, useSwitchNetwork, useNetwork } from 'wagmi'
 
@@ -39,7 +38,6 @@ dotenv.config()
 const { chains, provider } = configureChains(
   [chain.mainnet, chain.polygon, chain.polygonMumbai, chain.goerli],
   [
-    // alchemyProvider({ apiKey: 'qBs28Tonpldv529ErHD5Lhow4a9rrrCe' }),
     publicProvider()
   ]
 );

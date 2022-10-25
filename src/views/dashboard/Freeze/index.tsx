@@ -32,22 +32,26 @@ function Freeze() {
   const [stableCoin, setStableCoin] = useState<string>('')
   const [stableCoinUnfreeze, setStableCoinUnfreeze] = useState<string>('')
 
-  const freezeAction = useFreezeToken(adddressToFreeze, stableCoin)
-  const unFreezeAction = useUnFreezeToken(adddressToUnFreeze, stableCoin)
+  const freezeAction = useFreezeToken()
+  const unFreezeAction = useUnFreezeToken()
 
   const handleCoinChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setStableCoin(event.target.value);
   };
 
+  const handleUnfreezeCoinChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setStableCoinUnfreeze(event.target.value);
+  };
+
   console.log('stableCoin', stableCoin)
 
   const handleFreeze = () => {
-    freezeAction()
+    freezeAction(adddressToFreeze, stableCoin)
     updateLoader(true)
   }
 
   const handleUnFreeze = () => {
-    unFreezeAction()
+    unFreezeAction(adddressToUnFreeze, stableCoinUnfreeze)
     updateLoader(true)
   }
 
@@ -164,13 +168,13 @@ function Freeze() {
                   select
                   label="Stablecoin"
                   value={stableCoinUnfreeze}
-                  onChange={(e) => setStableCoinUnfreeze(e.target.value)}
+                  onChange={handleUnfreezeCoinChange}
                   fullWidth
                   // variant="outlined"
                   size='small'
                 >
                   {Object.entries(tokens[chainName?.id || _activeNetwork]).map((option) => (
-                  <MenuItem key={option[1].symbol} value={option[1].address}>
+                  <MenuItem key={option[1].symbol} value={option[1].symbol}>
                     {option[1].symbol}
                   </MenuItem>
                 ))}

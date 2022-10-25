@@ -147,11 +147,14 @@ function Burn({ burnTxns }) {
                 // variant="outlined"
                 size='small'
               >
-                {Object.entries(tokens[chainName?.id || _activeNetwork]).map((option) => (
-                  <MenuItem key={option[1].symbol} value={option[1].symbol}>
-                    {option[1].symbol}
-                  </MenuItem>
-                ))}
+                {
+                  tokens[chainName?.id || _activeNetwork] ? Object.entries(tokens[chainName?.id || _activeNetwork])?.map((option) => (
+                    <MenuItem key={option[1].symbol} value={option[1].symbol}>
+                      {option[1].symbol}
+                    </MenuItem>
+                  )):
+                    <MenuItem>No coins available on this chain</MenuItem>
+                }
               </TextField>
             </Grid>
             <Grid item xs={9}></Grid>
