@@ -126,7 +126,7 @@ function Navigation() {
         <Dashboard />
 
         <Routes>
-          <Route index element={<Auth />} />
+          <Route path={'/login'} element={<Auth />} />
           <Route path={'/dashboard'}>
             <Route path={'/dashboard/mint'} element={<Mint ethTxns={allApiTxns} tronTxns={allApiTronTxns} />} />
             <Route path={'/dashboard/burn'} element={<Burn ethTxns={allApiTxns} tronTxns={allApiTronTxns} />} />
