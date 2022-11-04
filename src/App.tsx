@@ -31,14 +31,17 @@ import ModalsProvider from './context/Modals'
 import Popups from './components/Popups';
 import { useGetActiveChainId, useGetUpdateActiveChainId } from './state/chains/hooks';
 import { ethers } from 'ethers';
+import { alchemyProvider } from 'wagmi/providers/alchemy'
+
 dotenv.config()
 
 
 // Rainbowkit starts
 const { chains, provider } = configureChains(
-  [chain.mainnet, chain.polygon, chain.polygonMumbai, chain.goerli],
+  [chain.mainnet, chain.goerli],
   [
-    publicProvider()
+    alchemyProvider({ apiKey: process.env.REACT_APP_ALCHEMY_GOERLI_API_KEY}),
+    // publicProvider()
   ]
 );
 
@@ -48,7 +51,6 @@ const connectors = connectorsForWallets([
     wallets: [
       wallet.injected({ chains }),
       wallet.rainbow({ chains }),
-      wallet.walletConnect({ chains }),
       wallet.metaMask({chains}),
       wallet.ledger({chains})
     ],
@@ -74,8 +76,6 @@ const WalletProvider = ({ children }: any) => {
   );
 }
 
-
-
 // Rainbow kit code ends
 
 
@@ -87,30 +87,6 @@ const Providers: React.FC = ({children}) => {
 
   );
 };
-
-// const WalletProvider = ({ children }: any) => {
-
-//   return (
-//     <UseWalletProvider
-//       // chainId={config.chainId}
-//       connectors={{
-//         injected: {
-//           chainId: getSupportedChains(),
-//         },
-//         walletconnect: {
-//           chainId: config.chainId,
-//           rpcUrl: config.defaultProvider
-//         }
-//       }}
-//       >
-//         <Updaters/>
-//         <ProtocolProvider>
-//           <AppContent>{children}</AppContent>
-//         </ProtocolProvider>
-
-//     </UseWalletProvider>
-//   );
-// };
 
 const AppContent: React.FC = ({children}) => {
 

@@ -13,6 +13,23 @@ import {
   DebtPoolTokenRateState
 } from './interface';
 
+export const tronMultiSigContract = "TAtV3NzLMdD13WCcD88jc1arp9cuq1Pa23"
+
+export const tronStableCoins = [
+  {
+    label: "TRUSDA",
+    symbol: "TRUSDA",
+    chain: 'Nile',
+    contractAdrs: 'TZDqfeWfSdKSpz5qPj4txXdrWJaCmuu8Kz'
+  },
+  {
+    label: "TRUSDB",
+    symbol: "TRUSDB",
+    chain: 'Nile',
+    contractAdrs: 'TWsxx7jHk4p8yQx34R2HxWUoAa5qjAdrto'
+  }
+]
+
 export const DAY = 86400;
 export const DAY_IN_MS = 86400000;
 

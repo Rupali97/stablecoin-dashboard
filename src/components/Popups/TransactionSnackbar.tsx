@@ -13,7 +13,7 @@ import CallMadeIcon from '@material-ui/icons/CallMade';
 import TrendingFlatIcon from '@material-ui/icons/TrendingFlat';
 import config from '../../config';
 import {PopupContent} from '../../utils/interface';
-import {useGetActiveChainId} from "../../state/chains/hooks";
+import {useGetActiveBlockChain, useGetActiveChainId} from "../../state/chains/hooks";
 import { useUpdateLoader } from '../../state/application/hooks';
 
 interface TxButtonProps {
@@ -37,6 +37,7 @@ const CustomizedSnackbars: React.FC<TxButtonProps> = ({
   const isLoading = content?.txn?.loading;
   const chainId = useGetActiveChainId();
   const updateLoader = useUpdateLoader()
+  const chain = useGetActiveBlockChain()
 
   useEffect(() => {
     setOpen(true)
@@ -107,7 +108,7 @@ const CustomizedSnackbars: React.FC<TxButtonProps> = ({
         { 
           config[chainId].etherscanUrl !== '' && content?.txn?.hash && (
             <AnchorTag
-              href={`${config[chainId].etherscanUrl}/tx/${content?.txn?.hash}`}
+              href={chain == "Nile" ? `https://nile.tronscan.org/#/transaction/${content?.txn?.hash}`  :`${config[chainId].etherscanUrl}/tx/${content?.txn?.hash}`}
               rel="noopener noreferrer"
               target="_blank"
             >

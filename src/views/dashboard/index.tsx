@@ -5,74 +5,105 @@ import { useWallet } from "use-wallet";
 import {Button, MenuItem, Snackbar, TextField} from '@material-ui/core'
 import { useAccount, useSwitchNetwork, useNetwork } from 'wagmi'
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-
+import TronWeb from "tronweb"
 import styles from '../../styles/adminStyle.js'
 import Sidebar from './Sidebar';
 import { noOp } from '../../utils/constants';
 import { truncateMiddle } from '../../utils/index';
 import Navigation from '../../navigation';
 import { useGetActiveBlockChain, useHandleBlokchainChange } from '../../state/chains/hooks';
+import useCore from '../../hooks/useCore';
 
 export const chains = [
   {
-    label: 'MaticMumbai',
-    chainID: 'MaticMumbai'
+    label: 'Goerli',
+    chainID: 'Goerli'
   },
-  // {
-  //   label: "Neil",
-  //   chainID: 'Neil',
-  // }
+  {
+    label: "Nile",
+    chainID: 'Nile',
+  }
 ]
 
 // @ts-ignore
 const useStyles = makeStyles(styles);
 function Dashbaord() {
+  const classes = useStyles();
+  const {myAccount} = useCore()
 
-  const { address: account, isConnecting, isDisconnected, connector } = useAccount()
-  const { data, error, isLoading, pendingChainId, switchNetwork, status, isSuccess } = useSwitchNetwork()
-  const { chain, chains,  } = useNetwork()
-  const { isConnected } = useAccount()
+  // const { address: account, isConnecting, isDisconnected, connector } = useAccount()
+  // const { data, error, isLoading, pendingChainId, switchNetwork, status, isSuccess } = useSwitchNetwork()
+  // const { chain  } = useNetwork()
+  // const { isConnected } = useAccount()
+  const [tronObj, setTronObj] = useState<any>()
+  const [tronSnackbar, setTronSnackbar] = useState<boolean>(false)
 
-  console.log('isConnected', isConnected)
+  useEffect(() => {
+    checkIfTronConnected()
+  }, [])
 
-  console.log('connector', connector)
-  console.log('chain', chain)
-
-  // useEffect(() => {
-  //   connectWalletOnPageLoad()
-  // },[])
-
-  // const { connect, connector, account } = useWallet();
   // const { tronLink } = window;
-  // const chain = useGetActiveBlockChain()
-  // const setChain = useHandleBlokchainChange()
+  const chain = useGetActiveBlockChain()
+  const setChain = useHandleBlokchainChange()
 
-  const [connectMetamask, setConnectMetamask] = useState(true)
 
-  // const connectWalletOnPageLoad = async () => {
-  //   if (localStorage?.getItem('isWalletConnected') === 'true') {
-  //     try {
-  //       await connect('injected')
-  //     } catch (ex) {
-  //       console.log(ex)
-  //     }
-  //   }
-  // }
+  useEffect(() => {
+    if(myAccount){
+      setChain("Goerli")
+    }else{
+      setChain("Nile")
+    }
 
-  // const handleChainChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setChain(event.target.value);
+  },[myAccount])
 
-  // };
+  const loginWithTron = () => {
+    if(window.tronWeb.ready){
+      console.log("show account")
+      setChain("Nile");
+      document.location.href = ""
+    }else{
+      setTronSnackbar(true)
+    }
+  }
 
+  const handleChainChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setChain(event.target.value);
+  };
+
+  const checkIfTronConnected = async() => {
+    // let res = await window.tronLink.ready
+    console.log("checkIfTronConnected",!myAccount)
+  }
+
+  var obj = setInterval(() => {
+      if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+        clearInterval(obj)
+        var tronweb = window.tronWeb
+        setTronObj(tronweb)
+      }
+  }, 10)
+
+
+  if(window.location.href.includes("login")) return <div />
   return (
  
-    <div style={{padding: '15px 15px 40px 0'}}>
-      <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-        <ConnectButton />
-      </div>
-
+    <div>
+      <div className={classes.wrapper} style={{padding: '15px 15px 40px 0'}}>
       {
-        !account && 
+        tronSnackbar && 
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+          }}
+            open={tronSnackbar}
+            onClose={() => setTronSnackbar(false)}
+            message="Please login to TronLink extention wallet first."
+          />
+      }
+
+      {/* {
+        (!myAccount) && 
         <Snackbar
           anchorOrigin={{
             vertical: 'top',
@@ -80,10 +111,10 @@ function Dashbaord() {
           }}
             open={connectMetamask}
             onClose={() => setConnectMetamask(false)}
-            message="Please connect to the Metamask on MumbaiTestnet"
+            message="Please connect to the Metamask on Goerli network or Tronlink on Nile network"
           />
-      }
-      {/* <div style={{padding: '28px', display: 'flex', justifyContent: 'flex-end'}}>
+      } */}
+      <div style={{padding: '28px', display: 'flex', justifyContent: 'flex-end'}}>
         <TextField
           required
           id="standard-select-currency"
@@ -103,44 +134,33 @@ function Dashbaord() {
           ))}
         </TextField>
         {
-          !account ? (
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={connector === "injected" ? noOp : () => {
-                connect('injected')
-                  .then(() => {
-                    console.log('Connected', account)                  
-                    localStorage.setItem('isWalletConnected', 'true')
-                    localStorage.removeItem('disconnectWallet')
-
-                  })
-                  .catch((e) => {
-                    console.log('Connection error', e)
-                  })
-              }}
-            >
-              Connect Wallet
-            </Button>
-            
-          ) :
           (
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => console.log('account address click')}
-            >
-              {chain == 'MaticMumbai' ?  
-                truncateMiddle(account, 12, '...') : 
-                window.tronWeb.defaultAddress.base58.slice(0, 3) + '...' + window.tronWeb.defaultAddress.base58.slice(31, 34)
+            <div>
+             
+              {chain == 'Nile' ?  
+                <button
+                  className={"tronlinkBtn"}
+                  style={{backgroundColor: "#fff", color: "#000"}}
+                  onClick={() => setTronSnackbar(true)}
+                >
+                  {
+                   tronObj ?  window.tronWeb.defaultAddress.base58.slice(0, 3) + '...' + window.tronWeb.defaultAddress.base58.slice(31, 34)
+                    : "Tronlink Wallet"
+                  }
+                </button>
+                : 
+                <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+                  <ConnectButton />
+                </div> 
               }
-            </Button>
+            </div>
           )
         }
-      </div> */}
+      </div>
 
       <Sidebar />
       <Outlet />
+    </div>
     </div>
 
   )

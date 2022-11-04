@@ -1,10 +1,14 @@
 {
-    "USDB": {
-          "abi": "StablecoinImpl",
-          "address": "0x3B31F8c01e68B054378698ED9DEA2a2238ed4Fd2"
+    "USDA": {
+      "abi": "StablecoinImpl",
+      "address": "0x50a256E9C218Fb3423a3aE3057c7350a80Ad1666"
+    },
+    "USDF": {
+      "abi": "StablecoinImpl",
+      "address": "0xe14a05bA3823a977555AD26F7B5c27818128a090"
     },
     "MultiSig": {
-          "abi": "MultiSig",
-          "address": "0xD1bc45D2f73aa7Eac008d66B5FF5b0b89a1842D3"
+      "abi": "MultiSig",
+      "address": "0xb114Fb2283B40A01abD570aFad4fce8bABEd19AB"
     }
 }

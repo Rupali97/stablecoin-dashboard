@@ -22,94 +22,89 @@ import useGetAllMultiSigTxns from '../../../hooks/useGetAllMultiSigTxns';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import useSubmit from '../../../hooks/tron/useSubmit';
 import useGetAllTronTxns from '../../../hooks/tron/useGetAllTronTxns';
-import { useGetActiveBlockChain } from '../../../state/chains/hooks';
+import { useGetActiveBlockChain, useGetActiveChainId } from '../../../state/chains/hooks';
 import Textfield from '../../../components/Textfield';
 import { useGetLoader, useUpdateLoader } from '../../../state/application/hooks';
 import Test from '../Test';
+import { tronStableCoins } from '../../../utils/constants';
+import useGetTronOwners from '../../../hooks/tron/useGetTronOwners';
 
-export const stableCoins = [
-  // {
-  //   label: 'Token',
-  //   chain: 'MaticMumbai'
-  // },
-  // {
-  //   label: 'Token2',
-  //   chain: 'MaticMumbai'
-  // },
-  {
-    label: 'USD-A',
-    chain: 'MaticMumbai',
-    address: "0x125eDC5cd0eA0453D0485153F7F200C323882B4e"
-  },
-  {
-    label: "T20",
-    chain: 'Neil',
-    contractAdrs: 'TQFw44XRvTyZ9VqxiQwcJ8udYMJ4p5MWUE'
-  }
-]
-
-export const chains = [
-  {
-    label: 'MaticMumbai',
-    chainID: 'MaticMumbai'
-  },
-  {
-    label: "Neil",
-    chainID: 'Neil',
-  }
-]
-
-function Mint({mintTxns}) {
+function Mint({ethTxns, tronTxns}) {
 
   const core = useCore()
-  const {myAccount, provider, _activeNetwork, tokens } = core
+  const {myAccount, provider, _activeNetwork, tokens, contracts } = core
 
-  // const allTransactions = useAllTransactions()
   const currentLoaderState = useGetLoader()
   const updateLoader = useUpdateLoader()
   const { chain: chainName} = useNetwork()
 
   const chain = useGetActiveBlockChain()
+  const chaindId = useGetActiveChainId()
+  const fetchOwners = useGetTronOwners()
 
-  // const {clearAllTransactions} = useClearAllTransactions();
-  // clearAllTransactions()
-
-  const [adddress, setAddress] = useState<string>('')
+  const [address, setAddress] = useState<string>('')
   const [amount, setAmount] = useState<string>('')
   const [stableCoin, setStableCoin] = useState<string>('')
   const [allTransactions, setAllTransactions] = useState<any>([])
-
+  const [finalTxns, setFinalTxns] = useState<any>([])
+  const [finalEthTxns, setFinalEthTxns] = useState<any>([])
+  const [finalTronTxns, setFinalTronTxns] = useState<any>([])
   // let allTx = Object.entries(allTransactions)?.map((key) => key[1])?.filter((tx) => tx.txDetail._typeOfTx == 0)
   // let allTronTxns = useGetAllTronTxns()
   // allTronTxns = allTronTxns.filter((tx) => tx._typeOfTx.toNumber() == 0)
 
-  let contractOwners: any = useGetOwners()
-
-  console.log('contractOwners', contractOwners)
-
+  const contractOwners: any = useGetOwners()
+  const tronContractOwners = useGetTronOwners()
+ 
   useEffect(() => {
-    setAllTransactions(mintTxns)
-  }, [mintTxns])
+    sortTransactions()
+  }, [ethTxns, tronTxns, chain])
+
+
+  const sortTransactions = async () => {
+    let ethTxnsArr: any[] = [], tronTxnsArr: any[] = []
+    ethTxns.forEach(async (item) => {
+      if (item.submitResponse.input.includes("40c10f19")) {
+        ethTxnsArr.push({...item, typeOfTxn: "Mint"})
+      }
+    })
+
+    setFinalEthTxns(ethTxnsArr)
+    console.log("Mint ethTxnsArr", ethTxnsArr)
+
+    tronTxns.forEach(async (item) => {
+      if (item.submitResponse.input.includes("40c10f19")) {
+        tronTxnsArr.push({...item, typeOfTxn: "Mint"})
+      }
+    })
+    console.log("sortTransactionsethTxnsArr", tronTxnsArr)
+
+    setFinalTronTxns(tronTxnsArr)
+    console.log("Mint tronTxnsArr", tronTxnsArr)
+
+  }
 
   const handleCoinChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setStableCoin(event.target.value);
   };
 
-  const mintTokenAction = useSubmitTransaction("mint", adddress, amount, stableCoin)
-  const submitTronTxnAction = useSubmit(adddress, formatToBN(amount), stableCoin, BigNumber.from('0'))
+  const mintTokenAction = useSubmitTransaction("mint", address, amount, stableCoin)
+  const submitTronTxnAction = useSubmit("mint", address, amount, stableCoin)
 
   const submitTx = async() => {
     updateLoader(true)
-    if(chain == 'MaticMumbai'){
+    if(chain == 'Goerli'){
       mintTokenAction(() => {},() => {})
     }
 
-    if(chain == 'Neil') {
+    if(chain == 'Nile') {
       submitTronTxnAction()
     }
   }
 
-  const disableMint = adddress && amount && stableCoin && chain && contractOwners?.includes(myAccount) && !currentLoaderState
+  const disableMint = address && (chain == "Goerli" ? ethers.utils.isAddress(address) :  window.tronWeb.isAddress(address)) && amount && stableCoin && chain && (chain == "Goerli" ? contractOwners?.includes(myAccount) : tronContractOwners?.includes(window.tronWeb.defaultAddress.base58))
+
+  console.log("finalTxns", finalEthTxns, finalTronTxns)
 
   return (
     <div style={{marginLeft: '260px', marginRight: '20px', position: 'relative',}}>      
@@ -130,7 +125,7 @@ function Mint({mintTxns}) {
                 // margin="dense"
                 type="text"
                 onChange={(e:any) => setAddress(e.target.value)}
-                value={adddress}
+                value={address}
                 fullWidth
                 // variant="outlined"
                 size={'small'}
@@ -162,15 +157,25 @@ function Mint({mintTxns}) {
                   // variant="outlined"
                   size='small'
                 >
-                  
                   {
-                  tokens[chainName?.id || _activeNetwork] ? Object.entries(tokens[chainName?.id || _activeNetwork])?.map((option) => (
-                    <MenuItem key={option[1].symbol} value={option[1].symbol}>
-                      {option[1].symbol}
-                    </MenuItem>
-                  )):
-                  <MenuItem>No coins available on this chain</MenuItem>
+                    chain == "Nile" ? 
+                      tronStableCoins?.map((coin) => 
+                        (<MenuItem
+                          key={coin.symbol}
+                          value={coin.contractAdrs}>
+                            {coin.symbol}
+                        </MenuItem>)
+                      ) 
+                      :
+
+                      tokens[chainName?.id || _activeNetwork] ? Object.entries(tokens[chainName?.id || _activeNetwork])?.map((option) => (
+                        <MenuItem key={option[1].symbol} value={option[1].symbol}>
+                          {option[1].symbol}
+                        </MenuItem>
+                      ))
+                      : <MenuItem>No coins available on this chain</MenuItem>
                   }
+                  
                 </TextField>           
             </Grid>
             <Grid item xs={6}></Grid>
@@ -189,28 +194,16 @@ function Mint({mintTxns}) {
 
               </Button>
             </Grid>
-            {/* <Grid item xs={4}></Grid> */}
           </Grid>
-          
         </CardContent>
-
       </Card>
     
+      {
+        chain == "Goerli" ? 
+        <ConfirmationStep allTransactions={finalEthTxns} /> :
+        <ConfirmationStep allTransactions={finalTronTxns} /> 
 
-      {/* <Card>
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-            Transaction History
-          </Typography>
-        </CardContent>
-      </Card> */}
-      {/* {
-        chain == "MaticMumbai" ?
-        <ConfirmationStep allTx={Object.entries(allTransactions).map((key) => key[1])} /> :
-        <ConfirmationStep allTx={allTronTxns} />
-
-      } */}
-      <ConfirmationStep allTransactions={allTransactions} /> 
+      }
     </div>
   )
 }

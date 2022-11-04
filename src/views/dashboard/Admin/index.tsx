@@ -23,8 +23,14 @@ import { PersonalVideo } from '@material-ui/icons';
 import ProgressModal from '../../../components/ProgressModal';
 import useGetTokenDetails from '../../../hooks/useGetTokenDetails';
 import useGetAllTokenDetails from '../../../hooks/useGetAllTokenDetails';
-// import useRemoveOwner from '../../../hooks/useRemoveOwner'
-// import useChangeNoConfirmations from '../../../hooks/useChangeNoConfirmations'
+import useSubmit from '../../../hooks/tron/useSubmit';
+import { useGetActiveBlockChain, useGetActiveChainId } from '../../../state/chains/hooks';
+import useConfirm from '../../../hooks/tron/useConfirm';
+import { tronMultiSigContract } from '../../../utils/constants';
+import useGetTronTokenDetails from '../../../hooks/tron/useGetTronTokenDetails';
+import useGetTronOwners from '../../../hooks/tron/useGetTronOwners';
+import { useGetTronConfirmationCount, useTronGetIsExecuted, useTronGetRequiredCount } from '../../../hooks/tron/useTronMultisig';
+
 
 const useStyles = makeStyles({
   table: {
@@ -32,36 +38,28 @@ const useStyles = makeStyles({
   },
 });
 
-function createData(id: number, details: any, outOfCount: string, status: string, action: string, hash: []) {
+function createData(id: number, details: any, outOfCount: string, status: string, action: string, hash: string[]) {
   return { id, details, outOfCount, status, action, hash };
 }
 
-// const rows = [
-//   createData(0, 'Frozen yoghurt', "1 out of 2", "Needs Confirmation", "Confirm"),
-//   createData(1, 'Ice cream sandwich', "1 out of 2", "Needs Confirmation", "Confirm"),
-//   createData(2, 'Eclair', "2 out of 2", "Success", ""),
-//   createData(3, 'Cupcake', "1 out of 2", "Needs Confirmation", "Confirm"),
-//   createData(4, 'Gingerbread', "1 out of 2", "Needs Execution", "Execute"),
-// ];
-
-function Admin({ adminTxns }) {
+function Admin({ ethTxns, tronTxns }) {
   const { provider, tokens, _activeNetwork, contracts, config } = useCore()
   const classes = useStyles();
   const { chain: chainName } = useNetwork()
-  console.log("adminTxns", adminTxns)
+
   const currentLoaderState = useGetLoader()
   const updateLoader = useUpdateLoader()
   let contractOwners: any = useGetOwners()
+  const chain = useGetActiveBlockChain()
 
   const [adddressToAdd, setAddressToAdd] = useState<string>('')
   const [adddressRemove, setAddressToRemove] = useState<string>('')
   const [noOfConfirmations, setNoOfConfirmations] = useState<string>("")
   const [finalData, setFinalData] = useState<any[]>([])
-  const [tableRows, setTableRows] = useState<any[]>([])
+  const [finalEthTxns, setFinalEthTxns] = useState<any>([])
+  const [finalTronTxns, setFinalTronTxns] = useState<any>([])
 
-  // const addOwnerAction = useAddOwner(adddressToAdd);
-  // const removeOwnerAction = useRemoveOwner(adddressRemove);
-  // const noConfirmAction = useChangeRequirement(noOfConfirmations);
+  // Ethereum blockchain
   const addOwnerAction = useSubmitTransaction("addOwner", adddressToAdd, '0', "MultiSig")
   const removeOwnerAction = useSubmitTransaction("removeOwner", adddressRemove, '0', "MultiSig")
   const noConfirmAction = useSubmitTransaction("changeRequirement", "", noOfConfirmations, "MultiSig")
@@ -71,182 +69,151 @@ function Admin({ adminTxns }) {
   const confirmTxnAction = useConfirmTxn()
   const { fetch } = useGetTokenDetails();
   const allTokensTotalSupply = useGetAllTokenDetails()
-  console.log("allTokensTotalSupply", allTokensTotalSupply)
+  const chaindId = useGetActiveChainId()
+  
+  // Tron blockchain
+  const addTronOwnerAction = useSubmit("addOwner", adddressToAdd, '0', tronMultiSigContract)
+  const removeTronOwnerAction = useSubmit("removeOwner", adddressRemove, '0', tronMultiSigContract)
+  const noConfirmActionTron = useSubmit("changeRequirement", "", noOfConfirmations, tronMultiSigContract)
+  const confirmTronTxnAction = useConfirm()
+  const allTronTokensTotalSupply = useGetTronTokenDetails()
+  const tronContractOwners = useGetTronOwners()
+  const confirmTronRequired = useTronGetRequiredCount()
+  const numOfConfirmationCountTron = useGetTronConfirmationCount()
+  const isTronExecuted = useTronGetIsExecuted()
+  console.log("confirmTronRequired", confirmTronRequired)
+
   let etherscanUrl = config[chainName?.id || _activeNetwork].etherscanUrl
-
+ 
   useEffect(() => {
-    getAllData()
-
-  }, [adminTxns])
-
-  useEffect(() => {
-    createRowData()
-  }, [finalData])
+    sortTransactions()
+  }, [ethTxns, tronTxns, chain])
 
   const handleAddOwner = () => {
-    addOwnerAction(() => { }, () => { })
+    if(chain == "Nile"){
+      addTronOwnerAction()
+    }else {
+      addOwnerAction(() => { }, () => { })
+    }
     updateLoader(true)
   }
 
   const handleRemoveOwner = () => {
-    removeOwnerAction(() => { }, () => { })
+    if(chain == "Nile"){
+      removeTronOwnerAction()
+    }else {
+      removeOwnerAction(() => { }, () => { })
+    }
     updateLoader(true)
   }
 
   const handleChangeConfirmation = () => {
-    noConfirmAction(() => { }, () => { })
+    if(chain == "Nile"){
+      noConfirmActionTron()
+    }else{
+      noConfirmAction(() => { }, () => { })
+    }
     updateLoader(true)
   }
 
   const handleConfirm = (id: number, typeOfTxn: string) => {
-    confirmTxnAction(id, typeOfTxn)
+    if(chain == "Nile"){
+      confirmTronTxnAction(id)
+    }else{
+      confirmTxnAction(id, typeOfTxn)
+    }
     updateLoader(true)
 
   }
 
-  const handleExecute = () => {
+  const handleExecute = () => {}
 
-  }
+  const sortTransactions = () => {
 
-  let returnRes
+    const mutlisigAddr = contracts[chaindId].MultiSig.address.replace('0x', '').toLowerCase()
 
-  const getTxnHash = async (hash: any, i: number) => {
-    let data, from, blockNumber
-    let toAdrs, val, token, typeOfTxn, timestamp, methodID
-
-    const testFn = async () => {
-      if (i == 0) {
-        const res = await provider.getTransaction(hash)
-        console.log('useGetTxnFromHash res', res.data)
-        data = res.data
-        from = res.from
-        blockNumber = res.blockNumber
-
-        const blockres = await provider.getBlock(blockNumber)
-        timestamp = blockres
-        // methodID = data?.slice(0, 10)
-        token = data.slice(10, 74)
-        token = `0x${token.slice(24, token.length)}`
-        typeOfTxn = data.slice(266, 274)
-        toAdrs = data.slice(274, 338)
-
-        if (typeOfTxn == "ba51a6df") val = data.slice(337, 338)
-        else {
-          val = "0"
-        }
-
-        return returnRes = {
-          token,
-          typeOfTxn: typeOfTxn == "173825d9" ? "removeOwner" : typeOfTxn == "7065cb48" ? "addOwner" : "changeRequirement",
-          toAdrs: `0x${toAdrs.slice(24, toAdrs.length)}`,
-          from,
-          timestamp,
-          val
-        }
-      } else {
-
-        console.log("hash", hash)
-        let hashData = await Promise.all(hash.map(async (singleHash) => {
-          const res = await provider.getTransaction(singleHash)
-          blockNumber = res.blockNumber
-          const blockres = await provider.getBlock(blockNumber)
-          timestamp = blockres.timestamp
-          from = res.from
-          return {
-            from, timestamp
-          }
-
-        }))
-
-        return hashData
+    let arr1: any[] = []
+    ethTxns?.map((item: any, i: number) =>  {
+      if (item.submitResponse.input.toLowerCase().includes(mutlisigAddr)) {
+        arr1.push(item)
       }
-    }
-    await testFn().then((res) => {
-      returnRes = res
-    }
-    )
-
-    return returnRes
-
-  }
+    })
 
 
-  const getAllData = () => {
-    adminTxns.map(async (item) => {
-      console.log("getAllData item", item)
-      let submitData = await getTxnHash(item[1].hash[0], 0)
-      let confirmData = [] // this should be array of data of confirm hashes / exclueded first (submit) txn hash
-      if (item[1].hash.length > 1) {
+    let token, value, symbol, toAdrs, typeOfTxn, typeOfTxnID
 
-        confirmData = await getTxnHash(item[1].hash.filter((arr, i) => i != 0), 1)
+    let arr2: any[] = []
+
+    arr1?.map(async(item: any, i: number) => {
+      const executed = await setIsExecuted(Number(item.index))
+      let numConfirmations = await setConfirmationCount(Number(item.index))
+
+      token = item.submitResponse.input.slice(10, 74)
+      token =  `0x${token.slice(24, token.length)}`
+      toAdrs = item.submitResponse.input.slice(274, 338)
+      toAdrs = `0x${toAdrs.slice(24, toAdrs.length)}`
+      typeOfTxnID = item.submitResponse.input.slice(266, 274)
+
+      if (typeOfTxnID == "ba51a6df") value = item.submitResponse.input.slice(337, 338)
+      else {
+        value = "0"
       }
-      let _numConfirmations = await setConfirmationCount(item[0])
+      if(typeOfTxnID == "173825d9") typeOfTxn = "removeOwner"
+      if(typeOfTxnID == "7065cb48") typeOfTxn = "addOwner"
+      if(typeOfTxnID == "ba51a6df") typeOfTxn = "changeRequirement"
 
-      const { token, typeOfTxn, toAdrs, from, timestamp, val } = submitData
+      arr2.push({...item, token, value, toAdrs, typeOfTxn, executed, numConfirmations})
+      setFinalEthTxns(arr2)
+    }) 
+    
 
-      const txIndex = item[0]
-      const _executed = await setIsExecuted(item[0])
+    let tronArr1: any[] = []
+    tronTxns?.map((item: any, i: number) =>  {
+      // console.log("TEST", item, window.tronWeb.address.toHex(tronMultiSigContract).slice(2, -1))
 
-      setFinalData(prev => [...prev, {
-        _token: token,
-        _typeOfTx: typeOfTxn,
-        _to: toAdrs,
-        from,
-        timestamp,
-        txIndex,
-        _executed,
-        _numConfirmations,
-        confirmData,
-        hash: item[1].hash,
-        val
-      }])
+      if (item.submitResponse.input.toLowerCase().includes(window.tronWeb.address.toHex(tronMultiSigContract).toLowerCase().slice(2, window.tronWeb.address.toHex(tronMultiSigContract).length))) {
+        tronArr1.push(item)
+
+      }
     })
-  }
 
-  let supply
-  const getTotalSupply = (token: string) => {
+    // console.log("TEST", tronArr1)
 
+    let tronArr2: any[] = []
 
-    console.log("getTotalSupply token", token)
+    tronArr1?.forEach(async(item: any, i: number) => {
+      const executed = await isTronExecuted(Number(item.index))
+      let numConfirmations = await numOfConfirmationCountTron(item.index)
+      console.log("TEST",executed, numConfirmations, item.index)
+      token = item.submitResponse.input.slice(8, 72)
+      token =  window.tronWeb.address.fromHex(`41${token.slice(24, token.length)}`)
+      toAdrs = item.submitResponse.input.slice(272, 336)
+      toAdrs = window.tronWeb.address.fromHex(`41${toAdrs.slice(24, toAdrs.length)}`)
+      typeOfTxnID = item.submitResponse.input.slice(264, 272)
 
-    const getTokenDetails = async () => {
-      let tokenDetails = await fetch(token)
-      console.log("getTotalSupply tokenDetails", tokenDetails)
-      return tokenDetails
-    }
+      if (typeOfTxnID == "ba51a6df") value = item.submitResponse.input.slice(336, 337)
+      else {
+        value = "0"
+      }
+      if(typeOfTxnID == "173825d9") typeOfTxn = "removeOwner"
+      if(typeOfTxnID == "7065cb48") typeOfTxn = "addOwner"
+      if(typeOfTxnID == "ba51a6df") typeOfTxn = "changeRequirement"
+      tronArr2.push({...item, token, value, toAdrs, typeOfTxn, executed, numConfirmations})
 
-    // getTokenDetails()
-    //   .then((res) => {
-    //     console.log("getTotalSupply res" , res)
-    //     supply = res
-    //   })
-
-    // console.log("getTotalSupply supply", supply)
-
-    return supply
-  }
-
-
-  // console.log("testSupply", testSupply)
-
-
-  const createRowData = () => {
-    finalData.map((item) => {
-
-      const { token, _typeOfTx, _to, from, txIndex, _executed, _numConfirmations, hash, confirmData, val } = item
-
-      let outOfData = _executed ? `Fullfilled` : `${_numConfirmations} out of ${confirmReq}`
-      let details = `Transaction (${_typeOfTx} to ${_typeOfTx == "changeRequirement" ? val : _to}) is Submitted by ${truncateMiddle(from, 12, "...")}.` +
-        `${_numConfirmations > 1 ? `Confirmed by ${truncateMiddle(from, 12, "...")} ${confirmData?.map((data) => "and " + truncateMiddle(data.from, 12, "..."))}` : ""} ${_executed && !!confirmData.length ? `Excuted by ${truncateMiddle(confirmData[confirmData?.length - 1].from, 12, "...")}.` : ""}`
-      let status = _executed ? "Success" : _numConfirmations < confirmReq ? 'Needs Confirmation' : 'Needs Execution'
-      let action = _executed ? "" : _numConfirmations < confirmReq ? "Confirm" : ""
-      const res = createData(txIndex, details, outOfData, status, action, hash)
-      setTableRows(prev => _.uniqWith([...prev, res], _.isEqual))
+      setFinalTronTxns(tronArr2)
     })
+  
+   
   }
-  console.log("tableRows", tableRows)
-  console.log("finalData", finalData)
-  // return <div />
+
+  const disableChangeConfirmCount = noOfConfirmations && noOfConfirmations < tronContractOwners.length && noOfConfirmations != "0"
+  const disableAddOwner = chain == "Goerli" ? ethers.utils.isAddress(adddressToAdd) : window.tronWeb?.isAddress(adddressToAdd)
+  const disableRemoveOwner = chain == "Goerli" ? ethers.utils.isAddress(adddressRemove) : window.tronWeb?.isAddress(adddressRemove)
+  
+  console.log("Admin", finalEthTxns, finalTronTxns)
+  // console.log("Admin", ethTxns, tronTxns)
+
+  // return (<div></div>)
   return (
     <div style={{ marginLeft: '260px', marginRight: '20px', position: 'relative', paddingTop: '50px' }}>
       <ProgressModal currentLoaderState={currentLoaderState} />
@@ -263,7 +230,7 @@ function Admin({ adminTxns }) {
               />
               <Grid item xs={2}>
                 {
-                  allTokensTotalSupply && allTokensTotalSupply?.map((item, i) => (
+                  chain == "Goerli" ? allTokensTotalSupply && allTokensTotalSupply?.map((item, i) => (
                     <div className={"row-spacebetween-center"} key={i}>
                       <Textfield
                         text={item.symbol + ":"}
@@ -278,8 +245,26 @@ function Admin({ adminTxns }) {
                         className={'m-b-15'}
                       />
                     </div>
+                  )) :
+
+                  allTronTokensTotalSupply && allTronTokensTotalSupply?.map((item, i) => (
+                    <div className={"row-spacebetween-center"} key={i}>
+                        <Textfield
+                          text={item.symbol + ":"}
+                          fontSize={'15px'}
+                          fontWeight={'500'}
+                          className={'m-b-15'}
+                        />
+                        <Textfield
+                          text={item.totalSupply}
+                          fontSize={'15px'}
+                          fontWeight={'bold'}
+                          className={'m-b-15'}
+                        />
+                      </div>
                   ))
                 }
+                
 
               </Grid>
 
@@ -299,7 +284,7 @@ function Admin({ adminTxns }) {
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <TextField
-                    helperText="Enter the address to which you want to add as an owner"
+                    helperText="Enter the valid address you want to add as an owner"
                     required
                     label="Address"
                     // margin="dense"
@@ -317,7 +302,7 @@ function Admin({ adminTxns }) {
                     variant="contained"
                     color="primary"
                     fullWidth
-                    // disabled={!disableMint}
+                    disabled={!disableAddOwner}
                     style={{ position: 'relative' }}>Submit
                   </Button>
                 </Grid>
@@ -337,7 +322,7 @@ function Admin({ adminTxns }) {
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <TextField
-                    helperText="Enter the address to which you want to remove as an owner"
+                    helperText="Enter the valid address you want to remove as an owner"
                     required
                     label="Address"
                     // margin="dense"
@@ -355,7 +340,7 @@ function Admin({ adminTxns }) {
                     variant="contained"
                     color="primary"
                     fullWidth
-                    // disabled={!disableMint}
+                    disabled={!disableRemoveOwner}
                     style={{ position: 'relative' }}>Submit
                   </Button>
                 </Grid>
@@ -375,7 +360,7 @@ function Admin({ adminTxns }) {
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <TextField
-                    helperText={`Enter the count that needs to be updated. Current count: ${confirmReq}`}
+                    helperText={`Enter the count that needs to be updated. Current count: ${chain == "Goerli" ? confirmReq : confirmTronRequired}`}
                     required
                     label="Confirmation count"
                     // margin="dense"
@@ -393,7 +378,7 @@ function Admin({ adminTxns }) {
                     variant="contained"
                     color="primary"
                     fullWidth
-                    // disabled={!disableMint}
+                    disabled={!disableChangeConfirmCount}
                     style={{ position: 'relative' }}>Change
                   </Button>
                 </Grid>
@@ -412,6 +397,7 @@ function Admin({ adminTxns }) {
               />
               <div className={"scrollable"}>
                 {
+                  chain == "Goerli" ?
                   contractOwners.map((owner, i) =>
                     <Textfield
                       key={i}
@@ -420,7 +406,19 @@ function Admin({ adminTxns }) {
                       // fontWeight={'bold'}
                       className={'m-b-15'}
                     />
+                  ) :
+
+                  tronContractOwners.map((owner, i) =>
+                    <Textfield
+                      key={i}
+                      text={`${i + 1}. ${owner}`}
+                      fontSize={'13px'}
+                      // fontWeight={'bold'}
+                      className={'m-b-15'}
+                    />
                   )
+
+                  
                 }
               </div>
             </CardContent>
@@ -430,7 +428,7 @@ function Admin({ adminTxns }) {
           <Card>
             <CardContent>
               <TableContainer>
-                <Table className={classes.table} aria-label="simple table">
+              <Table className={classes.table} aria-label="simple table">
                   <TableHead>
                     <TableRow>
                       <TableCell>ID</TableCell>
@@ -440,46 +438,45 @@ function Admin({ adminTxns }) {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {_.uniqWith(tableRows, (arrVal, othVal) => arrVal.id == othVal.id).sort((a, b) => b.id - a.id)?.map((row) => (
-                      <TableRow key={row.id}>
-                        <TableCell>{row.id}</TableCell>
-                        <TableCell component="th" scope="row">
-                          {row.details}
-                          {
-                            row.action.length ?
-                              <div style={{ margin: '15px 0 15px 0' }}>
-                                <Button onClick={() => {
-                                  if (row.action == "Confirm") handleConfirm(row.id, row._typeOfTx)
-                                  else handleExecute()
-                                }}>{row.action}</Button>
-                              </div>
-                              :
-                              <div />
-                          }
-                          Click on the links for more details. &nbsp;&nbsp;
-                          {
-                            row.hash.map((singleHash, i) =>
-                              <span key={i}><a target="_blank" href={`${etherscanUrl}/tx/${singleHash}`} rel="noreferrer"> {truncateMiddle(singleHash, 22, "...")}</a>
-                                &nbsp;&nbsp;</span>
-                            )
-                          }
-                        </TableCell>
-                        <TableCell align="right">{row.outOfCount}</TableCell>
-                        <TableCell align="right">{row.status}</TableCell>
-                        {/* {
-                          row.action.length ?
-                          <TableCell align="right">
-                              <Button onClick={() => {
-                              if(row.action == "Confirm") handleConfirm(row.id, row._typeOfTx)
-                              else handleExecute()
-                            }}>{row.action}</Button>
+                    {(chain == "Goerli" ? finalEthTxns : finalTronTxns).sort((a, b) => b.index - a.index)?.map((row) => {
+                      const {confirmData, executed, index, numConfirmations, submitResponse, toAdrs, token, typeOfTxn, value} = row
+                      let confirmCount = chain == "Goerli" ? confirmReq : confirmTronRequired
+                      let action = executed ? "" : numConfirmations <  confirmCount ? "Confirm" : ""
+                      let confirmHash = confirmData ? confirmData?.map((item) => item.hash) : []
+                      let hash = [submitResponse.hash].concat(confirmHash)
+                      let details = `Transaction (${typeOfTxn} to ${typeOfTxn == "changeRequirement" ? value : toAdrs}) is Submitted by ${truncateMiddle(submitResponse.from, 12, "...")}.` +
+                      `${numConfirmations > 1 ? `Confirmed by ${truncateMiddle(submitResponse.from, 12, "...")} ${confirmData?.map((data) => "and " + truncateMiddle(data.from, 12, "..."))}` : ""} ${executed && !!confirmData?.length ? `Excuted by ${truncateMiddle(confirmData[confirmData?.length - 1].from, 12, "...")}.` : ""}`
+                      return(
+                        <TableRow key={index}>
+                          <TableCell>{index}</TableCell>
+                          <TableCell component="th" scope="row">
+                            {details}
+                            {
+                              action.length ?
+                                <div style={{ margin: '15px 0 15px 0' }}>
+                                  <Button onClick={() => {
+                                    if (action == "Confirm") handleConfirm(index, typeOfTxn)
+                                    else handleExecute()
+                                  }}>{action}</Button>
+                                </div>
+                                :
+                                <div />
+                            }
+                            Click on the links for more details. &nbsp;&nbsp;
+                            {
+                              hash.map((singleHash, i) =>
+                                <span key={i}><a target="_blank" href={chain == "Goerli" ? `${etherscanUrl}/tx/${singleHash}` : `https://nile.tronscan.org/#/transaction/${singleHash}`} rel="noreferrer"> {truncateMiddle(singleHash, 22, "...")}</a>
+                                  &nbsp;&nbsp;</span>
+                              )
+                            }
                           </TableCell>
-                          :
-                          <div />
-                        } */}
-
-                      </TableRow>
-                    ))}
+                          <TableCell align="right"> { executed ? `Fullfilled` : `${numConfirmations} out of ${chain == "Goerli" ? confirmReq : confirmTronRequired}` } </TableCell>
+                          <TableCell align="right">{ executed ? "Success" : numConfirmations < confirmCount ? 'Needs Confirmation' : 'Needs Execution' }</TableCell>
+                        </TableRow>
+                      )
+                    }
+                    
+                    )}
                   </TableBody>
                 </Table>
               </TableContainer>

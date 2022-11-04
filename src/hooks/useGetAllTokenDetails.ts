@@ -1,3 +1,4 @@
+import _ from "lodash";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useWallet } from "use-wallet";
 import { useNetwork } from 'wagmi'
@@ -17,13 +18,11 @@ const useGetAllTokenDetails = () => {
     Object.entries(tokens[chain?.id || _activeNetwork]).forEach(async(item) => {
         const contract = await contracts[`${chain?.id || _activeNetwork}`][item[0]]
         const res = await contract.totalSupply()
-        
-        console.log("useGetAllTokenDetails res", res)
-        const bal = {
+                const bal = {
             totalSupply: getDisplayBalance(res),
             symbol: item[1].symbol
         }
-        setResponse(prev => [...prev, bal])
+        setResponse(prev => _.uniqWith([...prev, bal], (arrVal, othVal) => arrVal.symbol == othVal.symbol))
 
     })
     

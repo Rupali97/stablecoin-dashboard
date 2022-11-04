@@ -5,5 +5,5 @@ export const ChainIdInitialState: IChainIdInitialState = {
 };
 
 export const BlockChaianitialState: IBlockChaianitialState = {
-  active: 'MaticMumbai'
+  active: 'Goerli'
 }

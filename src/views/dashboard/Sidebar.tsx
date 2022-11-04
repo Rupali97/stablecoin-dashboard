@@ -12,6 +12,8 @@ import ListItemText from "@material-ui/core/ListItemText"
 import MenuIcon from '@material-ui/icons/Menu'
 import React from "react"
 import styles from "../../styles/components/sidebarStyle.js"
+import useCore from "../../hooks/useCore"
+import { useGetActiveBlockChain } from "../../state/chains/hooks"
 
 
 // @ts-ignore
@@ -19,6 +21,8 @@ const useStyles = makeStyles(styles)
 
 
 export default function Sidebar () {
+  const {myAccount} = useCore()
+  const chain = useGetActiveBlockChain()
   const [state, setState] = React.useState<boolean>(false)
 
   const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -40,22 +44,22 @@ export default function Sidebar () {
 
   const routes = [
     {
-      url: '/mint',
+      url: '/dashboard/mint',
       icon: 'construction',
       name: 'Mint token'
     },
     {
-      url: '/burn',
+      url: '/dashboard/burn',
       icon: 'whatshot',
       name: 'Burn token'
     },
     {
-      url: '/freeze',
+      url: '/dashboard/freeze',
       icon: 'ac_unit',
       name: 'Freeze'
     },
     {
-      url: '/admin',
+      url: '/dashboard/admin',
       icon: 'supervisor_account',
       name: 'Admin'
     },
@@ -71,7 +75,12 @@ export default function Sidebar () {
       {
         routes.map(r => {
           return (
-            <NavLink key={r.name} to={r.url} className={({isActive}) => isActive ? `active ${classes.item}` : classes.item}>
+            <NavLink onClick={() => {
+              setTimeout(() => {window.location.reload()}, 1500)
+              }}
+              key={r.name} to={
+                chain == "Nile" && window.tronWeb?.defaultAddress.hex ? r.url : chain == "Goerli" && myAccount ? r.url : "/stablecoin-dashboard"
+              } className={({isActive}) => isActive ? `active ${classes.item}` : classes.item}>
               <ListItem button className={classes.itemLink}>
                 <Icon className={classNames(classes.itemIcon)}>{r.icon}</Icon>
                 <ListItemText primary={r.name} className={classNames(classes.itemText)} disableTypography={true} />

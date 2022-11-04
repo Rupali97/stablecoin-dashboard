@@ -17,7 +17,8 @@ const configurations: { [env: string]: Configuration } = {
         networkSetupDocLink: 'https://docs.polygon.technology/docs/develop/metamask/config-polygon-on-metamask/',
         supportedTokens: [
           "USDB",
-          "USDA"
+          "USDA",
+          "USDF"
         ], 
         decimalOverrides: {
 

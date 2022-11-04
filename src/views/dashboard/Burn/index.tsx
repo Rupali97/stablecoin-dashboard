@@ -13,13 +13,12 @@ import {
 import { useAccount, useNetwork } from 'wagmi'
 
 import { formatToBN, getBalance } from '../../../utils/formatBalance';
-import { chains, stableCoins } from '../Mint';
 import ConfirmationStep from '../../../components/ConfirmationStep';
 import useSubmitTransaction from '../../../hooks/useSubmitTransaction';
 import useGetAllMultiSigTxns from '../../../hooks/useGetAllMultiSigTxns';
 import useGetOwners from '../../../hooks/useGetOwners';
 import useCore from '../../../hooks/useCore';
-import { BigNumber } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import useGetAllTronTxns from '../../../hooks/tron/useGetAllTronTxns';
 import { useGetActiveBlockChain } from '../../../state/chains/hooks';
 import useSubmit from '../../../hooks/tron/useSubmit';
@@ -28,8 +27,11 @@ import { useAllTransactions } from '../../../state/transactions/hooks';
 import { useGetLoader, useUpdateLoader } from '../../../state/application/hooks';
 import useGetTokenBalance from '../../../hooks/useGetTokenBalance';
 import useGetTokenDetails from '../../../hooks/useGetTokenDetails';
+import useGetTronOwners from '../../../hooks/tron/useGetTronOwners';
+import { tronStableCoins } from '../../../utils/constants';
+import useGetTronTokenBalance from '../../../hooks/tron/useGetTronTokenBalance';
 
-function Burn({ burnTxns }) {
+function Burn({ ethTxns, tronTxns }) {
   const { tokens, _activeNetwork } = useCore()
   const { chain: chainName } = useNetwork()
 
@@ -40,6 +42,8 @@ function Burn({ burnTxns }) {
   const chain = useGetActiveBlockChain()
 
   let contractOwners: any = useGetOwners()
+  const tronContractOwners = useGetTronOwners()
+
   // let allTx = Object.entries(allTransactions)?.map((key) => key[1])?.filter((tx) => tx.txDetail._typeOfTx == 1)
   const currentLoaderState = useGetLoader()
   const updateLoader = useUpdateLoader()
@@ -47,31 +51,55 @@ function Burn({ burnTxns }) {
   // let allTronTxns = useGetAllTronTxns()
   // allTronTxns = allTronTxns.filter((tx) => tx._typeOfTx.toNumber() == 1)
 
-  const [adddress, setAddress] = useState<string>('')
+  const [address, setAddress] = useState<string>('')
   const [amount, setAmount] = useState<string>('')
   const [stableCoin, setStableCoin] = useState<string>('')
   const [stableCoinDetails, setStableCoinDetails] = useState<any>()
+  const [allTransactions, setAllTransactions] = useState<any>([])
+  const [finalEthTxns, setFinalEthTxns] = useState<any>([])
+  const [finalTronTxns, setFinalTronTxns] = useState<any>([])
 
-  const burnTokenAction = useSubmitTransaction("burn", adddress, amount, stableCoin)
-  const submitTronTxnAction = useSubmit(adddress, formatToBN(amount), stableCoin, BigNumber.from('1'))
+  const burnTokenAction = useSubmitTransaction("burn", address, amount, stableCoin)
+  const submitTronTxnAction = useSubmit("burn", address, amount, stableCoin)
   const { fetchData } = useGetTokenBalance();
+  const { fetchTronTokenBal } = useGetTronTokenBalance();
 
   useEffect(() => {
-    if (adddress.length > 0 && stableCoin.length > 0)
+    if (address.length > 0 && stableCoin.length > 0)
       getTokenDetails()
-  }, [stableCoin, adddress])
+  }, [stableCoin, address])
 
   useEffect(() => {
-    console.log("useEffectBurnburnTxns", burnTxns)
-  }, [burnTxns])
+    sortTransactions()
+  }, [ethTxns, tronTxns, chain])
+
+  const sortTransactions = async () => {
+    let ethTxnsArr: any[] = [], tronTxnsArr: any[] = []
+    ethTxns.forEach(async (item) => {
+      if (item.submitResponse.input.includes("9dc29fac")) {
+        ethTxnsArr.push({...item, typeOfTxn: "Burn"})
+      }
+    })
+
+    setFinalEthTxns(ethTxnsArr)
+
+    tronTxns.forEach(async (item) => {
+      if (item.submitResponse.input.includes("9dc29fac")) {
+        tronTxnsArr.push({...item, typeOfTxn: "Burn"})
+      }
+    })
+
+    setFinalTronTxns(tronTxnsArr)
+
+  }
 
   const submitTx = async () => {
     updateLoader(true)
 
-    if (chain == 'MaticMumbai') {
+    if (chain == 'Goerli') {
       burnTokenAction(() => { }, () => { })
     }
-    if (chain == "Neil") {
+    if (chain == "Nile") {
       submitTronTxnAction()
     }
   }
@@ -81,18 +109,22 @@ function Burn({ burnTxns }) {
   };
 
   const getTokenDetails = async () => {
-    console.log("getTokenDetails stableCoin", stableCoin, adddress)
-    let tokenDetails = await fetchData(adddress, stableCoin)
+    console.log("getTokenDetails stableCoin", stableCoin, address)
+    let tokenDetails
+    if(chain == "Goerli"){
+      tokenDetails = await fetchData(address, stableCoin)
+    }else {
+      tokenDetails = await fetchTronTokenBal(address, stableCoin)
+    }
     console.log("getTokenDetails", tokenDetails)
     setStableCoinDetails(tokenDetails)
   }
 
-  const disableSubmitBtn = amount && Number(amount) <= Number(stableCoinDetails) && !!stableCoin && chain && contractOwners?.includes(myAccount)
+  const disableSubmitBtn = address && (chain == "Goerli" ? ethers.utils.isAddress(address) :  window.tronWeb.isAddress(address)) 
+    && amount && Number(amount) <= Number(stableCoinDetails) && !!stableCoin && chain && 
+    (chain == "Goerli" ? contractOwners?.includes(myAccount) : tronContractOwners?.includes(window.tronWeb.defaultAddress.base58))
 
-
-  // console.log("burnTxns", burnTxns)
-
-  console.log("stableCoinDetails", stableCoinDetails)
+  console.log("allTransactions", allTransactions)
 
   return (
     <div style={{ marginLeft: '260px', marginRight: '20px' }}>
@@ -115,7 +147,7 @@ function Burn({ burnTxns }) {
                 // margin="dense"
                 type="text"
                 onChange={(e: any) => setAddress(e.target.value)}
-                value={adddress}
+                value={address}
                 fullWidth
                 size='small'
               // variant="outlined"
@@ -147,14 +179,25 @@ function Burn({ burnTxns }) {
                 // variant="outlined"
                 size='small'
               >
+
                 {
-                  tokens[chainName?.id || _activeNetwork] ? Object.entries(tokens[chainName?.id || _activeNetwork])?.map((option) => (
-                    <MenuItem key={option[1].symbol} value={option[1].symbol}>
-                      {option[1].symbol}
-                    </MenuItem>
-                  )):
-                    <MenuItem>No coins available on this chain</MenuItem>
-                }
+                    chain == "Nile" ? 
+                      tronStableCoins?.map((coin) => 
+                        (<MenuItem
+                          key={coin.symbol}
+                          value={coin.contractAdrs}>
+                            {coin.symbol}
+                        </MenuItem>)
+                      ) 
+                      :
+
+                      tokens[chainName?.id || _activeNetwork] ? Object.entries(tokens[chainName?.id || _activeNetwork])?.map((option) => (
+                        <MenuItem key={option[1].symbol} value={option[1].symbol}>
+                          {option[1].symbol}
+                        </MenuItem>
+                      ))
+                      : <MenuItem>No coins available on this chain</MenuItem>
+                  }
               </TextField>
             </Grid>
             <Grid item xs={9}></Grid>
@@ -177,7 +220,11 @@ function Burn({ burnTxns }) {
 
       </Card>
 
-      <ConfirmationStep allTransactions={burnTxns} />
+      {
+        chain == "Goerli" ? 
+        <ConfirmationStep allTransactions={finalEthTxns} /> :
+        <ConfirmationStep allTransactions={finalTronTxns} /> 
+      }
 
     </div>
   )

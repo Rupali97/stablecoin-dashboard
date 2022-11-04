@@ -33,16 +33,33 @@ function getSteps() {
 }
 
 const getDate = (val: number) => {
-      let timestamp = val
-      let date = _moment.unix(timestamp).utc().format("MM-D-YYYY h:mm:ss a");
+      let timestamp
+      if(val.toString().length > 10){
+            timestamp = val/1000
+      }else {
+            timestamp = val
+      }
+      let date = _moment.unix(timestamp).utc().format("MMM Do YYYY h:mm:ss a");
       if(timestamp == 0) return 'N/A'
       return `${date}`
 }
 
-function getStepContent(step: number, stepData: any, core: any, chainName) {
+const timeAgo = (val: number) => {
+      let timestamp
+      if(val.toString().length > 10){
+            timestamp = val/1000
+      }else {
+            timestamp = val 
+      }
+      let date = _moment.unix(timestamp).fromNow();
+      return date
+}
 
-      const {from, _createdTime, _executed, hash, _numConfirmations, confirmData} = stepData;
-      console.log("getStepContent confirmData", confirmData)
+function getStepContent(step: number, stepData: any, core: any, chainName, chain) {
+
+      const {submitHash, submitFrom, submitTime, executed ,numConfirmations, confirmData} = stepData;
+      console.log("getStepContent confirmData", stepData)
+      
       const {config, _activeNetwork} = core
 
       let etherscanUrl = config[chainName?.id || _activeNetwork].etherscanUrl
@@ -54,26 +71,35 @@ function getStepContent(step: number, stepData: any, core: any, chainName) {
                   Created by&nbsp;
                   <a 
                         target="_blank"
-                        href={ `${etherscanUrl}/tx/${hash[0]}`}>
-                              {truncateMiddle(from, 12, "...")}
+                        href={chain == "Goerli" ? `${etherscanUrl}/tx/${submitHash}` : `https://nile.tronscan.org/#/transaction/${submitHash}`}>
+                              {truncateMiddle(submitFrom, 12, "...")}
                   </a>&nbsp;
-                   on {getDate(_createdTime)}&nbsp;+UTC
+                   on {getDate(submitTime)}&nbsp;+UTC
             </div>
           );
         case 1:
-            if( _numConfirmations > 1 ) return (
+            if( numConfirmations > 0 ) return (
                   <div style={{padding: '10px 0'}}>
                         Confirmed by&nbsp;
+                        <a 
+                              target="_blank"
+                              href={chain == "Goerli" ? `${etherscanUrl}/tx/${submitHash}` : `https://nile.tronscan.org/#/transaction/${submitHash}`}>
+                                    {truncateMiddle(submitFrom, 12, "...")}
+                        </a>&nbsp; and&nbsp;
                         {
-                              hash?.map((data, i) => 
-                                    <span key={i}><a key={i} target="_blank" href={ `${etherscanUrl}/tx/${data}`}>{truncateMiddle(data, 12, "...")}</a> {} and </span>
+                              confirmData?.map((data, i) => 
+                                    <span key={i}><a key={i} target="_blank" href={chain == "Goerli" ?  `${etherscanUrl}/tx/${data.hash}` : `https://nile.tronscan.org/#/transaction/${data.hash}`}>{truncateMiddle(data.from, 12, "...")}</a></span>
                               )
                         }
-                        &nbsp;on {getDate(_createdTime)}&nbsp;+UTC and&nbsp;
+                        &nbsp;on {getDate(submitTime)}&nbsp;+UTC 
                         {
-                            confirmData?.map((data) => getDate(data.timestamp))
-                        }&nbsp;+UTC
-                        &nbsp;respectively.
+                              confirmData && <div>and&nbsp; 
+                              {
+                                    confirmData?.map((data) => getDate(data.timeStamp))
+                              }&nbsp;+UTC&nbsp;respectively.</div>
+                        }
+                        
+                        
                   </div>
             )
           return <div />
@@ -81,15 +107,15 @@ function getStepContent(step: number, stepData: any, core: any, chainName) {
           return (
             <div style={{padding: '10px 0'}}>
                   {
-                        _executed && 
+                        (executed && confirmData) && 
                         <div>
                               Executed by&nbsp; 
                               <a 
                                     target="_blank" 
-                                    href={ `${etherscanUrl}/tx/${hash[hash?.length - 1]}`}>
+                                    href={chain == "Goerli" ? `${etherscanUrl}/tx/${confirmData[confirmData?.length - 1]}` : `https://nile.tronscan.org/#/transaction/${confirmData[confirmData?.length - 1]}`}>
                                           {truncateMiddle(confirmData[confirmData?.length - 1].from, 12, "...")} 
                               </a>&nbsp;
-                              on {getDate(confirmData[confirmData?.length - 1].timestamp)}&nbsp;+UTC
+                              on {getDate(confirmData[confirmData?.length - 1].timeStamp)}&nbsp;+UTC
                         </div>
                   }
                  
@@ -129,7 +155,7 @@ function Steps(props: any) {
                                     <StepContent style={{paddingLeft: '20px'}}>
                                           <div>
                                                 {
-                                                      getStepContent(i, stepData, core, chainName)
+                                                      getStepContent(i, stepData, core, chainName, chain)
                                                 }
                                           </div>
                                     </StepContent>

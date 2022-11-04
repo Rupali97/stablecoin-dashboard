@@ -12,12 +12,16 @@ import {Puff} from "react-loader-spinner"
 import { useNetwork } from 'wagmi'
 import Textfield from '../../../components/Textfield'
 import { useGetLoader, useUpdateLoader } from '../../../state/application/hooks';
-import { stableCoins } from '../Mint';
+
 import { useGetActiveBlockChain } from '../../../state/chains/hooks';
 import useFreezeToken from '../../../hooks/useFreezeToken';
 import useUnFreezeToken from '../../../hooks/useUnFreezeToken';
 import ProgressModal from '../../../components/ProgressModal';
 import useCore from '../../../hooks/useCore';
+import { tronStableCoins } from '../../../utils/constants';
+import useFreezeTokenTron from '../../../hooks/tron/useFreezeTokenTron';
+import useUnFreezeTokenTron from '../../../hooks/tron/useUnFreezeTokenTron';
+import { ethers } from 'ethers';
 
 function Freeze() {
   const {tokens, _activeNetwork} = useCore()
@@ -27,13 +31,16 @@ function Freeze() {
   const updateLoader = useUpdateLoader()
   const chain = useGetActiveBlockChain()
 
-  const [adddressToFreeze, setAddressToFreeze] = useState<string>('')
-  const [adddressToUnFreeze, setAddressToUnFreeze] = useState<string>('')
+  const [addressToFreeze, setAddressToFreeze] = useState<string>('')
+  const [addressToUnFreeze, setAddressToUnFreeze] = useState<string>('')
   const [stableCoin, setStableCoin] = useState<string>('')
   const [stableCoinUnfreeze, setStableCoinUnfreeze] = useState<string>('')
 
   const freezeAction = useFreezeToken()
   const unFreezeAction = useUnFreezeToken()
+
+  const freezeActionTron = useFreezeTokenTron()
+  const unFreezeActionTron = useUnFreezeTokenTron()
 
   const handleCoinChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setStableCoin(event.target.value);
@@ -46,18 +53,26 @@ function Freeze() {
   console.log('stableCoin', stableCoin)
 
   const handleFreeze = () => {
-    freezeAction(adddressToFreeze, stableCoin)
+    if(chain == "Goerli"){
+      freezeAction(addressToFreeze, stableCoin)
+    }else {
+      freezeActionTron(addressToFreeze, stableCoin)
+    }
     updateLoader(true)
   }
 
   const handleUnFreeze = () => {
-    unFreezeAction(adddressToUnFreeze, stableCoinUnfreeze)
+    if(chain == "Goerli"){
+      unFreezeAction(addressToUnFreeze, stableCoinUnfreeze)
+    }else {
+      unFreezeActionTron(addressToFreeze, stableCoin)
+    }
     updateLoader(true)
   }
 
-  const disableFreeze = adddressToFreeze && stableCoin
-  const disableUnFreeze = adddressToUnFreeze && stableCoinUnfreeze
-
+  const disableFreeze = stableCoin && addressToFreeze && chain == "Goerli" ? ethers.utils.isAddress(addressToFreeze) : window.tronWeb?.isAddress(addressToFreeze)
+  const disableUnFreeze = stableCoinUnfreeze && addressToUnFreeze  && chain == "Goerli" ? ethers.utils.isAddress(addressToUnFreeze) : window.tronWeb?.isAddress(addressToUnFreeze)
+  
   return (
     <div style={{marginLeft: '260px', marginRight: '20px', position: 'relative'}}>
       <ProgressModal currentLoaderState={currentLoaderState} />
@@ -78,7 +93,7 @@ function Freeze() {
                 // margin="dense"
                 type="text"
                 onChange={(e:any) => setAddressToFreeze(e.target.value)}
-                value={adddressToFreeze}
+                value={addressToFreeze}
                 fullWidth
                 // variant="outlined"
                 size={'small'}
@@ -96,11 +111,19 @@ function Freeze() {
                   // variant="outlined"
                   size='small'
                 > 
-                  {Object.entries(tokens[chainName?.id || _activeNetwork]).map((option) => (
-                  <MenuItem key={option[1].symbol} value={option[1].symbol}>
-                    {option[1].symbol}
-                  </MenuItem>
-                ))}
+                  {
+                    chain == "Goerli" ?
+                      Object.entries(tokens[chainName?.id || _activeNetwork]).map((option) => (
+                      <MenuItem key={option[1].symbol} value={option[1].symbol}>
+                        {option[1].symbol}
+                      </MenuItem>
+                    )) :
+                    tronStableCoins.map((option) => (
+                      <MenuItem key={option.symbol} value={option.contractAdrs}>
+                        {option.symbol}
+                      </MenuItem>
+                    ))
+                }
                 </TextField> 
             </Grid>
             <Grid item xs={9}></Grid>
@@ -117,19 +140,6 @@ function Freeze() {
               <div>
                 Freeze
               </div>
-              
-              {/* <div style={{position: 'absolute', right: 30}}>
-              <Puff
-                height="30"
-                width="30"
-                ariaLabel="progress-bar-loading"
-                wrapperStyle={{}}
-                wrapperClass="progress-bar-wrapper"
-                radius={1}
-                color={`#444`}
-                visible={currentLoaderState}
-              />
-              </div> */}
             </Button>      
             </Grid>
           </Grid>
@@ -155,7 +165,7 @@ function Freeze() {
                 // margin="dense"
                 type="text"
                 onChange={(e:any) => setAddressToUnFreeze(e.target.value)}
-                value={adddressToUnFreeze}
+                value={addressToUnFreeze}
                 fullWidth
                 // variant="outlined"
                 size={'small'}
@@ -173,11 +183,19 @@ function Freeze() {
                   // variant="outlined"
                   size='small'
                 >
-                  {Object.entries(tokens[chainName?.id || _activeNetwork]).map((option) => (
-                  <MenuItem key={option[1].symbol} value={option[1].symbol}>
-                    {option[1].symbol}
-                  </MenuItem>
-                ))}
+                   {
+                    chain == "Goerli" ?
+                      Object.entries(tokens[chainName?.id || _activeNetwork]).map((option) => (
+                      <MenuItem key={option[1].symbol} value={option[1].symbol}>
+                        {option[1].symbol}
+                      </MenuItem>
+                    )) :
+                    tronStableCoins.map((option) => (
+                      <MenuItem key={option.symbol} value={option.contractAdrs}>
+                        {option.symbol}
+                      </MenuItem>
+                    ))
+                  }
                 </TextField> 
             </Grid>
             <Grid item xs={9}></Grid>
@@ -194,19 +212,6 @@ function Freeze() {
               <div>
                 Unfreeze
               </div>
-              
-              {/* <div style={{position: 'absolute', right: 30}}>
-              <Puff
-                height="30"
-                width="30"
-                ariaLabel="progress-bar-loading"
-                wrapperStyle={{}}
-                wrapperClass="progress-bar-wrapper"
-                radius={1}
-                color={`#444`}
-                visible={currentLoaderState}
-              />
-              </div> */}
             </Button>      
             </Grid>
           </Grid>

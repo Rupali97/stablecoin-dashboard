@@ -6,18 +6,24 @@ import formatErrorMessage from '../../utils/formatErrorMessage';
 import MultiSig from "../../protocol/deployments/abi/MultiSig.json"
 
 import useCore from "../useCore"
+import { useGetActiveBlockChain } from '../../state/chains/hooks';
 
 // confirmation hooks = required // current confirmation count of a txn
 // is transaction confirmed(true/false) // get addresses who confirmed the transaction
 
 export const useGetRequiredCount = () => {
     const core = useCore();
-    const { chain } = useNetwork()
+    // const { chain } = useNetwork()
+    const chain = useGetActiveBlockChain()
     const [response, setResponse] = useState<number>(0)
 
     const fetchData = useCallback(async () => {
-        const contract = await core.contracts[`${chain?.id}`].MultiSig;
+        console.log("useGetRequiredCount", core.contracts)
+        const contract = await core.contracts[`${core._activeNetwork}`].MultiSig;
+        console.log("useGetRequiredCount", contract)
+
         const res = await contract.required()
+
         setResponse(res.toNumber())
     }, [chain])
 
@@ -44,7 +50,7 @@ export const useGetConfirmationCount = () => {
         const res = await contract.getConfirmationCount(txnId);
         console.log('useGetConfirmationCount', res);
         let count = res.toNumber();
-
+        console.log("count", count)
         return count
 
     }
@@ -189,7 +195,7 @@ export const useGetSingleTransaction = () => {
 
     const sendRes = async (txId: number) => {
 
-        const contract = core.contracts[`${chain?.id}`].MultiSig
+        const contract = core.contracts[`${chain?.id || core._activeNetwork}`].MultiSig
         const res = await contract.transactions(txId)
         console.log("useGetSingleTransaction res", res.executed)
         let executed = res.executed

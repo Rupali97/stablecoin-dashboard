@@ -1,14 +1,33 @@
 #auth {
-      background: rgb(69, 57, 80);
-      padding: 1px;
+      background: #280343;
+      padding: 200px;
       height: 100vh;
-      display: flex;
+      /* display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: center; */
 
 }
 
 .auth-container{
       /* max-width: 300px; */
 
+}
+
+.auth-container-card{
+      /* height: 220px; */
+}
+
+.tronlinkBtn {
+      background-color: #0D76FD;
+      color: #fff;
+      border: none;
+      padding: 11px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+}
+
+.tronlinkBtn:hover{
+      padding: 12px;
 }

@@ -22,28 +22,29 @@ import useExecuteTxn from '../hooks/useExecuteTxn';
 import useConfirm from '../hooks/tron/useConfirm';
 import useExecute from '../hooks/tron/useExecute';
 import useNoOfConfimReq from '../hooks/tron/useNoOfConfimReq';
-import { useGetActiveBlockChain } from '../state/chains/hooks';
+import { useGetActiveBlockChain, useGetActiveChainId } from '../state/chains/hooks';
 import { useGetLoader, useUpdateLoader } from '../state/application/hooks';
 import { useGetRequiredCount, useGetSingleTransaction, useGetOwners, useGetConfirmationCount, useGetTxnFromHash } from '../hooks/multisig/useMultiSig';
 import useGetTokenDetails from '../hooks/useGetTokenDetails';
 import ProgressModal from './ProgressModal';
+import { useGetTronConfirmationCount, useGetTronTokenDetails, useTronGetIsExecuted } from '../hooks/tron/useTronMultisig';
 
 
 function ConfirmationStep({allTransactions}) {
       const core = useCore()
 
-      const {myAccount, provider, config, _activeNetwork } = core
+      const {myAccount, provider, config, _activeNetwork, contracts } = core
       const { chain: chainName} = useNetwork()
-
       const chain = useGetActiveBlockChain()
       const updateLoader = useUpdateLoader()
       const currentLoaderState = useGetLoader()
       const {fetch} = useGetTokenDetails();
+      const fetchTronTokenDetails = useGetTronTokenDetails()
 
       const [finalData, setFinalData] = useState<any[]>([])
-      const [txnData, setTxnData] = useState<any[]>([])
+      const [finalTronData, setFinalTronData] = useState<any[]>([])
 
-      // maticMumbai network
+      // Goerli network
       let testOwners: any = useGetOwners()
       let confirmReq = useGetRequiredCount()
       const disableConfirm = testOwners?.includes(myAccount)
@@ -53,24 +54,25 @@ function ConfirmationStep({allTransactions}) {
       const getTxnFromHash = useGetTxnFromHash()
       const setConfirmationCount = useGetConfirmationCount()
       let etherscanUrl = config[chainName?.id || _activeNetwork].etherscanUrl
-
-      // const {_numConfirmations, setNumConfirmations} = useGetConfirmationCount()
-      
+      // const chaindId = useGetActiveChainId()
+            
       // Nile network
       let noOfConfirmReq = useNoOfConfimReq()
       const confirmTronTxnAction = useConfirm()
       const executeTronTxnAction = useExecute()
+      const setTronIsExecuted = useTronGetIsExecuted()
+      const setTronConfirmationCount = useGetTronConfirmationCount()
 
       useEffect(() => {
-            getAlltheData()
-            console.log("useEffectConfirmationStep allTransactions", allTransactions)
-      }, [allTransactions])
+            getFinalData()
+      }, [allTransactions, chain])
+
 
       const ConfirmTxn = (txIndex: number, _typeOfTx: string) => {
 
             updateLoader(true)
 
-            if(chain != "MaticMumbai"){
+            if(chain != "Goerli"){
                   confirmTronTxnAction(txIndex)  
             }else{
                   confirmTxnAction(txIndex, _typeOfTx)
@@ -81,7 +83,7 @@ function ConfirmationStep({allTransactions}) {
       const executeTxn = (txIndex: number, _typeOfTx: string) => {
             updateLoader(true)
 
-            if(chain != "MaticMumbai"){
+            if(chain != "Goerli"){
                   executeTronTxnAction(txIndex)  
             }else{
                   executeTxAction(txIndex, _typeOfTx)
@@ -90,22 +92,31 @@ function ConfirmationStep({allTransactions}) {
       }
 
       const getDate = (val: number) => {
-            let timestamp = val
+            let timestamp
+            if(val.toString().length > 10){
+                  timestamp = val/1000
+            }else {
+                  timestamp = val
+            }
             let date = _moment.unix(timestamp).utc().format("MMM Do YYYY h:mm:ss a");
             if(timestamp == 0) return 'N/A'
             return `${date}`
       }
 
       const timeAgo = (val: number) => {
-            let timestamp = val  
+            let timestamp
+            if(val.toString().length > 10){
+                  timestamp = val/1000
+            }else {
+                  timestamp = val 
+            }
             let date = _moment.unix(timestamp).fromNow();
-
             return date
       }
 
       const activeStepHandler = (confirmCount, isExecuted) => {
 
-            if(chain == "MaticMumbai"){
+            if(chain == "Goerli"){
                   if(isExecuted) return 3
                   else if(confirmCount < confirmReq) return 1
                   else if(confirmCount == confirmReq) return 2
@@ -118,121 +129,67 @@ function ConfirmationStep({allTransactions}) {
             }
       }
 
-      let returnRes
+      const getFinalData = () => {
+            let token, value, symbol, toAdrs
 
-      const getTxnHash = async(hash: any, i: number) => {
-            let data, from, blockNumber
-            let toAdrs, val, token, typeOfTxn, timestamp, methodID
-
-            const testFn = async() => {
-            
-                 
-                  if(i == 0){
-                        const res = await provider.getTransaction(hash)
-                        console.log('useGetTxnFromHash res', res.data)
-                        data = res.data
-                        from = res.from
-                        blockNumber = res.blockNumber
-                        const blockres = await provider.getBlock(blockNumber)
-                        timestamp = blockres.timestamp
-
-                        methodID = data?.slice(0, 10)
-                        token = data.slice(10, 74)
+            if(chain == "Goerli"){
+                  _.uniqWith(allTransactions).map(async(item: any, i: number) => {
+                        const executed = await setIsExecuted(Number(item.index))
+                        let numConfirmations = await setConfirmationCount(Number(item.index))
+                        token = item.submitResponse.input.slice(10, 74)
                         token =  `0x${token.slice(24, token.length)}`
-                        typeOfTxn = data.slice(266, 274)
-                        toAdrs = data.slice(274, 338)
-                        val = data.slice(338, 402) 
-
                         let tokenDetails = await fetch(token)
-                        console.log("tokenDetails", tokenDetails)
-
-                        return returnRes = {
-                              methodID,
-                              token: {
-                                    address: token,
-                                    symbol: tokenDetails?.value.symbol,
-                                    balance: tokenDetails?.value.balance
-                              },
-                              typeOfTxn: typeOfTxn == "40c10f19" ? "Mint" : "Burn",
-                              toAdrs: `0x${toAdrs.slice(24, toAdrs.length)}`,
-                              val: ethers.utils.formatEther(`0x${val}`),
-                              from,
-                              timestamp
-                        }
-                  }else {
-
-                        let hashData = await Promise.all(hash.map(async(singleHash) => {
-                              const res = await provider.getTransaction(singleHash)
-                              blockNumber = res.blockNumber
-                              const blockres = await provider.getBlock(blockNumber)
-                              timestamp = blockres.timestamp
-                              from = res.from
-                              return { from, timestamp }
-        
-                        }))
-
-                        console.log('hashData', hashData)
-
-                        return hashData 
-                  }
-
-  
-            }
-            await testFn().then((res) => 
-                  {
-                        returnRes = res
-                  }
-           )
-
-            console.log('updater returnRes', returnRes)
-            return returnRes
-
-      }
-
-      const getAlltheData = () => {
-
-            console.log("updater getAlltheData", allTransactions)
-
-            _.uniqWith(allTransactions)
-                  .map(async(item: any, i) => {
-                        
-                        let submitData = await getTxnHash(item[1].hash[0], 0)
-                        let confirmData = [] 
-                        if(item[1].hash.length > 1) {
-                              confirmData = await getTxnHash(item[1].hash.filter((arr, i) => i != 0), 1)
-                        }else {
-                              confirmData = await getTxnHash(item[1].hash, 1)
-                        }
-
-                        console.log("confirmData", confirmData)
-
-                        let _numConfirmations = await setConfirmationCount(item[0])
-                        console.log("_numConfirmations", _numConfirmations)
-                        console.log('submitData', submitData)
-                        const {token, typeOfTxn, toAdrs, val: _value, from, timestamp} = submitData
-                        // const {from: confirmAndexecuteFrom, timestamp: confirmAndexecuteTime} = confrimData
-
-                        const txIndex = item[0]
-                        const _executed = await setIsExecuted(item[0])
-                        console.log("_executed", _executed)
-
-                        setFinalData(prev => [...prev, {
-                              _token: token,
-                              _typeOfTx: typeOfTxn,
-                              _to: toAdrs,
-                              _value,
-                              from,
-                              timestamp,
-                              txIndex,
-                              _executed,
-                              _numConfirmations,
-                              confirmData,
-                              hash: item[1].hash
-                        }])
+                        symbol = tokenDetails?.value.symbol
+                        value = item.submitResponse.input.slice(338, 402) 
+                        value = ethers.utils.formatEther(`0x${value}`)
+                        toAdrs = item.submitResponse.input.slice(274, 338)
+                        toAdrs = `0x${toAdrs.slice(24, toAdrs.length)}`
+      
+                        setFinalData(prev => {
+      
+                              if(prev.length) {
+                                    const newState = prev.map((txns) => {
+                    
+                                          if(txns.index == item.index){
+                                            return {...item, token, symbol, value, executed, numConfirmations, toAdrs}
+                                          }
+                                          return txns
+                                        })
+                                    return newState;
+                              }else{
+                                    return [...prev, item]
+                              }
+                            })
                   })
+            }else {
+                  let arr1: any[] = []
+
+                  _.uniqWith(allTransactions).map(async(item: any, i: number) => {
+                        
+                        const executed = await setTronIsExecuted(item.index)
+                        let numConfirmations = await setTronConfirmationCount(Number(item.index))
+                        token = item.submitResponse.input.slice(8, 72)
+                        token =  `${token.slice(24, token.length)}`
+                        let tokenDetails = await fetchTronTokenDetails(`41${token}`)
+                        symbol = tokenDetails?.symbol
+                        toAdrs = item.submitResponse.input.slice(272, 336)
+                        toAdrs = `${toAdrs.slice(24, toAdrs.length)}`
+
+                        value = item.submitResponse.input.slice(336, 400) 
+                        value = ethers.utils.formatEther(`0x${value}`)
+
+                        // arr1.push({...item, token, symbol, value, executed, numConfirmations, toAdrs})
+                              
+                        setFinalTronData(prev => [...prev, {...item, token, symbol, value, executed, numConfirmations, toAdrs}])
+                  })
+
+                  
+            }
+
+            
       }
 
-      console.log("updater finalData", finalData)
+      console.log("ConfirmationStep", finalData, finalTronData)
 
 //   return <div />
   return (
@@ -244,10 +201,12 @@ function ConfirmationStep({allTransactions}) {
                   fontWeight={'bold'}
                   className={'m-b-15'}
             />
+            {/* <button onClick={() => ConfirmTxn(1, "mint")}>confirm</button> */}
             {
-                   _.uniqWith(finalData, (arrVal, othVal) => arrVal.txIndex == othVal.txIndex)?.sort((a, b) => b.txIndex - a.txIndex).map((item: any, i) => {
-                        const {from, timestamp: _createdTime, _typeOfTx, _value, _token, _to, _executed, txIndex, _numConfirmations, hash, confirmData} = item
-                        const {address: tokenAdrs, symbol: tokenSymbol, balance: tokenBal} = _token
+                   _.uniqWith(chain == "Goerli" ? finalData : finalTronData, (arrVal, othVal) => arrVal.index == othVal.index)?.sort((a, b) => b.index - a.index).map((item: any, i) => {
+                        const {submitResponse, toAdrs: submitTo, index, token, symbol, value, confirmData, typeOfTxn, executed, numConfirmations} = item
+                        const {from: submitFrom, hash: submitHash, timeStamp: submitTime } = submitResponse
+                        
                         return(
                               <Accordion key={i} style={{marginBottom: '16px'}}>
                                     <AccordionSummary
@@ -259,21 +218,21 @@ function ConfirmationStep({allTransactions}) {
                                           >
                                                 <div>
                                                       <Textfield 
-                                                            text={txIndex}
+                                                            text={index}
                                                             color={'#333'}
                                                             fontSize={'16px'}    
                                                       />
                                                 </div>
                                                 <div>
                                                       <Textfield 
-                                                            text={`${_typeOfTx} (${_value} ${tokenSymbol})`}
+                                                            text={`${typeOfTxn} (${value} ${symbol})`}
                                                             color={'#333'}
                                                             fontSize={'16px'}
                                                       />
                                                 </div>
                                                 <div>
                                                       <Textfield 
-                                                            text={`${timeAgo(_createdTime)}`}
+                                                            text={`${timeAgo(submitTime)}`}
                                                             color={'#333'}
                                                             fontSize={'16px'}
                                                       />
@@ -281,7 +240,7 @@ function ConfirmationStep({allTransactions}) {
                                                 <div className='row-left-center'>
                                                       <div><Icon className='m-r-5 headerIcon'>supervisor_account</Icon> </div>
                                                       <Textfield 
-                                                            text={ _executed ? `Fullfilled` : `${_numConfirmations} out of ${confirmReq}`}
+                                                            text={ executed ? `Fullfilled` : `${numConfirmations} out of ${confirmReq}`}
                                                             color={'#aaa'}
                                                             fontSize={'14px'}
                                                             fontWeight={'bold'}
@@ -290,15 +249,19 @@ function ConfirmationStep({allTransactions}) {
                                                 <div style={{width: '180px'}} className={"row-allcenter"}>
                                                       <Textfield 
                                                             text={`${
-                                                                  chain == 'MaticMumbai' ? 
-                                                                  _executed ? "Success" : _numConfirmations < confirmReq ? 'Needs Confirmation' : 'Needs Execution' :
-                                                                  _numConfirmations < noOfConfirmReq ? 'Needs Confirmation' : !_executed ? 'Needs Execution' : 'Success'}`}
+                                                                  chain == 'Goerli' ? 
+                                                                  executed ? "Success" : numConfirmations < confirmReq ? 'Needs Confirmation' : 'Needs Execution' :
+                                                                  executed ? "Success" : numConfirmations < noOfConfirmReq ? 'Needs Confirmation' : 'Needs Execution'
+                                                                  // numConfirmations < noOfConfirmReq ? 'Needs Confirmation' : !executed ? 'Needs Execution' : 'Success'
+                                                            }`}
                                                             // color={'#ed7117'}
                                                             color={`${
-                                                                  chain == 'MaticMumbai' ? 
+                                                                  chain == 'Goerli' ? 
                                                                   // _numConfirmations < confirmReq ? '#FF4500' : !_executed ? '#FF4500' : '#228B22' :
-                                                                  _executed ? '#228B22' : _numConfirmations < confirmReq ? '#FF4500' : "" :
-                                                                  _numConfirmations < noOfConfirmReq ? '#FF4500' : !_executed ? '#FF4500' : '#228B22'}`}
+                                                                  executed ? '#228B22' : numConfirmations < confirmReq ? '#FF4500' : "" :
+                                                                  executed ? '#228B22' :  numConfirmations < noOfConfirmReq ? '#FF4500' : ""
+                                                                  // numConfirmations < noOfConfirmReq ? '#FF4500' : !executed ? '#FF4500' : '#228B22'
+                                                            }`}
                                                             fontSize={'14px'}
                                                             fontWeight={'bold'}
                                                       />
@@ -313,7 +276,7 @@ function ConfirmationStep({allTransactions}) {
                                                       <div className="grid-item flex1">
                                                             <div style={{display: 'flex', justifyContent: 'space-between'}}>
                                                             <Textfield 
-                                                                  text={`${_typeOfTx} ${_value} ${tokenSymbol} (${ truncateMiddle(tokenAdrs, 12, '...')}) to ${_to}`}
+                                                                  text={`${typeOfTxn} ${value} ${symbol} (${ truncateMiddle(chain == "Goerli" ? token : window.tronWeb.address.fromHex(`41${token}`), 12, '...')}) to ${ chain == "Goerli" ? submitTo : window.tronWeb.address.fromHex(`41${submitTo}`)}`}
                                                                   color={'#000'}
                                                                   fontSize={'15px'}
                                                                   className={'m-b-15'}
@@ -321,19 +284,19 @@ function ConfirmationStep({allTransactions}) {
                                                             />
                               
                                                                   {/* <div>
-                                                                        <Icon className='cardIcon'>share</Icon>
+                                                                        <Icon className='cardIcon'>content_copy</Icon>
                                                                   </div>  */}
                               
                                                             </div>
                                                       
                                                             <div>
                                                                   {
-                                                                        chain == "MaticMumbai" ?
+                                                                        chain == "Goerli" ?
 
-                                                                        _executed ? <div /> :
-                                                                        _numConfirmations < confirmReq  ?
+                                                                        executed ? <div /> :
+                                                                        numConfirmations < confirmReq  ?
                                                                         <Button
-                                                                              onClick={() => ConfirmTxn(txIndex, _typeOfTx)}
+                                                                              onClick={() => ConfirmTxn(index, typeOfTxn)}
                                                                               variant="contained"
                                                                               color="primary"
                                                                               disabled={currentLoaderState}
@@ -342,7 +305,7 @@ function ConfirmationStep({allTransactions}) {
                                                                               Confirm
                                                                         </Button> :
                                                                         <Button
-                                                                              onClick={() => executeTxn(txIndex, _typeOfTx)}
+                                                                              onClick={() => executeTxn(index, typeOfTxn)}
                                                                               variant="contained"
                                                                               color="primary"
 
@@ -352,10 +315,10 @@ function ConfirmationStep({allTransactions}) {
                                                                               Execute
                                                                         </Button>  :
 
-                                                                        _numConfirmations < noOfConfirmReq ?
+                                                                        numConfirmations < noOfConfirmReq ?
                                                                                                                                           
                                                                         <Button
-                                                                              onClick={() => ConfirmTxn(txIndex, _typeOfTx)}
+                                                                              onClick={() => ConfirmTxn(index, typeOfTxn)}
                                                                               variant="contained"
                                                                               color="primary"
 
@@ -364,9 +327,9 @@ function ConfirmationStep({allTransactions}) {
                                                                               >
                                                                               Confirm
                                                                         </Button> :
-                                                                        !_executed ?
+                                                                        !executed ?
                                                                         <Button
-                                                                              onClick={() => executeTxn(txIndex, _typeOfTx)}
+                                                                              onClick={() => executeTxn(index, typeOfTxn)}
                                                                               variant="contained"
                                                                               color="primary"
 
@@ -389,7 +352,7 @@ function ConfirmationStep({allTransactions}) {
                                                                   />
                                                                   <div className='flex flex4'style={{alignItems: 'flex-start'}}>
                                                                         <Textfield 
-                                                                              text={txIndex}
+                                                                              text={index}
                                                                               color={'#000'}
                                                                               fontSize={'14px'}
                                                                               className={'m-r-10'}
@@ -405,7 +368,7 @@ function ConfirmationStep({allTransactions}) {
                                                                         className={'flex1'}
                                                                   />
                                                                   <Textfield 
-                                                                        text={timeAgo(_createdTime) + ` (${getDate(_createdTime)} +UTC)`}
+                                                                        text={timeAgo(submitTime) + ` (${getDate(submitTime)} +UTC)`}
                                                                         color={'#000'}
                                                                         fontSize={'14px'}
                                                                         className={'flex4'}
@@ -418,10 +381,11 @@ function ConfirmationStep({allTransactions}) {
                                                                         fontSize={'15px'}
                                                                         className={'flex1'}
                                                                   />
+                                                                  
                                                                   {
-                                                                        _executed && 
+                                                                        (executed && numConfirmations > 0 && confirmData ) && 
                                                                         <Textfield 
-                                                                              text={timeAgo(confirmData[confirmData?.length - 1].timestamp) + ` (${getDate(confirmData[confirmData?.length - 1].timestamp)} +UTC)`}
+                                                                              text={timeAgo(confirmData[confirmData?.length - 1].timeStamp) + ` (${getDate(confirmData[confirmData?.length - 1].timeStamp)} +UTC)`}
                                                                               color={'#000'}
                                                                               fontSize={'14px'}
                                                                               className={'flex4'}
@@ -432,7 +396,7 @@ function ConfirmationStep({allTransactions}) {
                                                             <div style={{paddingBottom: '15px', fontSize: '16px'}}>
                                                                   <a 
                                                                         target="_blank"
-                                                                        href={ chain == "MaticMumbai" ?`${etherscanUrl}/tx/${hash[hash.length - 1]}` : 'https://nile.tronscan.org/#/'}>
+                                                                        href={ chain == "Goerli" ?`${etherscanUrl}/tx/${submitHash}` : `https://nile.tronscan.org/#/transaction/${submitHash}`}>
                                                                               View on explorer
                                                                   </a>
 
@@ -443,9 +407,9 @@ function ConfirmationStep({allTransactions}) {
                                                 <div className="grid-item " style={{flex: 2}}>
                                                       <Steps
                                                             chain={chain}
-                                                            activeStep={activeStepHandler(_numConfirmations, _executed)}
-                                                            stepState={_executed}
-                                                            stepData={{hash, from, _createdTime, _executed ,_numConfirmations, confirmData}}
+                                                            activeStep={activeStepHandler(numConfirmations, executed)}
+                                                            stepState={executed}
+                                                            stepData={{submitHash, submitFrom, submitTime, executed ,numConfirmations, confirmData}}
                                                       />
                                                 </div>
                                                 

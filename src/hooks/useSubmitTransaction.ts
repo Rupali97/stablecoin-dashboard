@@ -51,7 +51,6 @@ const useMultiSig = (
             ethers.utils.parseEther(amount),
           ]);
 
-          console.log(data);
         } else {
           iface = new ethers.utils.Interface(MultiSig);
           if (typeOfTx == "changeRequirement") {
@@ -61,6 +60,9 @@ const useMultiSig = (
             data = iface.encodeFunctionData(typeOfTx, [to]);
           }
         }
+
+        console.log("useMultiSigdata", data);
+
 
         const contract = await core.contracts[`${chain?.id}`].MultiSig;
         const response = await contract.submitTransaction(
