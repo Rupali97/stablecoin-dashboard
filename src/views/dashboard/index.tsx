@@ -39,9 +39,9 @@ function Dashbaord() {
   const [tronObj, setTronObj] = useState<any>()
   const [tronSnackbar, setTronSnackbar] = useState<boolean>(false)
 
-  useEffect(() => {
-    checkIfTronConnected()
-  }, [])
+  // useEffect(() => {
+  //   checkIfTronConnected()
+  // }, [])
 
   // const { tronLink } = window;
   const chain = useGetActiveBlockChain()
@@ -64,7 +64,7 @@ function Dashbaord() {
   }, [myAccount, window.tronWeb])
 
   const loginWithTron = () => {
-    if(window.tronWeb.ready){
+    if(window.tronWeb?.ready){
       console.log("show account")
       setChain("Nile");
       document.location.href = ""
@@ -75,12 +75,14 @@ function Dashbaord() {
 
   const handleChainChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChain(event.target.value);
+    localStorage.setItem("ActiveChain", event.target.value)
+
   };
 
-  const checkIfTronConnected = async() => {
-    // let res = await window.tronLink.ready
-    console.log("checkIfTronConnected",!myAccount)
-  }
+  // const checkIfTronConnected = async() => {
+  //   // let res = await window.tronLink.ready
+  //   console.log("checkIfTronConnected",!myAccount)
+  // }
 
   var obj = setInterval(() => {
       if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
@@ -151,7 +153,7 @@ function Dashbaord() {
                   onClick={() => setTronSnackbar(true)}
                 ><div><img src={tronIcon} alt={"tronIcon"} style={{width: "18px", height: "18px", borderRadius: '50%', marginRight: '6px'}} /></div>
                   {
-                   tronObj ?  <div>{window.tronWeb.defaultAddress.base58.slice(0, 4) + '...' + window.tronWeb.defaultAddress.base58.slice(30, 34)}</div>
+                   tronObj ?  <div>{window.tronWeb?.defaultAddress.base58.slice(0, 4) + '...' + window.tronWeb?.defaultAddress.base58.slice(30, 34)}</div>
                     : <div>Tronlink Wallet</div>
                   }
                 </button>

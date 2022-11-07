@@ -12,7 +12,7 @@ const useNoOfConfimReq = () => {
     const fetchData = useCallback(async () => {
         let contract = await window.tronWeb.contract().at(tronMultiSigContract)
 
-        const response = await contract.numConfirmationsRequired().call()
+        const response = await contract.required().call()
        
         setResponse(response.toNumber())
 

@@ -14,12 +14,9 @@ const useUnFreezeTokenTron = () => {
 
   const unfreeze = async (to: string, stableCoin: string) => {
     try {
-      const contract = await window.tronWeb.contract().at(stableCoin)
-      console.log("contract", contract)
+      const contract = await window.tronWeb?.contract().at(stableCoin)
       const res = await contract.unfreeze(to).send()
-      let txnInfo = await window.tronWeb.trx.getTransaction(res);
-
-      console.log("freeze txnInfo", txnInfo)
+      let txnInfo = await window.tronWeb?.trx.getTransaction(res);
       if (txnInfo.ret[0].contractRet == "SUCCESS") {
         let summary = "Wallet address is unfrozen!";
 
@@ -35,12 +32,12 @@ const useUnFreezeTokenTron = () => {
     } catch (e: any) {
       updateLoader(false);
       console.log("useUnFreezeTokenTron error", e);
-    //   addPopup({
-    //     error: {
-    //       message: formatErrorMessage(e?.data?.message || e?.message),
-    //       stack: e?.stack,
-    //     },
-    //   });
+      addPopup({
+        error: {
+          message: "Transaction failed",
+          stack: e?.stack,
+        },
+      });
     }
   }
 

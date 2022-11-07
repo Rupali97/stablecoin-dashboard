@@ -81,7 +81,6 @@ function Admin({ ethTxns, tronTxns }) {
   const confirmTronRequired = useTronGetRequiredCount()
   const numOfConfirmationCountTron = useGetTronConfirmationCount()
   const isTronExecuted = useTronGetIsExecuted()
-  console.log("confirmTronRequired", confirmTronRequired)
 
   let etherscanUrl = config[chainName?.id || _activeNetwork].etherscanUrl
  
@@ -168,30 +167,23 @@ function Admin({ ethTxns, tronTxns }) {
           
     }) 
     
-    // setFinalEthTxns(arr2)
-    
     let tronArr1: any[] = []
     tronTxns?.map((item: any, i: number) =>  {
-      // console.log("TEST", item, window.tronWeb.address.toHex(tronMultiSigContract).slice(2, -1))
-
-      if (item.submitResponse.input.toLowerCase().includes(window.tronWeb.address.toHex(tronMultiSigContract).toLowerCase().slice(2, window.tronWeb.address.toHex(tronMultiSigContract).length))) {
+      if (item.submitResponse.input.toLowerCase().includes(window.tronWeb?.address.toHex(tronMultiSigContract).toLowerCase().slice(2, window.tronWeb?.address.toHex(tronMultiSigContract).length))) {
         tronArr1.push(item)
 
       }
     })
-
-    // console.log("TEST", tronArr1)
 
     let tronArr2: any[] = []
 
     tronArr1?.forEach(async(item: any, i: number) => {
       const executed = await isTronExecuted(Number(item.index))
       let numConfirmations = await numOfConfirmationCountTron(item.index)
-      console.log("TEST",executed, numConfirmations, item.index)
       token = item.submitResponse.input.slice(8, 72)
-      token =  window.tronWeb.address.fromHex(`41${token.slice(24, token.length)}`)
+      token =  window.tronWeb?.address.fromHex(`41${token.slice(24, token.length)}`)
       toAdrs = item.submitResponse.input.slice(272, 336)
-      toAdrs = window.tronWeb.address.fromHex(`41${toAdrs.slice(24, toAdrs.length)}`)
+      toAdrs = window.tronWeb?.address.fromHex(`41${toAdrs.slice(24, toAdrs.length)}`)
       typeOfTxnID = item.submitResponse.input.slice(264, 272)
 
       if (typeOfTxnID == "ba51a6df") value = item.submitResponse.input.slice(336, 337)
@@ -205,7 +197,6 @@ function Admin({ ethTxns, tronTxns }) {
 
       setFinalTronTxns(tronArr2)
     })
-  
    
   }
 
@@ -214,9 +205,6 @@ function Admin({ ethTxns, tronTxns }) {
   const disableRemoveOwner = chain == "Goerli" ? ethers.utils.isAddress(adddressRemove) : window.tronWeb?.isAddress(adddressRemove)
   console.log("finalEthTxns", finalEthTxns)
   
-  // console.log("Admin test", finalEthTxns, finalTronTxns)
-  // console.log("Admin", ethTxns, tronTxns)
-
   // return (<div></div>)
   return (
     <div style={{ marginLeft: '260px', marginRight: '20px', position: 'relative', paddingTop: '50px' }}>
@@ -442,7 +430,7 @@ function Admin({ ethTxns, tronTxns }) {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {(chain == "Goerli" ? finalEthTxns : finalTronTxns).sort((a, b) => b.index - a.index)?.map((row) => {
+                    {_.uniqWith(chain == "Goerli" ? finalEthTxns : finalTronTxns, (arrVal: any, othVal: any) => arrVal.index == othVal.index).sort((a, b) => b.index - a.index)?.map((row) => {
                       const {confirmData, executed, index, numConfirmations, submitResponse, toAdrs, token, typeOfTxn, value} = row
                       let confirmCount = chain == "Goerli" ? confirmReq : confirmTronRequired
                       let action = executed ? "" : numConfirmations <  confirmCount ? "Confirm" : ""

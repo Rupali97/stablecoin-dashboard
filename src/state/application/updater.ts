@@ -66,10 +66,7 @@ export default function Updater(): null {
 
   const debouncedState = useDebounce(state, 100);
 
-  console.log('debouncedState', debouncedState)
-
   useEffect(() => {
-    console.log('debouncedState', !debouncedState.chainId, !debouncedState.blockNumber, !windowVisible)
     if (!debouncedState.chainId || !debouncedState.blockNumber || !windowVisible) return;
     dispatch(
       updateBlockNumber({

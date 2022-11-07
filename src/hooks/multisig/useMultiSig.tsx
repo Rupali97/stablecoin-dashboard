@@ -18,10 +18,7 @@ export const useGetRequiredCount = () => {
     const [response, setResponse] = useState<number>(0)
 
     const fetchData = useCallback(async () => {
-        console.log("useGetRequiredCount", core.contracts)
         const contract = await core.contracts[`${core._activeNetwork}`].MultiSig;
-        console.log("useGetRequiredCount", contract)
-
         const res = await contract.required()
 
         setResponse(res.toNumber())
@@ -48,9 +45,7 @@ export const useGetConfirmationCount = () => {
         const contract = core.contracts[`${chain?.id || core._activeNetwork}`].MultiSig
 
         const res = await contract.getConfirmationCount(txnId);
-        console.log('useGetConfirmationCount', res);
         let count = res.toNumber();
-        console.log("count", count)
         return count
 
     }
@@ -152,7 +147,7 @@ export const useGetTransactionCount = () => {
             fetchData()
                 .catch((err) => {
                     setResponse(0)
-                    console.log('useGetTransactionCount err', err)
+                    console.error('useGetTransactionCount err', err)
                 })
         }
     }, [fetchData])
@@ -197,7 +192,6 @@ export const useGetSingleTransaction = () => {
 
         const contract = core.contracts[`${chain?.id || core._activeNetwork}`].MultiSig
         const res = await contract.transactions(txId)
-        console.log("useGetSingleTransaction res", res.executed)
         let executed = res.executed
 
         return executed
@@ -219,7 +213,6 @@ export const useGetTxnFromHash = () => {
         const testFn = async () => {
 
             const res = await provider.getTransaction(hash)
-            console.log('useGetTxnFromHash res', res.data)
             data = res.data
             from = res.from
             blockNumber = res.blockNumber
@@ -230,22 +223,6 @@ export const useGetTxnFromHash = () => {
             val = data.slice(338, 402)
 
             const methodID = data?.slice(0, 10)
-
-            // if(blockNumber)
-            //     {
-            //         const res = await provider.getBlock(blockNumber)
-            //         timestamp = res.timestamp
-
-            //         returnRes = {
-            //             methodID,
-            //             token: `0x${token.slice(24, token.length)}`,
-            //             typeOfTxn: typeOfTxn == "40c10f19" ? "Mint" : "Burn",
-            //             toAdrs: `0x${toAdrs.slice(24, toAdrs.length)}`,
-            //             val: ethers.utils.formatEther(`0x${val}`),
-            //             from,
-            //             timestamp
-            //         }
-            //     }
 
             const blockres = await provider.getBlock(blockNumber)
             timestamp = blockres.timestamp
@@ -265,7 +242,6 @@ export const useGetTxnFromHash = () => {
         }
 
         let test = testFn()
-        console.log("useGetTxnFromHash final", test)
 
         return returnRes
         // console.log('getTxnFromHash res', ethers.utils.formatEther(`0x${'0000000000000000000000000000000000000000000000008ac7230489e80000'}`))
@@ -290,7 +266,6 @@ export const useAddOwner = (address: string) => {
             const res = await contract.addOwner(address)
 
             const txresult = await res.wait()
-            console.log('useAddOwner txresult', txresult)
 
             if (txresult?.status == 1) {
                 addPopup({
@@ -323,7 +298,6 @@ export const useRemoveOwner = (address: string) => {
             const res = await contract.removeOwner(address)
 
             const txresult = await res.wait()
-            console.log('useRemoveOwner txresult', txresult)
 
             if (txresult?.status == 1) {
                 addPopup({
@@ -357,7 +331,6 @@ export const useReplaceOwner = (oldAddress: string, newAddress: string) => {
             const res = await contract.replaceOwner(oldAddress, newAddress)
 
             const txresult = await res.wait()
-            console.log('useReplaceOwner txresult', txresult)
 
             if (txresult?.status == 1) {
                 addPopup({
@@ -391,7 +364,6 @@ export const useChangeRequirement = (requiredCount: number) => {
             const res = await contract.changeRequirement(requiredCount)
 
             const txresult = await res.wait()
-            console.log('useChangeRequirement txresult', txresult)
 
             if (txresult?.status == 1) {
                 addPopup({

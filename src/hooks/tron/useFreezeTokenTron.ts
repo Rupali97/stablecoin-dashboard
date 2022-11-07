@@ -14,12 +14,9 @@ const useFreezeTokenTron = () => {
 
   const freeze = async (to: string, stableCoin: string) => {
     try {
-      const contract = await window.tronWeb.contract().at(stableCoin)
-      console.log("contract", contract)
+      const contract = await window.tronWeb?.contract().at(stableCoin)
       const res = await contract.freeze(to).send()
-      console.log("freeze res", res)
-      let txnInfo = await window.tronWeb.trx.getTransaction(res);
-      console.log("freeze txnInfo", txnInfo)
+      let txnInfo = await window.tronWeb?.trx.getTransaction(res);
       if (txnInfo.ret[0].contractRet == "SUCCESS") {
         let summary = "Wallet address is frozen!";
 
@@ -35,12 +32,12 @@ const useFreezeTokenTron = () => {
     } catch (e: any) {
       updateLoader(false);
       console.log("useFreezeTokenTron error", e);
-    //   addPopup({
-    //     error: {
-    //       message: formatErrorMessage(e?.data?.message || e?.message),
-    //       stack: e?.stack,
-    //     },
-    //   });
+      addPopup({
+        error: {
+          message: "Transaction failed",
+          stack: e?.stack,
+        },
+      });
     }
   }
 

@@ -50,8 +50,6 @@ function Freeze() {
     setStableCoinUnfreeze(event.target.value);
   };
 
-  console.log('stableCoin', stableCoin)
-
   const handleFreeze = () => {
     if(chain == "Goerli"){
       freezeAction(addressToFreeze, stableCoin)

@@ -8,7 +8,7 @@ const useGetAllTronTxns = () => {
   
 
   const fetchData = useCallback(async () => {
-    let contract = await window.tronWeb.contract().at(tronMultiSigContract)
+    let contract = await window.tronWeb?.contract().at(tronMultiSigContract)
     
     const res = await contract.getTransactionCount().call()
     

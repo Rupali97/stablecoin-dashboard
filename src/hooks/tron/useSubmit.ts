@@ -26,21 +26,21 @@ const useSubmit = (typeOfTx: string,
           parameter = [
             {type:'address',value: to},{type:'uint256',value: ethers.utils.parseEther(amount)}
           ] 
-          triggerContractRes = await window.tronWeb.transactionBuilder.triggerSmartContract(destinationAdrs, `${typeOfTx}(address,uint256)`, {},
-            parameter, window.tronWeb.defaultAddress.base58);
+          triggerContractRes = await window.tronWeb?.transactionBuilder.triggerSmartContract(destinationAdrs, `${typeOfTx}(address,uint256)`, {},
+            parameter, window.tronWeb?.defaultAddress.base58);
           data = `0x${triggerContractRes.transaction.raw_data.contract[0].parameter.value.data}`
-          summary = `Submitted to ${typeOfTx == "mint" ? "Mint" : "Burn"} ${Number(amount)}`
+          summary = `Submitted to ${typeOfTx == "mint" ? "Mint" : "Burn"} ${Number(amount)} token`
         }else {
           if (typeOfTx == "changeRequirement"){
             parameter = [{type: 'uint256', value: amount}]
-            triggerContractRes = await window.tronWeb.transactionBuilder.triggerSmartContract(destinationAdrs, `${typeOfTx}(uint256)`, {},
-            parameter, window.tronWeb.defaultAddress.base58);
+            triggerContractRes = await window.tronWeb?.transactionBuilder.triggerSmartContract(destinationAdrs, `${typeOfTx}(uint256)`, {},
+            parameter, window.tronWeb?.defaultAddress.base58);
             data = `0x${triggerContractRes.transaction.raw_data.contract[0].parameter.value.data}`
             summary = "Submitted to change requirement";
           }else {
             parameter = [{type: 'address', value: to}]
-            triggerContractRes = await window.tronWeb.transactionBuilder.triggerSmartContract(destinationAdrs, `${typeOfTx}(address)`, {},
-            parameter, window.tronWeb.defaultAddress.base58);
+            triggerContractRes = await window.tronWeb?.transactionBuilder.triggerSmartContract(destinationAdrs, `${typeOfTx}(address)`, {},
+            parameter, window.tronWeb?.defaultAddress.base58);
             data = `0x${triggerContractRes.transaction.raw_data.contract[0].parameter.value.data}`
             if (typeOfTx == "addOwner") summary = "Submitted to add owner"
             if (typeOfTx == "removeOwner")
@@ -48,14 +48,12 @@ const useSubmit = (typeOfTx: string,
           }
         }
 
-        let contract = await window.tronWeb.contract().at(tronMultiSigContract)
+        let contract = await window.tronWeb?.contract().at(tronMultiSigContract)
 
         const response = await contract.submitTransaction(destinationAdrs,
         formatToBN(0),
         data).send()
-        let txnInfo = await window.tronWeb.trx.getTransaction(response);
-
-        console.log("useSubmit txnInfo", txnInfo)
+        let txnInfo = await window.tronWeb?.trx.getTransaction(response);
         updateLoader(false);
         // if (typeOfTx == "mint" || typeOfTx == "burn") {
         //   let tokenDetails = await fetch(destinationAdrs);
@@ -77,12 +75,12 @@ const useSubmit = (typeOfTx: string,
         console.log('useSubmit error', e);
         updateLoader(false);
 
-        // addPopup({
-        //   error: {
-        //     message: formatErrorMessage(e?.data?.message || e?.message),
-        //     stack: e?.stack,
-        //   },
-        // });
+        addPopup({
+          error: {
+            message: "Transaction failed",
+            stack: e?.stack,
+          },
+        });
       }
     },
     [amount, to, typeOfTx],

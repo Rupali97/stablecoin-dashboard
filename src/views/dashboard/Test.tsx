@@ -11,9 +11,6 @@ function Test() {
     let data = iface.encodeFunctionData("mint", ["0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2", ethers.utils.parseEther("10")])
 
     // let count = useGetTransactions(2)
-
-    console.log('Test', data)
-
     return (
         <div>
 

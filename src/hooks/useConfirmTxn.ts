@@ -24,10 +24,8 @@ const useConfirmTxn = () => {
     try {
       const contract = await core.contracts[`${chain?.id}`].MultiSig;
       const response = await contract.confirmTransaction(index)
-      console.log('useConfirmTxn response', response)
   
       const tx = await response.wait();
-      console.log('useConfirmTxn tx', tx)
 
       setTimeout(async() => {
         if (tx?.status === 1){

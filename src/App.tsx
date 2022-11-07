@@ -21,7 +21,7 @@ import {
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import { publicProvider } from 'wagmi/providers/public';
 import { useAccount, useSwitchNetwork, useNetwork } from 'wagmi'
-
+import TronWeb from "tronweb"
 import config, { getSupportedChains } from './config';
 import ProtocolProvider from './context/Provider';
 // import ModalsProvider from './context/Modals'
@@ -120,7 +120,6 @@ const AppContent: React.FC = ({children}) => {
 
   // const {ethereum, chainId} = useWallet();
   const setChainId = useGetUpdateActiveChainId();
-
 
   useEffect(() => {
     if (isConnected) 

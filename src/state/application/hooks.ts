@@ -13,8 +13,6 @@ export function useBlockNumber(): number | undefined {
 
   const test = useSelector((state: AppState) => state)
 
-  console.log('useBlockNumber', chain?.id, test, test.application.blockNumber[chain?.id ?? -1])
-
   return useSelector((state: AppState) => state.application.blockNumber[chain?.id ?? -1]);
 }
 

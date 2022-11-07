@@ -5,5 +5,5 @@ export const ChainIdInitialState: IChainIdInitialState = {
 };
 
 export const BlockChaianitialState: IBlockChaianitialState = {
-  active: 'Goerli'
+  active: localStorage.getItem("ActiveChain") || "Goerli"
 }

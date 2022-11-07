@@ -16,7 +16,6 @@ export function shouldCheck(
   lastBlockNumber: number,
   tx: { addedTime: number; receipt?: {}; lastCheckedBlockNumber?: number },
 ): boolean {
-  console.log('shouldCheck', lastBlockNumber, tx)
   if (tx.receipt) return false;
   if (!tx.lastCheckedBlockNumber) return true;
   const blocksSinceCheck = lastBlockNumber - tx.lastCheckedBlockNumber;
@@ -78,7 +77,6 @@ export default function Updater(): null {
           .getTransactionReceipt(hash)
           .then((receipt) => {
             if (receipt) {
-              console.log("receipt if")
               dispatch(
                 finalizeTransaction({
                   hash,
@@ -114,8 +112,6 @@ export default function Updater(): null {
               //   hash,
               // );
             } else {
-              console.log("receipt else")
-              console.log("loader upelse")
               updateLoader(false)
               dispatch(checkedTransaction({chainId, hash, blockNumber: lastBlockNumber}));
             }

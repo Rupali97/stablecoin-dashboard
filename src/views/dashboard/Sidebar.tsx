@@ -76,7 +76,7 @@ export default function Sidebar () {
         routes.map(r => {
           return (
             <NavLink onClick={() => {
-              setTimeout(() => {window.location.reload()}, 1500)
+              // setTimeout(() => {window.location.reload()}, 2000)
               }}
               key={r.name} to={
                 chain == "Nile" && window.tronWeb?.defaultAddress.hex ? r.url : chain == "Goerli" && myAccount ? r.url : "/dashboard"

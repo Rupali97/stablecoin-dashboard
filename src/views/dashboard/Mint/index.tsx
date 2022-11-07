@@ -28,6 +28,7 @@ import { useGetLoader, useUpdateLoader } from '../../../state/application/hooks'
 import Test from '../Test';
 import { tronStableCoins } from '../../../utils/constants';
 import useGetTronOwners from '../../../hooks/tron/useGetTronOwners';
+import _ from 'lodash';
 
 function Mint({ethTxns, tronTxns}) {
 
@@ -63,24 +64,23 @@ function Mint({ethTxns, tronTxns}) {
 
   const sortTransactions = async () => {
     let ethTxnsArr: any[] = [], tronTxnsArr: any[] = []
-    ethTxns.forEach(async (item) => {
+    ethTxns.forEach((item) => {
       if (item.submitResponse.input.includes("40c10f19")) {
         ethTxnsArr.push({...item, typeOfTxn: "Mint"})
       }
     })
 
+     console.log("ethTxnsArr", ethTxnsArr)
+
     setFinalEthTxns(ethTxnsArr)
-    console.log("Mint ethTxnsArr", ethTxnsArr)
 
     tronTxns.forEach(async (item) => {
       if (item.submitResponse.input.includes("40c10f19")) {
         tronTxnsArr.push({...item, typeOfTxn: "Mint"})
       }
     })
-    console.log("sortTransactionsethTxnsArr", tronTxnsArr)
 
     setFinalTronTxns(tronTxnsArr)
-    console.log("Mint tronTxnsArr", tronTxnsArr)
 
   }
 
@@ -102,9 +102,10 @@ function Mint({ethTxns, tronTxns}) {
     }
   }
 
-  const disableMint = address && (chain == "Goerli" ? ethers.utils.isAddress(address) :  window.tronWeb.isAddress(address)) && amount && stableCoin && chain && (chain == "Goerli" ? contractOwners?.includes(myAccount) : tronContractOwners?.includes(window.tronWeb.defaultAddress.base58))
+  const disableMint = address && (chain == "Goerli" ? ethers.utils.isAddress(address) :  window.tronWeb?.isAddress(address)) && amount && stableCoin && chain && (chain == "Goerli" ? contractOwners?.includes(myAccount) : tronContractOwners?.includes(window.tronWeb?.defaultAddress.base58))
 
-  console.log("finalTxns", finalEthTxns, finalTronTxns)
+  // console.log("finalTxns", _.uniqWith(finalEthTxns, (arrVal: any, othVal: any) => arrVal.index == othVal.index), finalTronTxns)
+  console.log("Mint", ethTxns, tronTxns)
 
   return (
     <div style={{marginLeft: '260px', marginRight: '20px', position: 'relative',}}>      
@@ -200,7 +201,7 @@ function Mint({ethTxns, tronTxns}) {
     
       {
         chain == "Goerli" ? 
-        <ConfirmationStep allTransactions={finalEthTxns} /> :
+        <ConfirmationStep allTransactions={_.uniqWith(finalEthTxns, (arrVal: any, othVal: any) => arrVal.index == othVal.index)} /> :
         <ConfirmationStep allTransactions={finalTronTxns} /> 
 
       }

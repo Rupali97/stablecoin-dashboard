@@ -16,8 +16,6 @@ const useAddOwner = (address: string) => {
             const res = await contract.addOwner(address)
 
             const txresult = await res.wait()
-            console.log('useAddOwner txresult', txresult)
-
             if (txresult?.status == 1){
                 addPopup({txn: {
                     hash: txresult.transactionHash,

@@ -86,7 +86,7 @@ const useMultiSig = (
             );
 
             if (typeOfTx == "mint" || typeOfTx == "burn") {
-              let tokenDetails = await fetch(destinationAdrs);
+              let tokenDetails = await fetch(core.contracts[`${chain?.id}`][destinationAdrs].address);
               summary = `Submitted to ${
                 typeOfTx == "mint" ? "Mint" : "Burn"
               } ${Number(amount)} ${tokenDetails?.value.symbol}`;

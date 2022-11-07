@@ -30,6 +30,7 @@ import useGetTokenDetails from '../../../hooks/useGetTokenDetails';
 import useGetTronOwners from '../../../hooks/tron/useGetTronOwners';
 import { tronStableCoins } from '../../../utils/constants';
 import useGetTronTokenBalance from '../../../hooks/tron/useGetTronTokenBalance';
+import _ from 'lodash';
 
 function Burn({ ethTxns, tronTxns }) {
   const { tokens, _activeNetwork } = useCore()
@@ -37,8 +38,6 @@ function Burn({ ethTxns, tronTxns }) {
 
   // const { myAccount } = core
   const { address: myAccount } = useAccount()
-
-  console.log("BurnmyAccount", myAccount)
   const chain = useGetActiveBlockChain()
 
   let contractOwners: any = useGetOwners()
@@ -109,22 +108,20 @@ function Burn({ ethTxns, tronTxns }) {
   };
 
   const getTokenDetails = async () => {
-    console.log("getTokenDetails stableCoin", stableCoin, address)
     let tokenDetails
     if(chain == "Goerli"){
       tokenDetails = await fetchData(address, stableCoin)
     }else {
       tokenDetails = await fetchTronTokenBal(address, stableCoin)
     }
-    console.log("getTokenDetails", tokenDetails)
     setStableCoinDetails(tokenDetails)
   }
 
-  const disableSubmitBtn = address && (chain == "Goerli" ? ethers.utils.isAddress(address) :  window.tronWeb.isAddress(address)) 
-    && amount && Number(amount) <= Number(stableCoinDetails) && !!stableCoin && chain && 
-    (chain == "Goerli" ? contractOwners?.includes(myAccount) : tronContractOwners?.includes(window.tronWeb.defaultAddress.base58))
+  console.log("Burn tronTxns", tronTxns)
 
-  console.log("allTransactions", allTransactions)
+  const disableSubmitBtn = address && (chain == "Goerli" ? ethers.utils.isAddress(address) :  window.tronWeb?.isAddress(address)) 
+    && amount && Number(amount) <= Number(stableCoinDetails) && !!stableCoin && chain && 
+    (chain == "Goerli" ? contractOwners?.includes(myAccount) : tronContractOwners?.includes(window.tronWeb?.defaultAddress.base58))
 
   return (
     <div style={{ marginLeft: '260px', marginRight: '20px' }}>
@@ -222,7 +219,7 @@ function Burn({ ethTxns, tronTxns }) {
 
       {
         chain == "Goerli" ? 
-        <ConfirmationStep allTransactions={finalEthTxns} /> :
+        <ConfirmationStep allTransactions={_.uniqWith(finalEthTxns, (arrVal: any, othVal: any) => arrVal.index == othVal.index)} /> :
         <ConfirmationStep allTransactions={finalTronTxns} /> 
       }
 

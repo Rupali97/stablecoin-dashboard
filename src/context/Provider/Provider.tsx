@@ -30,18 +30,13 @@ export const ProtocolProvider = (props: IProps) => {
 
   // console.log('ethereum', ethereum)
   useEffect(() => {
-    console.log("provider", !core, config, account)
     if (!core && config) {
       const newCore = new Protocol(config, chainId);
-      console.log("provider if1", newCore)
-
       if (account) {
         newCore.unlockWallet(window.ethereum, account);
       }
       setCore(newCore);
     } else if (account && core) {
-      console.log("provider elseif")
-
       core.unlockWallet(window.ethereum, account);
     }
   }, [account, core, dispatch, window.ethereum, chainId]);

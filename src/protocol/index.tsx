@@ -5,6 +5,9 @@ import ABIS from './deployments/abi';
 import {configKeys, Configuration} from '../utils/interface';
 import {getDefaultProvider} from '../utils/provider';
 import Web3 from "web3";
+import TronWeb from "tronweb"
+
+import { setMultisigContract } from '../utils/tronFn';
 
 /**
  * An API module of ARTH contracts.
@@ -36,11 +39,25 @@ export class Protocol {
 
   _activeNetwork: number;
 
+  tronWeb: any
+
+  tronMultisigContract: any
+
   constructor(cfg: { [chainId: number]: Configuration }, chainId: number) {
     this._activeNetwork = chainId;
     this.contracts = {};
     this.tokens = {};
     this.tokens = {};
+    // this.tronWeb = {}
+
+    // this.tronMultisigContract = setMultisigContract()
+
+    // var obj = setInterval(() => {
+    //   if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+    //     this.tronWeb = window.tronWeb
+    //     clearInterval(obj)
+    //   }
+    // }, 10)
 
     try {
       for (const [chainIdString, config] of Object.entries(cfg)) {

@@ -32,7 +32,12 @@ const useConfirm = () => {
 
     } catch (e: any) {
         console.log('useConfirm error', e);
-
+        addPopup({
+          error: {
+            message: "Transaction failed",
+            stack: e?.stack,
+          },
+        });
     }
   }
 

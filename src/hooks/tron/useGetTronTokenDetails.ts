@@ -14,7 +14,7 @@ const useGetTronTokenDetails = () => {
   const fetchData = () => {
 
    tronStableCoins.forEach(async(item) => {
-    const contract = await window.tronWeb.contract().at(item.contractAdrs)
+    const contract = await window.tronWeb?.contract().at(item.contractAdrs)
     const res = await contract.totalSupply().call()
     setResponse(prev => _.uniqWith([...prev, {totalSupply: getDisplayBalance(res), symbol: item.symbol}], (arrVal, othVal) => arrVal.symbol == othVal.symbol))
 

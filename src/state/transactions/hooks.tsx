@@ -193,7 +193,6 @@ export function useAllTransactions() {
   }
   
   const state = useSelector<AppState, AppState['transactions']>((state) => state.transactions);
-  console.log("useAllTransactions", state)
   // return {}
   return chainId ? state[chainId] ?? {} : {};
 }
@@ -246,7 +245,6 @@ export function useHasPendingApproval(
 
 export function useClearAllTransactions(): { clearAllTransactions: () => void } {
   const activeChainId = useGetActiveChainId()
-  console.log('activeChainId', activeChainId)
   const dispatch = useDispatch<AppDispatch>();
   return {
     clearAllTransactions: useCallback(() => dispatch(clearAllTransactions({chainId: activeChainId})), [

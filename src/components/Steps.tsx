@@ -58,7 +58,6 @@ const timeAgo = (val: number) => {
 function getStepContent(step: number, stepData: any, core: any, chainName, chain) {
 
       const {submitHash, submitFrom, submitTime, executed ,numConfirmations, confirmData} = stepData;
-      console.log("getStepContent confirmData", stepData)
       
       const {config, _activeNetwork} = core
 
@@ -134,7 +133,6 @@ function Steps(props: any) {
       const { chain: chainName} = useNetwork()
 
       const {stepState, activeStep,  chain, stepData} = props
-      console.log("stepData", stepData)
       const [stepLabelColor, setStepLabelColor] = useState('#999');
       
       const steps = getSteps();

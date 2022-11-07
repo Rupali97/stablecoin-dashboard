@@ -63,11 +63,13 @@ function ConfirmationStep({allTransactions}) {
       const setTronIsExecuted = useTronGetIsExecuted()
       const setTronConfirmationCount = useGetTronConfirmationCount()
 
+      console.log("noOfConfirmReq", noOfConfirmReq)
+
       useEffect(() => {
             getFinalData()
       }, [allTransactions, chain])
 
-
+      // console.log("ConfirmationStep allTransactions", allTransactions)
       const ConfirmTxn = (txIndex: number, _typeOfTx: string) => {
 
             updateLoader(true)
@@ -133,6 +135,7 @@ function ConfirmationStep({allTransactions}) {
             let token, value, symbol, toAdrs
 
             if(chain == "Goerli"){
+                  let ethArr: any[] = []
                   _.uniqWith(allTransactions).map(async(item: any, i: number) => {
                         const executed = await setIsExecuted(Number(item.index))
                         let numConfirmations = await setConfirmationCount(Number(item.index))
@@ -144,22 +147,25 @@ function ConfirmationStep({allTransactions}) {
                         value = ethers.utils.formatEther(`0x${value}`)
                         toAdrs = item.submitResponse.input.slice(274, 338)
                         toAdrs = `0x${toAdrs.slice(24, toAdrs.length)}`
+
+                        setFinalData(prev => [...prev, {...item, token, symbol, value, executed, numConfirmations, toAdrs}])
+
       
-                        setFinalData(prev => {
+                        // setFinalData(prev => {
       
-                              if(prev.length) {
-                                    const newState = prev.map((txns) => {
+                        //       if(prev.length) {
+                        //             const newState = prev.map((txns) => {
                     
-                                          if(txns.index == item.index){
-                                            return {...item, token, symbol, value, executed, numConfirmations, toAdrs}
-                                          }
-                                          return txns
-                                        })
-                                    return newState;
-                              }else{
-                                    return [...prev, item]
-                              }
-                            })
+                        //                   if(txns.index == item.index){
+                        //                     return {...item, token, symbol, value, executed, numConfirmations, toAdrs}
+                        //                   }
+                        //                   return txns
+                        //                 })
+                        //             return newState;
+                        //       }else{
+                        //             return [...prev, item]
+                        //       }
+                        //     })
                   })
             }else {
                   let arr1: any[] = []
@@ -168,6 +174,8 @@ function ConfirmationStep({allTransactions}) {
                         
                         const executed = await setTronIsExecuted(item.index)
                         let numConfirmations = await setTronConfirmationCount(Number(item.index))
+                        console.log("ConfirmationStep", numConfirmations, item.index)
+
                         token = item.submitResponse.input.slice(8, 72)
                         token =  `${token.slice(24, token.length)}`
                         let tokenDetails = await fetchTronTokenDetails(`41${token}`)
@@ -189,8 +197,7 @@ function ConfirmationStep({allTransactions}) {
             
       }
 
-      console.log("ConfirmationStep", finalData, finalTronData)
-
+      console.log("finalTronData", finalTronData)
 //   return <div />
   return (
       <div>
@@ -240,7 +247,7 @@ function ConfirmationStep({allTransactions}) {
                                                 <div className='row-left-center'>
                                                       <div><Icon className='m-r-5 headerIcon'>supervisor_account</Icon> </div>
                                                       <Textfield 
-                                                            text={ executed ? `Fullfilled` : `${numConfirmations} out of ${confirmReq}`}
+                                                            text={ executed ? `Fullfilled` : `${numConfirmations} out of ${chain == 'Goerli' ? confirmReq : noOfConfirmReq}`}
                                                             color={'#aaa'}
                                                             fontSize={'14px'}
                                                             fontWeight={'bold'}
@@ -276,7 +283,7 @@ function ConfirmationStep({allTransactions}) {
                                                       <div className="grid-item flex1">
                                                             <div style={{display: 'flex', justifyContent: 'space-between'}}>
                                                             <Textfield 
-                                                                  text={`${typeOfTxn} ${value} ${symbol} (${ truncateMiddle(chain == "Goerli" ? token : window.tronWeb.address.fromHex(`41${token}`), 12, '...')}) to ${ chain == "Goerli" ? submitTo : window.tronWeb.address.fromHex(`41${submitTo}`)}`}
+                                                                  text={`${typeOfTxn} ${value} ${symbol} (${ truncateMiddle(chain == "Goerli" ? token : window.tronWeb?.address.fromHex(`41${token}`), 12, '...')}) to ${ chain == "Goerli" ? submitTo : window.tronWeb?.address.fromHex(`41${submitTo}`)}`}
                                                                   color={'#000'}
                                                                   fontSize={'15px'}
                                                                   className={'m-b-15'}
@@ -288,9 +295,11 @@ function ConfirmationStep({allTransactions}) {
                                                                   </div>  */}
                               
                                                             </div>
-                                                      
+                                                           
                                                             <div>
                                                                   {
+                                                                        
+
                                                                         chain == "Goerli" ?
 
                                                                         executed ? <div /> :
@@ -316,7 +325,8 @@ function ConfirmationStep({allTransactions}) {
                                                                         </Button>  :
 
                                                                         numConfirmations < noOfConfirmReq ?
-                                                                                                                                          
+
+                                                                                                                                                                                                                 
                                                                         <Button
                                                                               onClick={() => ConfirmTxn(index, typeOfTxn)}
                                                                               variant="contained"
