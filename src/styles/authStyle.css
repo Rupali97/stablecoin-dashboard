@@ -1,7 +1,7 @@
 #auth {
-      background: #280343;
-      padding: 200px;
-      height: 100vh;
+      background: #f2e6e6;
+      padding: 100px;
+      height: 100%;
       /* display: flex;
       align-items: center;
       justify-content: center; */
@@ -18,10 +18,10 @@
 }
 
 .tronlinkBtn {
-      background-color: #0D76FD;
+      background-color: #3f046d;
       color: #fff;
       border: none;
-      padding: 11px;
+      padding: 9px;
       font-size: 16px;
       font-weight: bold;
       border-radius: 10px;
@@ -29,5 +29,5 @@
 }
 
 .tronlinkBtn:hover{
-      padding: 12px;
+      /* padding: 12px; */
 }

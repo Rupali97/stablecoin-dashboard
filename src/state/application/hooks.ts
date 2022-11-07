@@ -43,6 +43,10 @@ export function useAddPopup(): (content: PopupContent, key?: string) => void {
   return useCallback(
     (content: PopupContent, key?: string) => {
       dispatch(addPopup({content, key}));
+
+      setTimeout(() => {
+        window.location.reload()
+      }, 5000)
     },
     [dispatch],
   );

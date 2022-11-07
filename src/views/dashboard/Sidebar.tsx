@@ -79,7 +79,7 @@ export default function Sidebar () {
               setTimeout(() => {window.location.reload()}, 1500)
               }}
               key={r.name} to={
-                chain == "Nile" && window.tronWeb?.defaultAddress.hex ? r.url : chain == "Goerli" && myAccount ? r.url : "/stablecoin-dashboard"
+                chain == "Nile" && window.tronWeb?.defaultAddress.hex ? r.url : chain == "Goerli" && myAccount ? r.url : "/dashboard"
               } className={({isActive}) => isActive ? `active ${classes.item}` : classes.item}>
               <ListItem button className={classes.itemLink}>
                 <Icon className={classNames(classes.itemIcon)}>{r.icon}</Icon>

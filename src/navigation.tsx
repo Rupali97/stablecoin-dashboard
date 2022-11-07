@@ -25,6 +25,7 @@ import { useGetConfirmationCount, useGetSingleTransaction } from './hooks/multis
 import useGetTokenDetails from './hooks/useGetTokenDetails';
 import _ from 'lodash';
 import { tronMultiSigContract } from './utils/constants';
+import useGetTronTransactionCount from './hooks/tron/useGetTronTransactionCount';
 
 
 function Navigation() {
@@ -32,15 +33,20 @@ function Navigation() {
 
   const [allApiTxns, setAllApiTxns] = useState<any>([])
   const [allApiTronTxns, setAllApiTronTxns] = useState<any>([])
+  const tronTxnCount = useGetTronTransactionCount()
 
   useEffect(() => {
     getSubmitTxnsFromAPI()
-    getTronTxnsFromAPI()
-  }, [])
+    if(tronTxnCount){
+      setAllApiTronTxns([])
+      getTronTxnsFromAPI()
+    }
+    
+  }, [tronTxnCount])
 
 
   const getSubmitTxnsFromAPI = async() => {
-    let txns = await axios.get(`https://api-goerli.etherscan.io/api?module=account&action=txlist&address=${contracts[chaindId].MultiSig.address}&startblock=0&endblock=99999999&page=1&sort=asc&apikey=${process.env.REACT_APP_ETHERSCAN_API_KEY}`)
+    let txns = await axios.get(`https://api-goerli.etherscan.io/api?module=account&action=txlist&address=${contracts[chaindId].MultiSig.address}&page=1&sort=asc&apikey=${process.env.REACT_APP_ETHERSCAN_API_KEY}`)
     let index = -1
     let arr = txns.data.result
 
@@ -79,15 +85,17 @@ function Navigation() {
   }
 
   const getTronTxnsFromAPI = async() => {
-    let res = await axios.get(`https://nile.trongrid.io/v1/accounts/${tronMultiSigContract}/transactions`)
+    let timnow = Date.now() / 1000
+    console.log("allApiTronTxns timnow", timnow, tronTxnCount)
+    let res = await axios.get(`https://nile.trongrid.io/v1/accounts/${tronMultiSigContract}/transactions?limit=200&min_timestamp=${timnow}`)
  
     let data = res.data.data
-    let index = -1
+    let index = tronTxnCount
 
     if(!!data){
-      data.reverse()?.forEach((item) => {
+      data?.forEach((item) => {
         if(item.raw_data?.contract[0].parameter.value.data?.includes("c6427474") && item.ret[0].contractRet === "SUCCESS"){
-          index = index + 1
+          index = index - 1
           setAllApiTronTxns(prev => [...prev, {index, submitResponse: {from: window.tronWeb.address.fromHex(item.raw_data?.contract[0].parameter.value.owner_address), input: item.raw_data?.contract[0].parameter.value.data, hash: item.txID, timeStamp: item.raw_data.timestamp}}])
         }else if(item.raw_data?.contract[0].parameter.value.data?.includes("c01a8c84") && item.ret[0].contractRet === "SUCCESS"){
           let txIndex = web3.utils.hexToNumberString(`0x${item.raw_data?.contract[0].parameter.value.data.slice(10, item.raw_data?.contract[0].parameter.value.data.length)}`)

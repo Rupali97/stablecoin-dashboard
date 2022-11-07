@@ -8,7 +8,9 @@ import {
   getDefaultWallets,
   RainbowKitProvider,
   connectorsForWallets,
-  wallet
+  wallet,
+  lightTheme,
+  Chain
 } from '@rainbow-me/rainbowkit';
 import {
   chain,
@@ -16,6 +18,7 @@ import {
   createClient,
   WagmiConfig,
 } from 'wagmi';
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import { publicProvider } from 'wagmi/providers/public';
 import { useAccount, useSwitchNetwork, useNetwork } from 'wagmi'
 
@@ -34,7 +37,6 @@ import { ethers } from 'ethers';
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 
 dotenv.config()
-
 
 // Rainbowkit starts
 const { chains, provider } = configureChains(
@@ -66,7 +68,16 @@ const wagmiClient = createClient({
 const WalletProvider = ({ children }: any) => {
   return (
     <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider chains={chains} coolMode={true}>
+      <RainbowKitProvider 
+        chains={chains} 
+        coolMode={true}
+        theme={lightTheme({
+          accentColor: '#3f046d',
+          // accentColorForeground: 'white',
+          // borderRadius: 'medium',
+          // fontStack: 'system',
+        })}
+        >
         <Updaters/>
         <ProtocolProvider>
           <AppContent>{children}</AppContent>
@@ -94,7 +105,7 @@ const AppContent: React.FC = ({children}) => {
   const { chain } = useNetwork()
   const { isConnected } = useAccount()
 
-  const newprovider = new ethers.providers.Web3Provider(window.ethereum, "any");
+  const newprovider = ((window.ethereum != null) ? new ethers.providers.Web3Provider(window.ethereum): ethers.providers.getDefaultProvider())
 
   newprovider.on("network", (newNetwork, oldNetwork) => {
     // When a Provider makes its initial connection, it emits a "network"
@@ -117,10 +128,10 @@ const AppContent: React.FC = ({children}) => {
       setChainId(chain.id)
   }, [isConnected]);
 
-  if (!window.ethereum) {
-    console.log('no window ethereum')
-    return <div />
-  };
+  // if (!window.ethereum) {
+  //   console.log('no window ethereum')
+  //   return <div />
+  // };
   if (!core){
     console.log('no core');
     return <div />

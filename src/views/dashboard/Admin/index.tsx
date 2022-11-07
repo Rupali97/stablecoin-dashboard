@@ -133,6 +133,8 @@ function Admin({ ethTxns, tronTxns }) {
     const mutlisigAddr = contracts[chaindId].MultiSig.address.replace('0x', '').toLowerCase()
 
     let arr1: any[] = []
+    let arr2: any[] = []
+
     ethTxns?.map((item: any, i: number) =>  {
       if (item.submitResponse.input.toLowerCase().includes(mutlisigAddr)) {
         arr1.push(item)
@@ -142,7 +144,6 @@ function Admin({ ethTxns, tronTxns }) {
 
     let token, value, symbol, toAdrs, typeOfTxn, typeOfTxnID
 
-    let arr2: any[] = []
 
     arr1?.map(async(item: any, i: number) => {
       const executed = await setIsExecuted(Number(item.index))
@@ -161,12 +162,14 @@ function Admin({ ethTxns, tronTxns }) {
       if(typeOfTxnID == "173825d9") typeOfTxn = "removeOwner"
       if(typeOfTxnID == "7065cb48") typeOfTxn = "addOwner"
       if(typeOfTxnID == "ba51a6df") typeOfTxn = "changeRequirement"
-
       arr2.push({...item, token, value, toAdrs, typeOfTxn, executed, numConfirmations})
+
       setFinalEthTxns(arr2)
+          
     }) 
     
-
+    // setFinalEthTxns(arr2)
+    
     let tronArr1: any[] = []
     tronTxns?.map((item: any, i: number) =>  {
       // console.log("TEST", item, window.tronWeb.address.toHex(tronMultiSigContract).slice(2, -1))
@@ -209,8 +212,9 @@ function Admin({ ethTxns, tronTxns }) {
   const disableChangeConfirmCount = noOfConfirmations && noOfConfirmations < tronContractOwners.length && noOfConfirmations != "0"
   const disableAddOwner = chain == "Goerli" ? ethers.utils.isAddress(adddressToAdd) : window.tronWeb?.isAddress(adddressToAdd)
   const disableRemoveOwner = chain == "Goerli" ? ethers.utils.isAddress(adddressRemove) : window.tronWeb?.isAddress(adddressRemove)
+  console.log("finalEthTxns", finalEthTxns)
   
-  console.log("Admin", finalEthTxns, finalTronTxns)
+  // console.log("Admin test", finalEthTxns, finalTronTxns)
   // console.log("Admin", ethTxns, tronTxns)
 
   // return (<div></div>)

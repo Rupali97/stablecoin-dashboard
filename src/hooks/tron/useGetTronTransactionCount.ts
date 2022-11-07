@@ -2,23 +2,16 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import { tronMultiSigContract } from "../../utils/constants";
 // import { tronWeb } from "../../views/dashboard/TestTron";
 
-const useGetAllTronTxns = () => {
+const useGetTronTransactionCount = () => {
 
-  const [response, setResponse] = React.useState<any>([])
+  const [response, setResponse] = React.useState<any>()
   
 
   const fetchData = useCallback(async () => {
     let contract = await window.tronWeb.contract().at(tronMultiSigContract)
-    
-    const res = await contract.getTransactionCount().call()
-    
-    for(let i=0; i < res; i++){
-      let txn =  await contract.getTransaction(i).call()
-      
-      setResponse((prevState) => [...prevState, txn]);
-    }
-
-
+    const res = await contract.transactionCount().call()
+    console.log("useGetTronTransactionCount", res.toNumber())
+    setResponse(res.toNumber())
   }, []) 
 
   useEffect(() => {
@@ -30,4 +23,4 @@ const useGetAllTronTxns = () => {
 
 }
 
-export default useGetAllTronTxns
+export default useGetTronTransactionCount

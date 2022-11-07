@@ -13,6 +13,7 @@ import { truncateMiddle } from '../../utils/index';
 import Navigation from '../../navigation';
 import { useGetActiveBlockChain, useHandleBlokchainChange } from '../../state/chains/hooks';
 import useCore from '../../hooks/useCore';
+import tronIcon from "../../icons/tronIcon.jpeg"
 
 export const chains = [
   {
@@ -47,14 +48,20 @@ function Dashbaord() {
   const setChain = useHandleBlokchainChange()
 
 
-  useEffect(() => {
-    if(myAccount){
-      setChain("Goerli")
-    }else{
-      setChain("Nile")
-    }
+  // useEffect(() => {
+  //   if(myAccount){
+  //     setChain("Goerli")
+  //   }else{
+  //     setChain("Nile")
+  //   }
 
-  },[myAccount])
+  // },[myAccount])
+
+  useEffect(() => {
+    if(!myAccount && !window.tronWeb){
+      // window.location.reload()
+    }
+  }, [myAccount, window.tronWeb])
 
   const loginWithTron = () => {
     if(window.tronWeb.ready){
@@ -140,17 +147,17 @@ function Dashbaord() {
               {chain == 'Nile' ?  
                 <button
                   className={"tronlinkBtn"}
-                  style={{backgroundColor: "#fff", color: "#000"}}
+                  style={{backgroundColor: "#fff", color: "#000", display: 'flex', justifyContent: "space-between", alignItems: "center"}}
                   onClick={() => setTronSnackbar(true)}
-                >
+                ><div><img src={tronIcon} alt={"tronIcon"} style={{width: "18px", height: "18px", borderRadius: '50%', marginRight: '6px'}} /></div>
                   {
-                   tronObj ?  window.tronWeb.defaultAddress.base58.slice(0, 3) + '...' + window.tronWeb.defaultAddress.base58.slice(31, 34)
-                    : "Tronlink Wallet"
+                   tronObj ?  <div>{window.tronWeb.defaultAddress.base58.slice(0, 4) + '...' + window.tronWeb.defaultAddress.base58.slice(30, 34)}</div>
+                    : <div>Tronlink Wallet</div>
                   }
                 </button>
                 : 
                 <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-                  <ConnectButton />
+                  <ConnectButton chainStatus={"none"} showBalance={false} />
                 </div> 
               }
             </div>

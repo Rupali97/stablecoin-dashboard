@@ -27,13 +27,13 @@ function Auth() {
 
 
   const loginWithTron = () => {
-    if(window.tronWeb.ready){
+    if(!window.tronWeb){
+      setShowSnackbar(true)
+      
+    }else{
       console.log("show account")
       setChain("Nile");
       document.location.href = ""
-      disconnect()
-    }else{
-      setShowSnackbar(true)
     }
     
   }
@@ -54,7 +54,12 @@ function Auth() {
           }}
             open={showSnackbar}
             onClose={() => setShowSnackbar(false)}
-            message="Please login to TronLink extention wallet first."
+            message={`Please login to TronLink extention wallet first. If you don't have then please download from the link below!`}
+            action={
+              <React.Fragment>
+                <a style={{color: '#fff'}} href={'https://chrome.google.com/webstore/detail/tronlink/ibnejdfjmmkpcnlpebklmnkoeoihofec'}>Tronlink wallet</a>
+              </React.Fragment>
+            }
           />
       }
        <div className="auth-container">
@@ -68,17 +73,18 @@ function Auth() {
               </Typography>
               <Typography align={"center"} variant="body2" color="textSecondary" style={{marginBottom: '60px'}} >
                 <p>
-                  Please login with one of the wallet below.
+                  Please login to one of the wallet below.
                 </p>
               </Typography>
               <div style={{display: 'flex', justifyContent: 'space-between'}}>
                 <div>
-                  <ConnectButton />
+                  <ConnectButton chainStatus={"none"} />
                 </div>
                 <div>
                   <button
                     onClick={loginWithTron}
                     className={"tronlinkBtn"}
+                    style={{padding: '11px'}}
                   >
                     Tronlink Wallet
                   </button>
