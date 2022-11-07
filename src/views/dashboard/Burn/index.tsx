@@ -34,7 +34,7 @@ import useGetTronTokenBalance from '../../../hooks/tron/useGetTronTokenBalance';
 import _ from 'lodash';
 
 function Burn({ ethTxns, tronTxns }) {
-  const isMobile = useMediaQuery({maxWidth: '600px'});
+  const isMobile = useMediaQuery({maxWidth: '768px'});
   const { tokens, _activeNetwork } = useCore()
   const { chain: chainName } = useNetwork()
 

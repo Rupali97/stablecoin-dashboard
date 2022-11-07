@@ -37,7 +37,7 @@ import { Grid } from '@mui/material';
 
 function ConfirmationStep({allTransactions}) {
       const core = useCore()
-      const isMobile = useMediaQuery({maxWidth: '600px'});
+      const isMobile = useMediaQuery({maxWidth: '768px'});
 
       const {myAccount, provider, config, _activeNetwork, contracts } = core
       const { chain: chainName} = useNetwork()

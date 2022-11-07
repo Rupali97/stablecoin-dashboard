@@ -26,7 +26,7 @@ import { ethers } from 'ethers';
 function Freeze() {
   const {tokens, _activeNetwork} = useCore()
   const { chain: chainName} = useNetwork()
-  const isMobile = useMediaQuery({maxWidth: '600px'});
+  const isMobile = useMediaQuery({maxWidth: '768px'});
   
   const currentLoaderState = useGetLoader()
   const updateLoader = useUpdateLoader()

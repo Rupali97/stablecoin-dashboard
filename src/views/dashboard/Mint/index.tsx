@@ -39,7 +39,7 @@ function Mint({ethTxns, tronTxns}) {
   const currentLoaderState = useGetLoader()
   const updateLoader = useUpdateLoader()
   const { chain: chainName} = useNetwork()
-  const isMobile = useMediaQuery({maxWidth: '600px'});
+  const isMobile = useMediaQuery({maxWidth: '768px'});
 
   const chain = useGetActiveBlockChain()
   const chaindId = useGetActiveChainId()

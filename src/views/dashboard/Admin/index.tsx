@@ -44,7 +44,7 @@ function createData(id: number, details: any, outOfCount: string, status: string
 }
 
 function Admin({ ethTxns, tronTxns }) {
-  const isMobile = useMediaQuery({maxWidth: '600px'});
+  const isMobile = useMediaQuery({maxWidth: '768px'});
   const { provider, tokens, _activeNetwork, contracts, config } = useCore()
   const classes = useStyles();
   const { chain: chainName } = useNetwork()
