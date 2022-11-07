@@ -12,7 +12,7 @@ import {Puff} from "react-loader-spinner"
 import { useNetwork } from 'wagmi'
 import Textfield from '../../../components/Textfield'
 import { useGetLoader, useUpdateLoader } from '../../../state/application/hooks';
-
+import {useMediaQuery} from "react-responsive";
 import { useGetActiveBlockChain } from '../../../state/chains/hooks';
 import useFreezeToken from '../../../hooks/useFreezeToken';
 import useUnFreezeToken from '../../../hooks/useUnFreezeToken';
@@ -26,6 +26,7 @@ import { ethers } from 'ethers';
 function Freeze() {
   const {tokens, _activeNetwork} = useCore()
   const { chain: chainName} = useNetwork()
+  const isMobile = useMediaQuery({maxWidth: '600px'});
   
   const currentLoaderState = useGetLoader()
   const updateLoader = useUpdateLoader()
@@ -72,7 +73,7 @@ function Freeze() {
   const disableUnFreeze = stableCoinUnfreeze && addressToUnFreeze  && chain == "Goerli" ? ethers.utils.isAddress(addressToUnFreeze) : window.tronWeb?.isAddress(addressToUnFreeze)
   
   return (
-    <div style={{marginLeft: '260px', marginRight: '20px', position: 'relative'}}>
+    <div style={{marginLeft: isMobile ? "20px" : '260px', marginRight: '20px', position: 'relative'}}>
       <ProgressModal currentLoaderState={currentLoaderState} />
       <Textfield
         text={'Freeze a wallet'}
@@ -83,7 +84,7 @@ function Freeze() {
       <Card style={{marginBottom: '30px'}}>
         <CardContent>
           <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid xs={12} md={6}>
               <TextField
                 helperText="This is the address to be frozen."
                 required
@@ -97,7 +98,7 @@ function Freeze() {
                 size={'small'}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid xs={12} md={6}>
               <TextField
                   helperText="This is the stable coin to be frozen."
                   required
@@ -124,8 +125,8 @@ function Freeze() {
                 }
                 </TextField> 
             </Grid>
-            <Grid item xs={9}></Grid>
-            <Grid item xs={3}>
+            <Grid item xs={8} md={9}></Grid>
+            <Grid item xs={4} md={3}>
                       
             <Button
               onClick={handleFreeze}
@@ -155,7 +156,7 @@ function Freeze() {
       <Card style={{marginBottom: '30px'}}>
         <CardContent>
           <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6}>
               <TextField
                 helperText="This is the address to be unfrozen."
                 required
@@ -169,7 +170,7 @@ function Freeze() {
                 size={'small'}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6}>
               <TextField
                   helperText="This is the stable coin to be unfrozen."
                   required
@@ -196,8 +197,8 @@ function Freeze() {
                   }
                 </TextField> 
             </Grid>
-            <Grid item xs={9}></Grid>
-            <Grid item xs={3}>
+            <Grid item xs={8} md={9}></Grid>
+            <Grid item xs={4} md={3}>
                       
             <Button
               onClick={handleUnFreeze}

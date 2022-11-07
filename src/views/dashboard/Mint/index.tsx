@@ -6,8 +6,9 @@ import {
   CardContent,
   Button,
   Grid,
-  MenuItem
+  MenuItem,
 } from "@material-ui/core";
+import {useMediaQuery} from "react-responsive";
 import Web3 from 'web3';
 import { useNetwork } from 'wagmi'
 import { formatToBN, getBalance } from '../../../utils/formatBalance';
@@ -38,6 +39,7 @@ function Mint({ethTxns, tronTxns}) {
   const currentLoaderState = useGetLoader()
   const updateLoader = useUpdateLoader()
   const { chain: chainName} = useNetwork()
+  const isMobile = useMediaQuery({maxWidth: '600px'});
 
   const chain = useGetActiveBlockChain()
   const chaindId = useGetActiveChainId()
@@ -108,7 +110,7 @@ function Mint({ethTxns, tronTxns}) {
   console.log("Mint", ethTxns, tronTxns)
 
   return (
-    <div style={{marginLeft: '260px', marginRight: '20px', position: 'relative',}}>      
+    <div style={{marginLeft: isMobile ? "20px" : '260px', marginRight: '20px', position: 'relative',}}>      
       <Card style={{marginBottom: '30px'}}>
         <CardContent className='p15'>
           <Textfield
@@ -132,7 +134,7 @@ function Mint({ethTxns, tronTxns}) {
                 size={'small'}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid  xs={12} md={6}>
               <TextField
                 helperText="This is the amount of token to be minted"
                 required
@@ -146,7 +148,7 @@ function Mint({ethTxns, tronTxns}) {
                 size={'small'}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid  xs={12} md={6}>
                 <TextField
                   helperText="This is the token to be minted"
                   required
@@ -179,10 +181,10 @@ function Mint({ethTxns, tronTxns}) {
                   
                 </TextField>           
             </Grid>
-            <Grid item xs={6}></Grid>
-            <Grid item xs={3}>
+            <Grid  xs={12} md={6}></Grid>
+            <Grid item md={9}>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={12} md={3}>
               <Button
                 onClick={submitTx}
                 variant="contained"

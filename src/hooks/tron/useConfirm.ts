@@ -27,6 +27,13 @@ const useConfirm = () => {
               summary
             }
           });
+        }else{
+          addPopup({
+            error: {
+              message: "Transaction failed",
+              stack: "",
+            },
+          });
         }
         console.log('useConfirmcontract', response, index)
 
@@ -34,8 +41,8 @@ const useConfirm = () => {
         console.log('useConfirm error', e);
         addPopup({
           error: {
-            message: "Transaction failed",
-            stack: e?.stack,
+            message: e,
+            stack: e,
           },
         });
     }

@@ -8,11 +8,15 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import {useNetwork} from "wagmi"
 import _ from "lodash"
+import {useMediaQuery} from "react-responsive";
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import Steps from './Steps'
 import Textfield from './Textfield';
 import { truncateMiddle } from '../utils';
 // import { tronWeb } from '../views/dashboard/TestTron';
-
+import GroupWorkIcon from '@material-ui/icons/GroupWork';
+import TouchAppIcon from '@material-ui/icons/TouchApp';
+import LaunchIcon from '@material-ui/icons/Launch';
 import { formatToBN, getBalance, getDisplayBalance } from '../utils/formatBalance';
 import useCore from '../hooks/useCore';
 import useConfirmTxn from '../hooks/useConfirmTxn';
@@ -28,10 +32,12 @@ import { useGetRequiredCount, useGetSingleTransaction, useGetOwners, useGetConfi
 import useGetTokenDetails from '../hooks/useGetTokenDetails';
 import ProgressModal from './ProgressModal';
 import { useGetTronConfirmationCount, useGetTronTokenDetails, useTronGetIsExecuted } from '../hooks/tron/useTronMultisig';
+import { Grid } from '@mui/material';
 
 
 function ConfirmationStep({allTransactions}) {
       const core = useCore()
+      const isMobile = useMediaQuery({maxWidth: '600px'});
 
       const {myAccount, provider, config, _activeNetwork, contracts } = core
       const { chain: chainName} = useNetwork()
@@ -208,7 +214,6 @@ function ConfirmationStep({allTransactions}) {
                   fontWeight={'bold'}
                   className={'m-b-15'}
             />
-            {/* <button onClick={() => ConfirmTxn(1, "mint")}>confirm</button> */}
             {
                    _.uniqWith(chain == "Goerli" ? finalData : finalTronData, (arrVal, othVal) => arrVal.index == othVal.index)?.sort((a, b) => b.index - a.index).map((item: any, i) => {
                         const {submitResponse, toAdrs: submitTo, index, token, symbol, value, confirmData, typeOfTxn, executed, numConfirmations} = item
@@ -216,6 +221,47 @@ function ConfirmationStep({allTransactions}) {
                         
                         return(
                               <Accordion key={i} style={{marginBottom: '16px'}}>
+                                   {
+                                    isMobile ? 
+                                    <AccordionSummary>
+                                          <Grid container alignItems={"center"} justifyContent={"space-between"} >
+                                                <Grid item xs={1}>
+                                                      <Textfield 
+                                                            text={index}
+                                                            color={'#333'}
+                                                            fontSize={'16px'}    
+                                                      />
+                                                </Grid>
+                                                <Grid item xs={7}>
+                                                       <Textfield 
+                                                            text={`${typeOfTxn} (${value} ${symbol})`}
+                                                            color={'#333'}
+                                                            fontSize={'16px'}
+                                                      />
+                                                </Grid>
+                                                <Grid item xs={1}>
+                                                      <div className='statusText'
+                                                            style={{color: `${
+                                                                  chain == 'Goerli' ? 
+                                                                  executed ? '#228B22' : numConfirmations < confirmReq ? '#FF4500' : "" :
+                                                                  executed ? '#228B22' :  numConfirmations < noOfConfirmReq ? '#FF4500' : ""
+                                                            }`, marginTop: '15px'}}
+                                                      >
+                                                            {
+                                                                  chain == 'Goerli' ? 
+                                                                  executed ? <CheckCircleIcon /> : numConfirmations < confirmReq ? <TouchAppIcon /> : <LaunchIcon /> :
+                                                                  executed ? <CheckCircleIcon /> : numConfirmations < noOfConfirmReq ? <TouchAppIcon /> : <LaunchIcon />
+                                                            }
+                                                      </div>
+                                                </Grid>
+                                                <Grid item xs={1}>
+                                                      <div className='statusText'>&nbsp; &nbsp; <KeyboardArrowUpIcon /> </div>
+                                                </Grid>
+                                               
+                                               
+                                          </Grid>
+                                    </AccordionSummary>
+                                    : 
                                     <AccordionSummary
                                           // expandIcon={<ExpandMoreIcon />}
                                           >
@@ -277,6 +323,89 @@ function ConfirmationStep({allTransactions}) {
                                                 <div>&nbsp; &nbsp; <KeyboardArrowUpIcon /> </div>
                                           </div>
                                     </AccordionSummary>
+                                   } 
+                                   {
+                                    isMobile ? 
+                                    <AccordionDetails>
+                                          <Grid container alignItems={"center"}>
+                                                <Grid item xs={12}>
+                                                      <Textfield 
+                                                            text={`${typeOfTxn} ${value} ${symbol} (${ truncateMiddle(chain == "Goerli" ? token : window.tronWeb?.address.fromHex(`41${token}`), 12, '...')}) to ${ chain == "Goerli" ? truncateMiddle(submitTo, 12, '...')  : truncateMiddle(window.tronWeb?.address.fromHex(`41${submitTo}`), 12, "...") }`}
+                                                            color={'#000'}
+                                                            fontSize={'15px'}
+                                                            className={'m-b-15'}
+                                                            fontWeight={'bold'}
+                                                      />
+                                                </Grid>
+                                               
+                                                <Grid item xs={9}>
+                                                      <div>
+                                                            {
+                                                                  
+
+                                                                  chain == "Goerli" ?
+
+                                                                  executed ? <div /> :
+                                                                  numConfirmations < confirmReq  ?
+                                                                  <Button
+                                                                        onClick={() => ConfirmTxn(index, typeOfTxn)}
+                                                                        variant="contained"
+                                                                        color="primary"
+                                                                        disabled={currentLoaderState}
+                                                                        size={'large'}
+                                                                        >
+                                                                        Confirm
+                                                                  </Button> :
+                                                                  <Button
+                                                                        onClick={() => executeTxn(index, typeOfTxn)}
+                                                                        variant="contained"
+                                                                        color="primary"
+
+                                                                        disabled={currentLoaderState}
+                                                                        size={'large'}
+                                                                        >
+                                                                        Execute
+                                                                  </Button>  :
+
+                                                                  numConfirmations < noOfConfirmReq ?
+
+                                                                                                                                                                                                            
+                                                                  <Button
+                                                                        onClick={() => ConfirmTxn(index, typeOfTxn)}
+                                                                        variant="contained"
+                                                                        color="primary"
+
+                                                                        // disabled={!disableConfirm}
+                                                                        size={'large'}
+                                                                        >
+                                                                        Confirm
+                                                                  </Button> :
+                                                                  !executed ?
+                                                                  <Button
+                                                                        onClick={() => executeTxn(index, typeOfTxn)}
+                                                                        variant="contained"
+                                                                        color="primary"
+
+                                                                        // disabled={!disableConfirm}
+                                                                        size={'large'}
+                                                                        >
+                                                                        Execute
+                                                                  </Button> : <div /> 
+                                                            }
+                                                      </div>
+                                                </Grid>
+                                                <Grid item xs={3}>
+                                                      <Textfield 
+                                                            text={ executed ? `Fullfilled` : `${numConfirmations} out of ${chain == 'Goerli' ? confirmReq : noOfConfirmReq}`}
+                                                            color={'#aaa'}
+                                                            fontSize={'14px'}
+                                                            fontWeight={'bold'}
+                                                            
+                                                      />
+                                                </Grid>
+                                          </Grid>
+                                    </AccordionDetails>
+                                    : 
                                     <AccordionDetails>
                                           <div className='flex' style={{width: '100%'}}>
                                                 <div style={{flex: 3, display: 'flex', flexDirection: 'column'}}>
@@ -426,6 +555,9 @@ function ConfirmationStep({allTransactions}) {
                                           </div>
 
                                     </AccordionDetails>
+                                   }
+                                    
+                                    
                               </Accordion>
                         )
                   })

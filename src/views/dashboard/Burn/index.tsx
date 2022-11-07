@@ -11,6 +11,7 @@ import {
   MenuItem,
 } from "@material-ui/core";
 import { useAccount, useNetwork } from 'wagmi'
+import {useMediaQuery} from "react-responsive";
 
 import { formatToBN, getBalance } from '../../../utils/formatBalance';
 import ConfirmationStep from '../../../components/ConfirmationStep';
@@ -33,6 +34,7 @@ import useGetTronTokenBalance from '../../../hooks/tron/useGetTronTokenBalance';
 import _ from 'lodash';
 
 function Burn({ ethTxns, tronTxns }) {
+  const isMobile = useMediaQuery({maxWidth: '600px'});
   const { tokens, _activeNetwork } = useCore()
   const { chain: chainName } = useNetwork()
 
@@ -124,7 +126,7 @@ function Burn({ ethTxns, tronTxns }) {
     (chain == "Goerli" ? contractOwners?.includes(myAccount) : tronContractOwners?.includes(window.tronWeb?.defaultAddress.base58))
 
   return (
-    <div style={{ marginLeft: '260px', marginRight: '20px' }}>
+    <div style={{ marginLeft: isMobile ? "20px" : '260px', marginRight: '20px' }}>
 
       <Card style={{ marginBottom: '15px' }}>
         <CardContent className='p15'>
@@ -150,7 +152,7 @@ function Burn({ ethTxns, tronTxns }) {
               // variant="outlined"
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6}>
               <TextField
                 helperText={`This is the amount of token to be burned. ${stableCoin && `Max value: ${stableCoinDetails}`} `}
                 required
@@ -164,7 +166,7 @@ function Burn({ ethTxns, tronTxns }) {
               // variant="outlined"
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6}>
               <TextField
                 helperText="This is the token to be burned"
                 required
@@ -197,8 +199,8 @@ function Burn({ ethTxns, tronTxns }) {
                   }
               </TextField>
             </Grid>
-            <Grid item xs={9}></Grid>
-            <Grid item xs={3}>
+            <Grid item md={9}></Grid>
+            <Grid item xs={12} md={3}>
               <Button
                 disabled={!disableSubmitBtn}
                 onClick={submitTx}

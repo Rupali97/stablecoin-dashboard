@@ -22,6 +22,8 @@
       display: flex !important;
       justify-content: space-between !important;
       align-items: center !important;
+
+      /* flex-direction: column; */
 }
 
 .item2 {
@@ -52,4 +54,9 @@
       color: #bbb;
       font-size: 18px !important;
       cursor: pointer;
+}
+
+.statusText {
+      font-size: 14px;
+      font-weight: bold;
 }

@@ -9,6 +9,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { useNetwork } from "wagmi"
+import {useMediaQuery} from "react-responsive";
 
 import Textfield from '../../../components/Textfield'
 import { useGetLoader, useUpdateLoader } from '../../../state/application/hooks'
@@ -43,6 +44,7 @@ function createData(id: number, details: any, outOfCount: string, status: string
 }
 
 function Admin({ ethTxns, tronTxns }) {
+  const isMobile = useMediaQuery({maxWidth: '600px'});
   const { provider, tokens, _activeNetwork, contracts, config } = useCore()
   const classes = useStyles();
   const { chain: chainName } = useNetwork()
@@ -203,11 +205,11 @@ function Admin({ ethTxns, tronTxns }) {
   const disableChangeConfirmCount = noOfConfirmations && noOfConfirmations < tronContractOwners.length && noOfConfirmations != "0"
   const disableAddOwner = chain == "Goerli" ? ethers.utils.isAddress(adddressToAdd) : window.tronWeb?.isAddress(adddressToAdd)
   const disableRemoveOwner = chain == "Goerli" ? ethers.utils.isAddress(adddressRemove) : window.tronWeb?.isAddress(adddressRemove)
-  console.log("finalEthTxns", finalEthTxns)
+  console.log("finalEthTxns", finalEthTxns, finalTronTxns)
   
   // return (<div></div>)
   return (
-    <div style={{ marginLeft: '260px', marginRight: '20px', position: 'relative', paddingTop: '50px' }}>
+    <div style={{ marginLeft: isMobile ? "20px" : '260px', marginRight: '20px', position: 'relative', paddingTop: '50px' }}>
       <ProgressModal currentLoaderState={currentLoaderState} />
 
       <Grid container spacing={2}>
@@ -263,7 +265,7 @@ function Admin({ ethTxns, tronTxns }) {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6}>
           <Card style={{ marginBottom: '30px' }}>
 
             <CardContent>
@@ -302,7 +304,7 @@ function Admin({ ethTxns, tronTxns }) {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6}>
           <Card style={{ marginBottom: '30px' }}>
             <CardContent>
               <Textfield
@@ -340,7 +342,7 @@ function Admin({ ethTxns, tronTxns }) {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6}>
           <Card style={{ marginBottom: '30px' }}>
             <CardContent>
               <Textfield
@@ -378,7 +380,7 @@ function Admin({ ethTxns, tronTxns }) {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6}>
           <Card style={{ marginBottom: '30px', maxHeight: '200px', height: '200px' }} className={"scrollable"}>
             <CardContent>
               <Textfield

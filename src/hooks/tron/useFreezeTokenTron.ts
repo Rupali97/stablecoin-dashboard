@@ -34,8 +34,8 @@ const useFreezeTokenTron = () => {
       console.log("useFreezeTokenTron error", e);
       addPopup({
         error: {
-          message: "Transaction failed",
-          stack: e?.stack,
+          message: e,
+          stack: e,
         },
       });
     }
