@@ -13,6 +13,7 @@ import validator from "validator";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useDisconnect } from 'wagmi'
 import { useAccount, useSwitchNetwork, useNetwork } from 'wagmi'
+import {useMediaQuery} from "react-responsive";
 
 import '../../styles/authStyle.css'
 import { useHandleBlokchainChange } from '../../state/chains/hooks';
@@ -24,6 +25,7 @@ function Auth() {
   const [showSnackbar, setShowSnackbar] = useState<boolean>(false)
   const { isConnected } = useAccount()
   const {myAccount} = useCore()
+  const isMobile = useMediaQuery({maxWidth: '768px'});
 
 
   const loginWithTron = () => {
@@ -42,9 +44,9 @@ function Auth() {
     document.location.href = ""
     
   }
-
+ 
   return (
-    <div id={'auth'}>
+    <div id={!isMobile ? 'auth' : ''} style={{padding: isMobile ? "100px 0" : ""}} >
        {
         showSnackbar && 
         <Snackbar
