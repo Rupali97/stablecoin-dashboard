@@ -34,6 +34,7 @@ function Navigation() {
   const [allApiTxns, setAllApiTxns] = useState<any>([])
   const [allApiTronTxns, setAllApiTronTxns] = useState<any>([])
   const tronTxnCount = useGetTronTransactionCount()
+  const [tronObj, setTronObj] = useState<any>()
 
   useEffect(() => {
     getSubmitTxnsFromAPI()
@@ -43,6 +44,16 @@ function Navigation() {
     }
     
   }, [tronTxnCount])
+
+//   var obj = setInterval(() => {
+//     if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+//       clearInterval(obj)
+//       var tronweb = window.tronWeb
+//       setTronObj(tronweb)
+//     }else {
+//       console.log("No tron")
+//     }
+// }, 1000)
 
 
   const getSubmitTxnsFromAPI = async() => {
@@ -96,7 +107,7 @@ function Navigation() {
       data?.forEach((item) => {
         if(item.raw_data?.contract[0].parameter.value.data?.includes("c6427474") && item.ret[0].contractRet === "SUCCESS"){
           index = index - 1
-          setAllApiTronTxns(prev => [...prev, {index, submitResponse: {from: window.tronWeb.address.fromHex(item.raw_data?.contract[0].parameter.value.owner_address), input: item.raw_data?.contract[0].parameter.value.data, hash: item.txID, timeStamp: item.raw_data.timestamp}}])
+          setAllApiTronTxns(prev => [...prev, {index, submitResponse: {from: window.tronWeb?.address?.fromHex(item.raw_data?.contract[0].parameter.value.owner_address), input: item.raw_data?.contract[0].parameter.value.data, hash: item.txID, timeStamp: item.raw_data.timestamp}}])
         }else if(item.raw_data?.contract[0].parameter.value.data?.includes("c01a8c84") && item.ret[0].contractRet === "SUCCESS"){
           let txIndex = web3.utils.hexToNumberString(`0x${item.raw_data?.contract[0].parameter.value.data.slice(10, item.raw_data?.contract[0].parameter.value.data.length)}`)
           console.log("txIndex", txIndex)
