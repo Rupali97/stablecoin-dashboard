@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/stablecoin-dashboard/static/css/main.cb3e818a.chunk.css",
-    "main.js": "/stablecoin-dashboard/static/js/main.46133ff7.chunk.js",
-    "main.js.map": "/stablecoin-dashboard/static/js/main.46133ff7.chunk.js.map",
+    "main.js": "/stablecoin-dashboard/static/js/main.35e9cbf1.chunk.js",
+    "main.js.map": "/stablecoin-dashboard/static/js/main.35e9cbf1.chunk.js.map",
     "runtime-main.js": "/stablecoin-dashboard/static/js/runtime-main.803810ec.js",
     "runtime-main.js.map": "/stablecoin-dashboard/static/js/runtime-main.803810ec.js.map",
     "static/css/2.473fcec1.chunk.css": "/stablecoin-dashboard/static/css/2.473fcec1.chunk.css",
-    "static/js/2.eeeeaeba.chunk.js": "/stablecoin-dashboard/static/js/2.eeeeaeba.chunk.js",
-    "static/js/2.eeeeaeba.chunk.js.map": "/stablecoin-dashboard/static/js/2.eeeeaeba.chunk.js.map",
+    "static/js/2.ba43fa43.chunk.js": "/stablecoin-dashboard/static/js/2.ba43fa43.chunk.js",
+    "static/js/2.ba43fa43.chunk.js.map": "/stablecoin-dashboard/static/js/2.ba43fa43.chunk.js.map",
     "static/js/3.e7b236c2.chunk.js": "/stablecoin-dashboard/static/js/3.e7b236c2.chunk.js",
     "static/js/3.e7b236c2.chunk.js.map": "/stablecoin-dashboard/static/js/3.e7b236c2.chunk.js.map",
     "static/js/4.8ccc3eaa.chunk.js": "/stablecoin-dashboard/static/js/4.8ccc3eaa.chunk.js",
@@ -77,15 +77,15 @@
     "index.html": "/stablecoin-dashboard/index.html",
     "static/css/2.473fcec1.chunk.css.map": "/stablecoin-dashboard/static/css/2.473fcec1.chunk.css.map",
     "static/css/main.cb3e818a.chunk.css.map": "/stablecoin-dashboard/static/css/main.cb3e818a.chunk.css.map",
-    "static/js/2.eeeeaeba.chunk.js.LICENSE.txt": "/stablecoin-dashboard/static/js/2.eeeeaeba.chunk.js.LICENSE.txt",
+    "static/js/2.ba43fa43.chunk.js.LICENSE.txt": "/stablecoin-dashboard/static/js/2.ba43fa43.chunk.js.LICENSE.txt",
     "static/js/3.e7b236c2.chunk.js.LICENSE.txt": "/stablecoin-dashboard/static/js/3.e7b236c2.chunk.js.LICENSE.txt",
     "static/media/tronIcon.350f3509.jpeg": "/stablecoin-dashboard/static/media/tronIcon.350f3509.jpeg"
   },
   "entrypoints": [
     "static/js/runtime-main.803810ec.js",
     "static/css/2.473fcec1.chunk.css",
-    "static/js/2.eeeeaeba.chunk.js",
+    "static/js/2.ba43fa43.chunk.js",
     "static/css/main.cb3e818a.chunk.css",
-    "static/js/main.46133ff7.chunk.js"
+    "static/js/main.35e9cbf1.chunk.js"
   ]
 }
