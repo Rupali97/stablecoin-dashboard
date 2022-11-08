@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/stablecoin-dashboard/static/css/main.cb3e818a.chunk.css",
-    "main.js": "/stablecoin-dashboard/static/js/main.923012a5.chunk.js",
-    "main.js.map": "/stablecoin-dashboard/static/js/main.923012a5.chunk.js.map",
+    "main.js": "/stablecoin-dashboard/static/js/main.8cae8cbe.chunk.js",
+    "main.js.map": "/stablecoin-dashboard/static/js/main.8cae8cbe.chunk.js.map",
     "runtime-main.js": "/stablecoin-dashboard/static/js/runtime-main.48d1b531.js",
     "runtime-main.js.map": "/stablecoin-dashboard/static/js/runtime-main.48d1b531.js.map",
     "static/css/2.473fcec1.chunk.css": "/stablecoin-dashboard/static/css/2.473fcec1.chunk.css",
@@ -86,6 +86,6 @@
     "static/css/2.473fcec1.chunk.css",
     "static/js/2.b5e977fb.chunk.js",
     "static/css/main.cb3e818a.chunk.css",
-    "static/js/main.923012a5.chunk.js"
+    "static/js/main.8cae8cbe.chunk.js"
   ]
 }
