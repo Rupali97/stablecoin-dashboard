@@ -104,7 +104,7 @@ export default function Sidebar () {
         <Fab
           size="small"
           color="secondary" aria-label="add"
-          style={{ outline: 'none', position: 'fixed', bottom: 15, right: 15, zIndex: 100 }}>
+          style={{ outline: 'none', position: 'fixed', bottom: 15, right: 15, zIndex: 100, backgroundColor: "#3f046d" }}>
           <MenuIcon onClick={toggleDrawer(true)} />
         </Fab>
 

@@ -6,6 +6,8 @@ import {Button, MenuItem, Snackbar, TextField} from '@material-ui/core'
 import { useAccount, useSwitchNetwork, useNetwork } from 'wagmi'
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import TronWeb from "tronweb"
+import {useMediaQuery} from "react-responsive";
+
 import styles from '../../styles/adminStyle.js'
 import Sidebar from './Sidebar';
 import { noOp } from '../../utils/constants';
@@ -31,6 +33,7 @@ const useStyles = makeStyles(styles);
 function Dashbaord() {
   const classes = useStyles();
   const {myAccount} = useCore()
+  const isMobile = useMediaQuery({maxWidth: '768px'});
 
   // const { address: account, isConnecting, isDisconnected, connector } = useAccount()
   // const { data, error, isLoading, pendingChainId, switchNetwork, status, isSuccess } = useSwitchNetwork()
@@ -97,7 +100,7 @@ function Dashbaord() {
   return (
  
     <div>
-      <div className={classes.wrapper} style={{padding: '15px 15px 40px 0'}}>
+      <div className={classes.wrapper} style={{padding: isMobile ? '' : '15px 15px 40px 0'}}>
       {
         tronSnackbar && 
         <Snackbar
