@@ -52,9 +52,9 @@ const CustomizedSnackbars: React.FC<TxButtonProps> = ({
     setOpen(false);
     if (handleCancel) handleCancel();
 
-    // setTimeout(() => {
-    //   window.location.reload()
-    // }, 2000)
+    setTimeout(() => {
+      window.location.reload()
+    }, 3000)
   };
 
   function SlideTransition(props: TransitionProps) {

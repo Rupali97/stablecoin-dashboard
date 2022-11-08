@@ -35,7 +35,7 @@ import _ from 'lodash';
 
 function Burn({ ethTxns, tronTxns }) {
   const isMobile = useMediaQuery({maxWidth: '768px'});
-  const { tokens, _activeNetwork } = useCore()
+  const { tokens, _activeNetwork, tronWeb } = useCore()
   const { chain: chainName } = useNetwork()
 
   // const { myAccount } = core
@@ -121,9 +121,9 @@ function Burn({ ethTxns, tronTxns }) {
 
   console.log("Burn tronTxns", tronTxns)
 
-  const disableSubmitBtn = address && (chain == "Goerli" ? ethers.utils.isAddress(address) :  window.tronWeb?.isAddress(address)) 
+  const disableSubmitBtn = address && (chain == "Goerli" ? ethers.utils.isAddress(address) : tronWeb.isAddress(address)) 
     && amount && Number(amount) <= Number(stableCoinDetails) && !!stableCoin && chain && 
-    (chain == "Goerli" ? contractOwners?.includes(myAccount) : tronContractOwners?.includes(window.tronWeb?.defaultAddress.base58))
+    (chain == "Goerli" ? contractOwners?.includes(myAccount) : tronContractOwners?.includes(tronWeb.defaultAddress.base58))
 
   return (
     <div style={{ marginLeft: isMobile ? "20px" : '260px', marginRight: '20px' }}>
@@ -137,36 +137,7 @@ function Burn({ ethTxns, tronTxns }) {
             className={'m-b-15'}
           />
           <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                helperText="This is the address to which token to be burned"
-                required
-                id="outlined-email"
-                label="Address"
-                // margin="dense"
-                type="text"
-                onChange={(e: any) => setAddress(e.target.value)}
-                value={address}
-                fullWidth
-                size='small'
-              // variant="outlined"
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                helperText={`This is the amount of token to be burned. ${stableCoin && `Max value: ${stableCoinDetails}`} `}
-                required
-                label="Amount"
-                // margin="dense"
-                type="text"
-                onChange={(e: any) => setAmount(e.target.value)}
-                value={amount}
-                fullWidth
-                size='small'
-              // variant="outlined"
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={5}>
               <TextField
                 helperText="This is the token to be burned"
                 required
@@ -198,6 +169,36 @@ function Burn({ ethTxns, tronTxns }) {
                       : <MenuItem>No coins available on this chain</MenuItem>
                   }
               </TextField>
+            </Grid>
+            <Grid item md={1}></Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                helperText={`This is the amount of token to be burned. ${stableCoin && `Max value: ${stableCoinDetails}`} `}
+                required
+                label="Amount"
+                // margin="dense"
+                type="text"
+                onChange={(e: any) => setAmount(e.target.value)}
+                value={amount}
+                fullWidth
+                size='small'
+              // variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                helperText="This is the address to which token to be burned"
+                required
+                id="outlined-email"
+                label="Address"
+                // margin="dense"
+                type="text"
+                onChange={(e: any) => setAddress(e.target.value)}
+                value={address}
+                fullWidth
+                size='small'
+              // variant="outlined"
+              />
             </Grid>
             <Grid item md={9}></Grid>
             <Grid item xs={12} md={3}>

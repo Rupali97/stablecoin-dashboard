@@ -5,8 +5,10 @@ import { useNetwork } from 'wagmi'
 import { useGetActiveBlockChain } from "../../state/chains/hooks";
 import { tronMultiSigContract, tronStableCoins } from "../../utils/constants";
 import { getDisplayBalance } from "../../utils/formatBalance";
+import useCore from "../useCore";
 
-const useGetTronTokenDetails = () => {
+const useTronTokensTotalSupply = () => {
+  const {tronWeb} = useCore()
   const chain = useGetActiveBlockChain()
 
   const [response, setResponse] = React.useState<any>([])
@@ -14,7 +16,7 @@ const useGetTronTokenDetails = () => {
   const fetchData = () => {
 
    tronStableCoins.forEach(async(item) => {
-    const contract = await window.tronWeb?.contract().at(item.contractAdrs)
+    const contract = await tronWeb.contract().at(item.contractAdrs)
     const res = await contract.totalSupply().call()
     setResponse(prev => _.uniqWith([...prev, {totalSupply: getDisplayBalance(res), symbol: item.symbol}], (arrVal, othVal) => arrVal.symbol == othVal.symbol))
 
@@ -30,4 +32,4 @@ const useGetTronTokenDetails = () => {
 
 }
 
-export default useGetTronTokenDetails
+export default useTronTokensTotalSupply

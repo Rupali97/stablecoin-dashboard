@@ -24,7 +24,7 @@ import useUnFreezeTokenTron from '../../../hooks/tron/useUnFreezeTokenTron';
 import { ethers } from 'ethers';
 
 function Freeze() {
-  const {tokens, _activeNetwork} = useCore()
+  const {tokens, _activeNetwork, tronWeb} = useCore()
   const { chain: chainName} = useNetwork()
   const isMobile = useMediaQuery({maxWidth: '768px'});
   
@@ -64,13 +64,13 @@ function Freeze() {
     if(chain == "Goerli"){
       unFreezeAction(addressToUnFreeze, stableCoinUnfreeze)
     }else {
-      unFreezeActionTron(addressToFreeze, stableCoin)
+      unFreezeActionTron(addressToUnFreeze, stableCoinUnfreeze)
     }
     updateLoader(true)
   }
 
-  const disableFreeze = stableCoin && addressToFreeze && chain == "Goerli" ? ethers.utils.isAddress(addressToFreeze) : window.tronWeb?.isAddress(addressToFreeze)
-  const disableUnFreeze = stableCoinUnfreeze && addressToUnFreeze  && chain == "Goerli" ? ethers.utils.isAddress(addressToUnFreeze) : window.tronWeb?.isAddress(addressToUnFreeze)
+  const disableFreeze = stableCoin && addressToFreeze && chain == "Goerli" ? ethers.utils.isAddress(addressToFreeze) : tronWeb.isAddress(addressToFreeze)
+  const disableUnFreeze = stableCoinUnfreeze && addressToUnFreeze  && chain == "Goerli" ? ethers.utils.isAddress(addressToUnFreeze) : tronWeb.isAddress(addressToUnFreeze)
   
   return (
     <div style={{marginLeft: isMobile ? "20px" : '260px', marginRight: '20px', position: 'relative'}}>
@@ -84,7 +84,7 @@ function Freeze() {
       <Card style={{marginBottom: '30px'}}>
         <CardContent>
           <Grid container spacing={2}>
-            <Grid xs={12} md={6}>
+            <Grid item xs={12} md={6}>
               <TextField
                 helperText="This is the address to be frozen."
                 required
@@ -98,7 +98,7 @@ function Freeze() {
                 size={'small'}
               />
             </Grid>
-            <Grid xs={12} md={6}>
+            <Grid item xs={12} md={6}>
               <TextField
                   helperText="This is the stable coin to be frozen."
                   required

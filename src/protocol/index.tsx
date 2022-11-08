@@ -7,13 +7,17 @@ import {getDefaultProvider} from '../utils/provider';
 import Web3 from "web3";
 import TronWeb from "tronweb"
 
-import { setMultisigContract } from '../utils/tronFn';
+import tronConfig from '../tronConfig';
+
+const chain = tronConfig.chain;
+const privateKey = chain.privateKey;
 
 /**
  * An API module of ARTH contracts.
  * All contract-interacting domain logic should be defined in here.
  */
 export class Protocol {
+  
   // @ts-ignore
   myAccount: string;
 
@@ -48,16 +52,10 @@ export class Protocol {
     this.contracts = {};
     this.tokens = {};
     this.tokens = {};
-    // this.tronWeb = {}
-
-    // this.tronMultisigContract = setMultisigContract()
-
-    // var obj = setInterval(() => {
-    //   if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-    //     this.tronWeb = window.tronWeb
-    //     clearInterval(obj)
-    //   }
-    // }, 10)
+    this.tronWeb = new TronWeb({
+      fullHost: chain.fullHost,
+      privateKey
+    });
 
     try {
       for (const [chainIdString, config] of Object.entries(cfg)) {

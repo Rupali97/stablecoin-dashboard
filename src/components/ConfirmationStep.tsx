@@ -39,7 +39,7 @@ function ConfirmationStep({allTransactions}) {
       const core = useCore()
       const isMobile = useMediaQuery({maxWidth: '768px'});
 
-      const {myAccount, provider, config, _activeNetwork, contracts } = core
+      const {myAccount, provider, config, _activeNetwork, contracts, tronWeb } = core
       const { chain: chainName} = useNetwork()
       const chain = useGetActiveBlockChain()
       const updateLoader = useUpdateLoader()
@@ -204,6 +204,7 @@ function ConfirmationStep({allTransactions}) {
       }
 
       console.log("finalTronData", finalTronData)
+      console.log("finalData", finalData)
 //   return <div />
   return (
       <div>
@@ -214,6 +215,7 @@ function ConfirmationStep({allTransactions}) {
                   fontWeight={'bold'}
                   className={'m-b-15'}
             />
+           
             {
                    _.uniqWith(chain == "Goerli" ? finalData : finalTronData, (arrVal, othVal) => arrVal.index == othVal.index)?.sort((a, b) => b.index - a.index).map((item: any, i) => {
                         const {submitResponse, toAdrs: submitTo, index, token, symbol, value, confirmData, typeOfTxn, executed, numConfirmations} = item
@@ -330,7 +332,7 @@ function ConfirmationStep({allTransactions}) {
                                           <Grid container alignItems={"center"}>
                                                 <Grid item xs={12}>
                                                       <Textfield 
-                                                            text={`${typeOfTxn} ${value} ${symbol} (${ truncateMiddle(chain == "Goerli" ? token : window.tronWeb?.address.fromHex(`41${token}`), 12, '...')}) to ${ chain == "Goerli" ? truncateMiddle(submitTo, 12, '...')  : truncateMiddle(window.tronWeb?.address.fromHex(`41${submitTo}`), 12, "...") }`}
+                                                            text={`${typeOfTxn} ${value} ${symbol} (${ truncateMiddle(chain == "Goerli" ? token : tronWeb?.address.fromHex(`41${token}`), 12, '...')}) to ${ chain == "Goerli" ? truncateMiddle(submitTo, 12, '...')  : truncateMiddle(tronWeb.address.fromHex(`41${submitTo}`), 12, "...") }`}
                                                             color={'#000'}
                                                             fontSize={'15px'}
                                                             className={'m-b-15'}
@@ -412,7 +414,7 @@ function ConfirmationStep({allTransactions}) {
                                                       <div className="grid-item flex1">
                                                             <div style={{display: 'flex', justifyContent: 'space-between'}}>
                                                             <Textfield 
-                                                                  text={`${typeOfTxn} ${value} ${symbol} (${ truncateMiddle(chain == "Goerli" ? token : window.tronWeb?.address.fromHex(`41${token}`), 12, '...')}) to ${ chain == "Goerli" ? submitTo : window.tronWeb?.address.fromHex(`41${submitTo}`)}`}
+                                                                  text={`${typeOfTxn} ${value} ${symbol} (${ truncateMiddle(chain == "Goerli" ? token : tronWeb.address.fromHex(`41${token}`), 12, '...')}) to ${ chain == "Goerli" ? submitTo : tronWeb.address.fromHex(`41${submitTo}`)}`}
                                                                   color={'#000'}
                                                                   fontSize={'15px'}
                                                                   className={'m-b-15'}

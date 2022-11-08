@@ -1,13 +1,16 @@
 import {useCallback, useEffect, useState} from "react"
+import { mainchain, multisigContract } from "../../utils/blockchain"
 import { tronMultiSigContract } from "../../utils/constants"
+import useCore from "../useCore"
 
 
 export const useTronGetIsExecuted = () => {
+    const {tronWeb} = useCore()
 
     const setTronIsExecuted = async (txId: number) => {
-
        try {
-        let instance = await  window.tronWeb?.contract().at(tronMultiSigContract)
+        let instance = await tronWeb.contract().at(`${tronMultiSigContract}`)
+        // console.log("useTronGetIsExecuted txId", txId, instance)
 
         let res = await instance.transactions(txId).call()
         res = res.executed
@@ -25,12 +28,15 @@ export const useTronGetIsExecuted = () => {
 }
 
 export const useGetTronConfirmationCount = () => {
+    const {tronWeb} = useCore()
 
     const fetchData = async (txnId: number) => {
-        let contract = await window.tronWeb?.contract().at(tronMultiSigContract)
+        let contract = await tronWeb.contract().at(tronMultiSigContract)
 
         const res = await contract.getConfirmationCount(txnId).call();
-        let count = res.toNumber();
+
+        console.log("useGetTronConfirmationCount res", res)
+        let count = res.count.toNumber();
 
         return count
 
@@ -38,12 +44,14 @@ export const useGetTronConfirmationCount = () => {
 
     return fetchData
 }
-
+// Not using
 export const useGetTronTokenDetails = () => {
-
+    
+    const {tronWeb} = useCore()
     const fetchData = async (token: string) => {
-        let contract = await window.tronWeb?.contract().at(token)
-
+        // const tronweb = window.tronWeb
+        let contract = await tronWeb.contract().at(`${token}`)
+        console.log("useGetTronTokenDetails contract", contract)
         const symbol = await contract.symbol().call();
         const decimals = await contract.decimals().call();
         const name = await contract.name().call();
@@ -62,11 +70,12 @@ export const useGetTronTokenDetails = () => {
 }
 
 export const useTronGetRequiredCount = () => {
+    const {tronWeb} = useCore()
 
     const [response, setResponse] = useState<number>(0)
 
     const fetchData = useCallback(async () => {
-        let contract = await window.tronWeb?.contract().at(tronMultiSigContract)
+        let contract = await tronWeb.contract().at(tronMultiSigContract)
 
         const res = await contract.required().call()
         setResponse(res.toNumber())

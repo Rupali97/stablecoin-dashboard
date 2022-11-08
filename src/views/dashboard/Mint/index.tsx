@@ -34,7 +34,7 @@ import _ from 'lodash';
 function Mint({ethTxns, tronTxns}) {
 
   const core = useCore()
-  const {myAccount, provider, _activeNetwork, tokens, contracts } = core
+  const {myAccount, provider, _activeNetwork, tokens, contracts, tronWeb } = core
 
   const currentLoaderState = useGetLoader()
   const updateLoader = useUpdateLoader()
@@ -104,7 +104,7 @@ function Mint({ethTxns, tronTxns}) {
     }
   }
 
-  const disableMint = address && (chain == "Goerli" ? ethers.utils.isAddress(address) :  window.tronWeb?.isAddress(address)) && amount && stableCoin && chain && (chain == "Goerli" ? contractOwners?.includes(myAccount) : tronContractOwners?.includes(window.tronWeb?.defaultAddress.base58))
+  const disableMint = address && (chain == "Goerli" ? ethers.utils.isAddress(address) :  tronWeb.isAddress(address)) && amount && stableCoin && chain && (chain == "Goerli" ? contractOwners?.includes(myAccount) : tronContractOwners?.includes(tronWeb.defaultAddress.base58))
 
   // console.log("finalTxns", _.uniqWith(finalEthTxns, (arrVal: any, othVal: any) => arrVal.index == othVal.index), finalTronTxns)
   console.log("Mint", ethTxns, tronTxns)
@@ -120,6 +120,54 @@ function Mint({ethTxns, tronTxns}) {
             className={'m-b-15'}
             />
           <Grid container spacing={2}>
+            <Grid item xs={12} md={5}>
+                  <TextField
+                    helperText="This is the token to be minted"
+                    required
+                    select
+                    label="Stablecoin"
+                    value={stableCoin}
+                    onChange={handleCoinChange}
+                    fullWidth
+                    // variant="outlined"
+                    size='small'
+                  >
+                    {
+                      chain == "Nile" ? 
+                        tronStableCoins?.map((coin) => 
+                          (<MenuItem
+                            key={coin.symbol}
+                            value={coin.contractAdrs}>
+                              {coin.symbol}
+                          </MenuItem>)
+                        ) 
+                        :
+
+                        tokens[chainName?.id || _activeNetwork] ? Object.entries(tokens[chainName?.id || _activeNetwork])?.map((option) => (
+                          <MenuItem key={option[1].symbol} value={option[1].symbol}>
+                            {option[1].symbol}
+                          </MenuItem>
+                        ))
+                        : <MenuItem>No coins available on this chain</MenuItem>
+                    }
+                    
+                  </TextField>           
+            </Grid>
+            <Grid item md={1}></Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                helperText="This is the amount of token to be minted"
+                required
+                label="Amount"
+                // margin="dense"
+                type="text"
+                onChange={(e:any) => setAmount(e.target.value)}
+                value={amount}
+                fullWidth
+                // variant="outlined"
+                size={'small'}
+              />
+            </Grid>
             <Grid item xs={12}>
               <TextField
                 helperText="This is the address to which token to be minted"
@@ -134,54 +182,7 @@ function Mint({ethTxns, tronTxns}) {
                 size={'small'}
               />
             </Grid>
-            <Grid  xs={12} md={6}>
-              <TextField
-                helperText="This is the amount of token to be minted"
-                required
-                label="Amount"
-                // margin="dense"
-                type="text"
-                onChange={(e:any) => setAmount(e.target.value)}
-                value={amount}
-                fullWidth
-                // variant="outlined"
-                size={'small'}
-              />
-            </Grid>
-            <Grid  xs={12} md={6}>
-                <TextField
-                  helperText="This is the token to be minted"
-                  required
-                  select
-                  label="Stablecoin"
-                  value={stableCoin}
-                  onChange={handleCoinChange}
-                  fullWidth
-                  // variant="outlined"
-                  size='small'
-                >
-                  {
-                    chain == "Nile" ? 
-                      tronStableCoins?.map((coin) => 
-                        (<MenuItem
-                          key={coin.symbol}
-                          value={coin.contractAdrs}>
-                            {coin.symbol}
-                        </MenuItem>)
-                      ) 
-                      :
-
-                      tokens[chainName?.id || _activeNetwork] ? Object.entries(tokens[chainName?.id || _activeNetwork])?.map((option) => (
-                        <MenuItem key={option[1].symbol} value={option[1].symbol}>
-                          {option[1].symbol}
-                        </MenuItem>
-                      ))
-                      : <MenuItem>No coins available on this chain</MenuItem>
-                  }
-                  
-                </TextField>           
-            </Grid>
-            <Grid  xs={12} md={6}></Grid>
+            <Grid item xs={12} md={6}></Grid>
             <Grid item md={9}>
             </Grid>
             <Grid item xs={12} md={3}>

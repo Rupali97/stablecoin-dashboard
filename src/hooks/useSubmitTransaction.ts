@@ -27,7 +27,7 @@ const useMultiSig = (
   const { _activeNetwork } = core;
   const updateLoader = useUpdateLoader();
   const activeID = useGetActiveChainId();
-  console.log("activeID", activeID);
+
 
   const { chain } = useNetwork();
   const dispatch = useDispatch<AppDispatch>();
@@ -55,14 +55,10 @@ const useMultiSig = (
           iface = new ethers.utils.Interface(MultiSig);
           if (typeOfTx == "changeRequirement") {
             data = iface.encodeFunctionData(typeOfTx, [Number(amount)]);
-            console.log("changeRequirement", data);
           } else {
             data = iface.encodeFunctionData(typeOfTx, [to]);
           }
         }
-
-        console.log("useMultiSigdata", data);
-
 
         const contract = await core.contracts[`${chain?.id}`].MultiSig;
         const response = await contract.submitTransaction(

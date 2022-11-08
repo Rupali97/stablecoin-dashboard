@@ -28,7 +28,7 @@ import useSubmit from '../../../hooks/tron/useSubmit';
 import { useGetActiveBlockChain, useGetActiveChainId } from '../../../state/chains/hooks';
 import useConfirm from '../../../hooks/tron/useConfirm';
 import { tronMultiSigContract } from '../../../utils/constants';
-import useGetTronTokenDetails from '../../../hooks/tron/useGetTronTokenDetails';
+import useGetTronTokenDetails from '../../../hooks/tron/useTronTokensTotalSupply';
 import useGetTronOwners from '../../../hooks/tron/useGetTronOwners';
 import { useGetTronConfirmationCount, useTronGetIsExecuted, useTronGetRequiredCount } from '../../../hooks/tron/useTronMultisig';
 
@@ -45,7 +45,7 @@ function createData(id: number, details: any, outOfCount: string, status: string
 
 function Admin({ ethTxns, tronTxns }) {
   const isMobile = useMediaQuery({maxWidth: '768px'});
-  const { provider, tokens, _activeNetwork, contracts, config } = useCore()
+  const { provider, tokens, _activeNetwork, contracts, config, tronWeb } = useCore()
   const classes = useStyles();
   const { chain: chainName } = useNetwork()
 
@@ -85,7 +85,7 @@ function Admin({ ethTxns, tronTxns }) {
   const isTronExecuted = useTronGetIsExecuted()
 
   let etherscanUrl = config[chainName?.id || _activeNetwork].etherscanUrl
- 
+  console.log("Inside admin", tronTxns)
   useEffect(() => {
     sortTransactions()
   }, [ethTxns, tronTxns, chain])
@@ -171,7 +171,7 @@ function Admin({ ethTxns, tronTxns }) {
     
     let tronArr1: any[] = []
     tronTxns?.map((item: any, i: number) =>  {
-      if (item.submitResponse.input.toLowerCase().includes(window.tronWeb?.address.toHex(tronMultiSigContract).toLowerCase().slice(2, window.tronWeb?.address.toHex(tronMultiSigContract).length))) {
+      if (item.submitResponse.input.toLowerCase().includes(tronWeb.address.toHex(tronMultiSigContract).toLowerCase().slice(2, tronWeb.address.toHex(tronMultiSigContract).length))) {
         tronArr1.push(item)
 
       }
@@ -183,9 +183,9 @@ function Admin({ ethTxns, tronTxns }) {
       const executed = await isTronExecuted(Number(item.index))
       let numConfirmations = await numOfConfirmationCountTron(item.index)
       token = item.submitResponse.input.slice(8, 72)
-      token =  window.tronWeb?.address.fromHex(`41${token.slice(24, token.length)}`)
+      token =  tronWeb.address.fromHex(`41${token.slice(24, token.length)}`)
       toAdrs = item.submitResponse.input.slice(272, 336)
-      toAdrs = window.tronWeb?.address.fromHex(`41${toAdrs.slice(24, toAdrs.length)}`)
+      toAdrs = tronWeb.address.fromHex(`41${toAdrs.slice(24, toAdrs.length)}`)
       typeOfTxnID = item.submitResponse.input.slice(264, 272)
 
       if (typeOfTxnID == "ba51a6df") value = item.submitResponse.input.slice(336, 337)
@@ -197,14 +197,14 @@ function Admin({ ethTxns, tronTxns }) {
       if(typeOfTxnID == "ba51a6df") typeOfTxn = "changeRequirement"
       tronArr2.push({...item, token, value, toAdrs, typeOfTxn, executed, numConfirmations})
 
-      setFinalTronTxns(tronArr2)
+      setFinalTronTxns(prev => [...prev, {...item, token, value, toAdrs, typeOfTxn, executed, numConfirmations}])
     })
    
   }
 
   const disableChangeConfirmCount = noOfConfirmations && noOfConfirmations < tronContractOwners.length && noOfConfirmations != "0"
-  const disableAddOwner = chain == "Goerli" ? ethers.utils.isAddress(adddressToAdd) : window.tronWeb?.isAddress(adddressToAdd)
-  const disableRemoveOwner = chain == "Goerli" ? ethers.utils.isAddress(adddressRemove) : window.tronWeb?.isAddress(adddressRemove)
+  const disableAddOwner = chain == "Goerli" ? ethers.utils.isAddress(adddressToAdd) : tronWeb.isAddress(adddressToAdd)
+  const disableRemoveOwner = chain == "Goerli" ? ethers.utils.isAddress(adddressRemove) : tronWeb.isAddress(adddressRemove)
   console.log("finalEthTxns", finalEthTxns, finalTronTxns)
   
   // return (<div></div>)

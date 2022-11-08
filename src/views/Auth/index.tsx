@@ -29,12 +29,13 @@ function Auth() {
 
 
   const loginWithTron = () => {
-    if(!window.tronWeb){
+    if(!window.tronWeb.ready){
       setShowSnackbar(true)
       
     }else{
       console.log("show account")
       setChain("Nile");
+      localStorage.setItem("ActiveChain", "Nile")
       document.location.href = ""
     }
     
@@ -42,7 +43,7 @@ function Auth() {
 
   if(isConnected){
     document.location.href = ""
-    
+    localStorage.setItem("ActiveChain", "Goerli")
   }
  
   return (

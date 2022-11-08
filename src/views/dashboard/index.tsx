@@ -16,6 +16,7 @@ import Navigation from '../../navigation';
 import { useGetActiveBlockChain, useHandleBlokchainChange } from '../../state/chains/hooks';
 import useCore from '../../hooks/useCore';
 import tronIcon from "../../icons/tronIcon.jpeg"
+import { addressToHex, fromHex } from '../../utils/helper';
 
 export const chains = [
   {
@@ -32,7 +33,7 @@ export const chains = [
 const useStyles = makeStyles(styles);
 function Dashbaord() {
   const classes = useStyles();
-  const {myAccount} = useCore()
+  const {myAccount, tronWeb} = useCore()
   const isMobile = useMediaQuery({maxWidth: '768px'});
 
   // const { address: account, isConnecting, isDisconnected, connector } = useAccount()
@@ -68,9 +69,9 @@ function Dashbaord() {
 
   const loginWithTron = () => {
     if(window.tronWeb?.ready){
-      console.log("show account")
-      setChain("Nile");
-      document.location.href = ""
+      // console.log("show account")
+      // setChain("Nile");
+      // document.location.href = ""
     }else{
       setTronSnackbar(true)
     }
@@ -82,20 +83,15 @@ function Dashbaord() {
 
   };
 
-  // const checkIfTronConnected = async() => {
-  //   // let res = await window.tronLink.ready
-  //   console.log("checkIfTronConnected",!myAccount)
-  // }
-
   var obj = setInterval(() => {
-      if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-        clearInterval(obj)
-        var tronweb = window.tronWeb
-        setTronObj(tronweb)
-      }
-  }, 10)
+    if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+      clearInterval(obj)
+      var tronweb = window.tronWeb
+      setTronObj(tronweb)
+    }
+}, 10)
 
-
+  
   if(window.location.href.includes("login")) return <div />
   return (
  
@@ -153,10 +149,10 @@ function Dashbaord() {
                 <button
                   className={"tronlinkBtn"}
                   style={{backgroundColor: "#fff", color: "#000", display: 'flex', justifyContent: "space-between", alignItems: "center"}}
-                  onClick={() => setTronSnackbar(true)}
+                  onClick={loginWithTron}
                 ><div><img src={tronIcon} alt={"tronIcon"} style={{width: "18px", height: "18px", borderRadius: '50%', marginRight: '6px'}} /></div>
                   {
-                   tronObj ?  <div>{window.tronWeb?.defaultAddress.base58.slice(0, 4) + '...' + window.tronWeb?.defaultAddress.base58.slice(30, 34)}</div>
+                   tronObj ?  <div>{tronObj.defaultAddress.base58.slice(0, 4) + '...' + tronObj.defaultAddress.base58.slice(30, 34)}</div>
                     : <div>Tronlink Wallet</div>
                   }
                 </button>
