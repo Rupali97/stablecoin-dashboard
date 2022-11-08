@@ -111,7 +111,7 @@ function getStepContent(step: number, stepData: any, core: any, chainName, chain
                               Executed by&nbsp; 
                               <a 
                                     target="_blank" 
-                                    href={chain == "Goerli" ? `${etherscanUrl}/tx/${confirmData[confirmData?.length - 1]}` : `https://nile.tronscan.org/#/transaction/${confirmData[confirmData?.length - 1]}`}>
+                                    href={chain == "Goerli" ? `${etherscanUrl}/tx/${confirmData[confirmData?.length - 1].hash}` : `https://nile.tronscan.org/#/transaction/${confirmData[confirmData?.length - 1].hash}`}>
                                           {truncateMiddle(confirmData[confirmData?.length - 1].from, 12, "...")} 
                               </a>&nbsp;
                               on {getDate(confirmData[confirmData?.length - 1].timeStamp)}&nbsp;+UTC
