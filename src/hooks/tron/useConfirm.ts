@@ -19,7 +19,7 @@ const useConfirm = () => {
       
     try {
 
-        let contract = await tronWeb.contract().at(tronMultiSigContract)
+        let contract = await window.tronWeb.contract().at(tronMultiSigContract)
         const response = await contract.confirmTransaction(index).send()
         let txnInfo = await mainchain.trx.getTransaction(response);
         let summary = `Confirmed ID ${index}`

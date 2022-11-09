@@ -16,7 +16,7 @@ const useFreezeTokenTron = () => {
 
   const freeze = async (to: string, stableCoin: string) => {
     try {
-      const contract = await tronWeb.contract().at(stableCoin)
+      const contract = await window.tronWeb.contract().at(stableCoin)
       const res = await contract.freeze(to).send()
       let txnInfo = await tronWeb.trx.getTransaction(res);
       if (txnInfo.ret[0].contractRet == "SUCCESS") {

@@ -54,7 +54,7 @@ const useSubmit = (typeOfTx: string,
 
         data = `0x${transaction.transaction.raw_data.contract[0].parameter.value.data}`
 
-        let contract = await tronWeb.contract().at(tronMultiSigContract)
+        let contract = await window.tronWeb.contract().at(tronMultiSigContract)
         const response = await contract.submitTransaction(destinationAdrs,
           formatToBN(0),
           data).send()
