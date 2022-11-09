@@ -305,8 +305,8 @@ function ConfirmationStep({allTransactions}) {
                                                       <Textfield 
                                                             text={`${
                                                                   chain == 'Goerli' ? 
-                                                                  executed ? "Success" : numConfirmations < confirmReq ? 'Needs Confirmation' : 'Needs Execution' :
-                                                                  executed ? "Success" : numConfirmations < noOfConfirmReq ? 'Needs Confirmation' : 'Needs Execution'
+                                                                  executed ? "Success" : numConfirmations < confirmReq ? 'Needs Confirmation' : 'Not Executable' :
+                                                                  executed ? "Success" : numConfirmations < noOfConfirmReq ? 'Needs Confirmation' : 'Not Executable'
                                                                   // numConfirmations < noOfConfirmReq ? 'Needs Confirmation' : !executed ? 'Needs Execution' : 'Success'
                                                             }`}
                                                             // color={'#ed7117'}
@@ -358,16 +358,7 @@ function ConfirmationStep({allTransactions}) {
                                                                         >
                                                                         Confirm
                                                                   </Button> :
-                                                                  <Button
-                                                                        onClick={() => executeTxn(index, typeOfTxn)}
-                                                                        variant="contained"
-                                                                        color="primary"
-
-                                                                        disabled={currentLoaderState}
-                                                                        size={'large'}
-                                                                        >
-                                                                        Execute
-                                                                  </Button>  :
+                                                                  <div /> :
 
                                                                   numConfirmations < noOfConfirmReq ?
 
@@ -382,17 +373,7 @@ function ConfirmationStep({allTransactions}) {
                                                                         >
                                                                         Confirm
                                                                   </Button> :
-                                                                  !executed ?
-                                                                  <Button
-                                                                        onClick={() => executeTxn(index, typeOfTxn)}
-                                                                        variant="contained"
-                                                                        color="primary"
-
-                                                                        // disabled={!disableConfirm}
-                                                                        size={'large'}
-                                                                        >
-                                                                        Execute
-                                                                  </Button> : <div /> 
+                                                                   <div /> 
                                                             }
                                                       </div>
                                                 </Grid>
@@ -444,16 +425,7 @@ function ConfirmationStep({allTransactions}) {
                                                                               >
                                                                               Confirm
                                                                         </Button> :
-                                                                        <Button
-                                                                              onClick={() => executeTxn(index, typeOfTxn)}
-                                                                              variant="contained"
-                                                                              color="primary"
-
-                                                                              disabled={currentLoaderState}
-                                                                              size={'large'}
-                                                                              >
-                                                                              Execute
-                                                                        </Button>  :
+                                                                        <div />  :
 
                                                                         numConfirmations < noOfConfirmReq ?
 
@@ -468,20 +440,9 @@ function ConfirmationStep({allTransactions}) {
                                                                               >
                                                                               Confirm
                                                                         </Button> :
-                                                                        !executed ?
-                                                                        <Button
-                                                                              onClick={() => executeTxn(index, typeOfTxn)}
-                                                                              variant="contained"
-                                                                              color="primary"
-
-                                                                              // disabled={!disableConfirm}
-                                                                              size={'large'}
-                                                                              >
-                                                                              Execute
-                                                                        </Button> : <div /> 
+                                                                        <div /> 
                                                                   }
                                                             </div>
-                              
                                                       </div>  
                                                       <div className="grid-item flex1">
                                                             <div className='flex m-b-10'>

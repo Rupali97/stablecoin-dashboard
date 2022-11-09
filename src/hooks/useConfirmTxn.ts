@@ -10,6 +10,7 @@ import formatErrorMessage from "../utils/formatErrorMessage";
 import useCore from "./useCore";
 import { saveTxn } from "../state/transactions/actions";
 import {AppDispatch, AppState} from "../state/index";
+import { useGetSingleTransaction } from "./multisig/useMultiSig";
  
 const useConfirmTxn = () => {
   const core = useCore();
@@ -18,7 +19,7 @@ const useConfirmTxn = () => {
   const addPopup = useAddPopup()
   const dispatch = useDispatch<AppDispatch>();
   const updateLoader = useUpdateLoader()
-
+  const isExecuted = useGetSingleTransaction()
   const confirmCallback = async (index: number, typeOfTx: string) => {
       
     try {
@@ -31,8 +32,14 @@ const useConfirmTxn = () => {
         if (tx?.status === 1){
           updateLoader(false)
           dispatch(saveTxn({txIndex: index, hash: tx.transactionHash, chainId: chain?.id || core._activeNetwork}))
-          let summary = `Confirmed ID ${index}`
-          
+          let summary
+          let executed = await isExecuted(index)
+          if(executed){
+            summary = `Confirmed and Executed ID ${index}`
+          }else {
+            summary = `Confirmed ID ${index} (Not executed)`
+          }
+
           addPopup({
             txn: {
               hash: tx.transactionHash,

@@ -5,6 +5,7 @@ import { mainchain, multisigContract } from "../../utils/blockchain";
 import { tronMultiSigContract } from "../../utils/constants";
 import { getDisplayBalance } from "../../utils/formatBalance";
 import useCore from "../useCore";
+import { useTronGetIsExecuted } from "./useTronMultisig";
 
 // import { tronWeb } from "../../views/dashboard/TestTron";
 
@@ -12,7 +13,7 @@ import useCore from "../useCore";
 const useConfirm = () => {
   const {tronWeb} = useCore()
   const addPopup = useAddPopup()
- 
+  const setTronIsExecuted = useTronGetIsExecuted()
   const confirmCallback = async (index: number) => {
 
     console.log("useConfirm", index)
@@ -22,9 +23,19 @@ const useConfirm = () => {
         let contract = await window.tronWeb.contract().at(tronMultiSigContract)
         const response = await contract.confirmTransaction(index).send()
         let txnInfo = await mainchain.trx.getTransaction(response);
-        let summary = `Confirmed ID ${index}`
-       
+        let summary
+        
+
+
         if(txnInfo.ret[0].contractRet == "SUCCESS"){
+          let executed = await setTronIsExecuted(index)
+
+          console.log("useConfirm executed", executed)
+          if(executed){
+            summary = `Confirmed and Executed ID ${index}`
+          }else {
+            summary = `Confirmed ID ${index} (Not executed)`
+          }
           addPopup({
             txn: {
               hash: response,

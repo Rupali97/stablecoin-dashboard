@@ -17,6 +17,7 @@ import { useGetActiveBlockChain, useHandleBlokchainChange } from '../../state/ch
 import useCore from '../../hooks/useCore';
 import tronIcon from "../../icons/tronIcon.jpeg"
 import { addressToHex, fromHex } from '../../utils/helper';
+import { mainchain } from '../../utils/blockchain';
 
 export const chains = [
   {
@@ -42,6 +43,7 @@ function Dashbaord() {
   // const { isConnected } = useAccount()
   const [tronObj, setTronObj] = useState<any>()
   const [tronSnackbar, setTronSnackbar] = useState<boolean>(false)
+  const [tronCurrentAcc, setTronCurrentAcc] = useState<string>("")
 
   // useEffect(() => {
   //   checkIfTronConnected()
@@ -51,15 +53,6 @@ function Dashbaord() {
   const chain = useGetActiveBlockChain()
   const setChain = useHandleBlokchainChange()
 
-
-  // useEffect(() => {
-  //   if(myAccount){
-  //     setChain("Goerli")
-  //   }else{
-  //     setChain("Nile")
-  //   }
-
-  // },[myAccount])
 
   useEffect(() => {
     if(!myAccount && !window.tronWeb){
@@ -84,12 +77,24 @@ function Dashbaord() {
   };
 
   var obj = setInterval(() => {
+    console.log("inside tronweb useeffect")
     if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
       clearInterval(obj)
       var tronweb = window.tronWeb
       setTronObj(tronweb)
     }
-}, 10)
+  }, 10)
+
+  console.log("tronObjmain", tronObj)
+
+  window.addEventListener('message', function (e){
+    if (e.data.message && e.data.message.action == "accountsChanged") {
+      console.log("accountsChanged event", e.data.message)
+      console.log("current address:", e.data.message.data.address)
+      setTronCurrentAcc(e.data.message.data.address)
+    }
+
+  })
 
   
   if(window.location.href.includes("login")) return <div />
@@ -152,7 +157,16 @@ function Dashbaord() {
                   onClick={loginWithTron}
                 ><div><img src={tronIcon} alt={"tronIcon"} style={{width: "18px", height: "18px", borderRadius: '50%', marginRight: '6px'}} /></div>
                   {
-                   tronObj ?  <div>{tronObj.defaultAddress.base58.slice(0, 4) + '...' + tronObj.defaultAddress.base58.slice(30, 34)}</div>
+                   tronObj ?  
+                    <div> 
+                      {
+                        tronCurrentAcc ?
+                        tronCurrentAcc.slice(0, 4) + '...' + tronCurrentAcc.slice(30, 34):
+                        window.tronLink.tronWeb.defaultAddress.base58.slice(0, 4) + '...' + window.tronLink.tronWeb.defaultAddress.base58.slice(30, 34)
+                      }
+                      {/* {window.tronLink.tronWeb.defaultAddress.base58.slice(0, 4) + '...' + window.tronLink.tronWeb.defaultAddress.base58.slice(30, 34)} */}
+                    </div>
+                    
                     : <div>Tronlink Wallet</div>
                   }
                 </button>
