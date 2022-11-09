@@ -428,7 +428,7 @@ function Admin({ ethTxns, tronTxns }) {
                       <TableCell>ID</TableCell>
                       <TableCell>Details</TableCell>
                       <TableCell align="right">Confirmation Count</TableCell>
-                      <TableCell align="right">Staus</TableCell>
+                      <TableCell align="right">Status</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
