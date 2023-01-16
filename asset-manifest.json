@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/stablecoin-dashboard/static/css/main.cb3e818a.chunk.css",
-    "main.js": "/stablecoin-dashboard/static/js/main.c7c3e4de.chunk.js",
-    "main.js.map": "/stablecoin-dashboard/static/js/main.c7c3e4de.chunk.js.map",
-    "runtime-main.js": "/stablecoin-dashboard/static/js/runtime-main.48d1b531.js",
-    "runtime-main.js.map": "/stablecoin-dashboard/static/js/runtime-main.48d1b531.js.map",
+    "main.js": "/stablecoin-dashboard/static/js/main.df8e8533.chunk.js",
+    "main.js.map": "/stablecoin-dashboard/static/js/main.df8e8533.chunk.js.map",
+    "runtime-main.js": "/stablecoin-dashboard/static/js/runtime-main.9f6a410f.js",
+    "runtime-main.js.map": "/stablecoin-dashboard/static/js/runtime-main.9f6a410f.js.map",
     "static/css/2.473fcec1.chunk.css": "/stablecoin-dashboard/static/css/2.473fcec1.chunk.css",
-    "static/js/2.b5e977fb.chunk.js": "/stablecoin-dashboard/static/js/2.b5e977fb.chunk.js",
-    "static/js/2.b5e977fb.chunk.js.map": "/stablecoin-dashboard/static/js/2.b5e977fb.chunk.js.map",
-    "static/js/3.2c0fef5a.chunk.js": "/stablecoin-dashboard/static/js/3.2c0fef5a.chunk.js",
-    "static/js/3.2c0fef5a.chunk.js.map": "/stablecoin-dashboard/static/js/3.2c0fef5a.chunk.js.map",
-    "static/js/4.44911026.chunk.js": "/stablecoin-dashboard/static/js/4.44911026.chunk.js",
-    "static/js/4.44911026.chunk.js.map": "/stablecoin-dashboard/static/js/4.44911026.chunk.js.map",
+    "static/js/2.5356516c.chunk.js": "/stablecoin-dashboard/static/js/2.5356516c.chunk.js",
+    "static/js/2.5356516c.chunk.js.map": "/stablecoin-dashboard/static/js/2.5356516c.chunk.js.map",
+    "static/js/3.90dcb9d8.chunk.js": "/stablecoin-dashboard/static/js/3.90dcb9d8.chunk.js",
+    "static/js/3.90dcb9d8.chunk.js.map": "/stablecoin-dashboard/static/js/3.90dcb9d8.chunk.js.map",
+    "static/js/4.7ccdd771.chunk.js": "/stablecoin-dashboard/static/js/4.7ccdd771.chunk.js",
+    "static/js/4.7ccdd771.chunk.js.map": "/stablecoin-dashboard/static/js/4.7ccdd771.chunk.js.map",
     "static/js/5.24a83143.chunk.js": "/stablecoin-dashboard/static/js/5.24a83143.chunk.js",
     "static/js/5.24a83143.chunk.js.map": "/stablecoin-dashboard/static/js/5.24a83143.chunk.js.map",
     "static/js/6.dd47642c.chunk.js": "/stablecoin-dashboard/static/js/6.dd47642c.chunk.js",
@@ -77,15 +77,15 @@
     "index.html": "/stablecoin-dashboard/index.html",
     "static/css/2.473fcec1.chunk.css.map": "/stablecoin-dashboard/static/css/2.473fcec1.chunk.css.map",
     "static/css/main.cb3e818a.chunk.css.map": "/stablecoin-dashboard/static/css/main.cb3e818a.chunk.css.map",
-    "static/js/2.b5e977fb.chunk.js.LICENSE.txt": "/stablecoin-dashboard/static/js/2.b5e977fb.chunk.js.LICENSE.txt",
-    "static/js/3.2c0fef5a.chunk.js.LICENSE.txt": "/stablecoin-dashboard/static/js/3.2c0fef5a.chunk.js.LICENSE.txt",
+    "static/js/2.5356516c.chunk.js.LICENSE.txt": "/stablecoin-dashboard/static/js/2.5356516c.chunk.js.LICENSE.txt",
+    "static/js/3.90dcb9d8.chunk.js.LICENSE.txt": "/stablecoin-dashboard/static/js/3.90dcb9d8.chunk.js.LICENSE.txt",
     "static/media/tronIcon.350f3509.jpeg": "/stablecoin-dashboard/static/media/tronIcon.350f3509.jpeg"
   },
   "entrypoints": [
-    "static/js/runtime-main.48d1b531.js",
+    "static/js/runtime-main.9f6a410f.js",
     "static/css/2.473fcec1.chunk.css",
-    "static/js/2.b5e977fb.chunk.js",
+    "static/js/2.5356516c.chunk.js",
     "static/css/main.cb3e818a.chunk.css",
-    "static/js/main.c7c3e4de.chunk.js"
+    "static/js/main.df8e8533.chunk.js"
   ]
 }
