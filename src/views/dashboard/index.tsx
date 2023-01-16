@@ -83,7 +83,7 @@ function Dashbaord() {
       var tronweb = window.tronWeb
       setTronObj(tronweb)
     }
-  }, 10)
+  }, 3000)
 
   console.log("tronObjmain", tronObj)
 

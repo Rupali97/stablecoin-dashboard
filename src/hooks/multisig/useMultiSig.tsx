@@ -13,12 +13,12 @@ import { useGetActiveBlockChain } from '../../state/chains/hooks';
 
 export const useGetRequiredCount = () => {
     const core = useCore();
-    // const { chain } = useNetwork()
-    const chain = useGetActiveBlockChain()
+    const { chain } = useNetwork()
+
     const [response, setResponse] = useState<number>(0)
 
     const fetchData = useCallback(async () => {
-        const contract = await core.contracts[`${core._activeNetwork}`].MultiSig;
+        const contract = await core.contracts[`${core._activeNetwork || chain?.id}`].MultiSig;
         const res = await contract.required()
 
         setResponse(res.toNumber())
@@ -42,7 +42,7 @@ export const useGetConfirmationCount = () => {
     const { chain } = useNetwork()
 
     const fetchData = async (txnId: number) => {
-        const contract = core.contracts[`${chain?.id || core._activeNetwork}`].MultiSig
+        const contract = core.contracts[`${core._activeNetwork || chain?.id}`].MultiSig
 
         const res = await contract.getConfirmationCount(txnId);
         let count = res.toNumber();
@@ -60,7 +60,7 @@ export const useIsTxnConfirmed = (txnId: number) => {
     const [response, setResponse] = useState<boolean>(false)
 
     const fetchData = useCallback(async () => {
-        const contract = await core.contracts[`${chain?.id}`].MultiSig;
+        const contract = await core.contracts[`${chain?.id || core._activeNetwork}`].MultiSig;
         const res = await contract.isConfirmed(txnId)
         setResponse(res)
     }, [chain])
@@ -111,7 +111,7 @@ export const useGetOwners = () => {
     const [response, setResponse] = useState<[]>([])
 
     const fetchData = useCallback(async () => {
-        const contract = await core.contracts[`${chain?.id || core._activeNetwork}`].MultiSig;
+        const contract = await core.contracts[`${core._activeNetwork || chain?.id}`].MultiSig;
         const res = await contract.getOwners()
         setResponse(res)
     }, [chain, core._activeNetwork])
@@ -137,7 +137,7 @@ export const useGetTransactionCount = () => {
     const [response, setResponse] = useState<number>(0)
 
     const fetchData = useCallback(async () => {
-        const contract = await core.contracts[`${chain?.id}`].MultiSig;
+        const contract = await core.contracts[`${chain?.id}` || core._activeNetwork].MultiSig;
         const res = await contract.transactionCount()
         setResponse(res.toNumber())
     }, [chain])
