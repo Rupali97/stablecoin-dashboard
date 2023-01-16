@@ -13,20 +13,20 @@ import {
   DebtPoolTokenRateState
 } from './interface';
 
-export const tronMultiSigContract = "TAtV3NzLMdD13WCcD88jc1arp9cuq1Pa23"
+export const tronMultiSigContract = "TDTQFVuxHkMcFx6ENPwQieRhb81ihSExHj"
 
 export const tronStableCoins = [
   {
     label: "TRUSDA",
     symbol: "TRUSDA",
     chain: 'Nile',
-    contractAdrs: 'TZDqfeWfSdKSpz5qPj4txXdrWJaCmuu8Kz'
+    contractAdrs: 'TPLZEEyWK1M4qfdnR89GeQC3RJknwCU99C'
   },
   {
     label: "TRUSDB",
     symbol: "TRUSDB",
     chain: 'Nile',
-    contractAdrs: 'TWsxx7jHk4p8yQx34R2HxWUoAa5qjAdrto'
+    contractAdrs: 'TMAQ7sn8PeFqKCua65qR3yUjeWUSXgNoTk'
   }
 ]
 
