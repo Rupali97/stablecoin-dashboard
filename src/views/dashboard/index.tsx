@@ -87,8 +87,6 @@ function Dashbaord() {
     }
   }, 3000)
 
-  console.log("tronObjmain", tronObj)
-
   window.addEventListener('message', function (e){
     if (e.data.message && e.data.message.action == "accountsChanged") {
       console.log("accountsChanged event", e.data.message)
@@ -97,7 +95,6 @@ function Dashbaord() {
     }
 
   })
-
   
   if(window.location.href.includes("login")) return <div />
   return (
@@ -117,7 +114,7 @@ function Dashbaord() {
           />
       }
       {
-        chainNetwork?.id !== 5 && 
+        (chainNetwork?.id !== 5 && chain !== "Nile") && 
         <Snackbar
           anchorOrigin={{
             vertical: 'top',

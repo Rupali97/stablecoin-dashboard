@@ -84,7 +84,7 @@ function Admin({ ethTxns, tronTxns }) {
   const numOfConfirmationCountTron = useGetTronConfirmationCount()
   const isTronExecuted = useTronGetIsExecuted()
 
-  let etherscanUrl = config[chainName?.id || _activeNetwork].etherscanUrl
+  let etherscanUrl = config[_activeNetwork].etherscanUrl
   console.log("Inside admin", tronTxns)
   useEffect(() => {
     sortTransactions()

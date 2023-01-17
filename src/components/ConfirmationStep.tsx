@@ -16,7 +16,9 @@ import { truncateMiddle } from '../utils';
 // import { tronWeb } from '../views/dashboard/TestTron';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
 import TouchAppIcon from '@material-ui/icons/TouchApp';
+import WarningIcon from '@material-ui/icons/Warning';
 import LaunchIcon from '@material-ui/icons/Launch';
+import CachedIcon from '@material-ui/icons/Cached';
 import { formatToBN, getBalance, getDisplayBalance } from '../utils/formatBalance';
 import useCore from '../hooks/useCore';
 import useConfirmTxn from '../hooks/useConfirmTxn';
@@ -251,8 +253,8 @@ function ConfirmationStep({allTransactions}) {
                                                       >
                                                             {
                                                                   chain == 'Goerli' ? 
-                                                                  executed ? <CheckCircleIcon /> : numConfirmations < confirmReq ? <TouchAppIcon /> : <LaunchIcon /> :
-                                                                  executed ? <CheckCircleIcon /> : numConfirmations < noOfConfirmReq ? <TouchAppIcon /> : <LaunchIcon />
+                                                                  executed ? <CheckCircleIcon style={{color: '#2C004C'}}/> : numConfirmations < confirmReq ? <CachedIcon /> : <WarningIcon style={{color: '#B61500'}} /> :
+                                                                  executed ? <CheckCircleIcon style={{color: '#2C004C'}} /> : numConfirmations < noOfConfirmReq ? <CachedIcon /> : <WarningIcon style={{color: '#B61500'}} />
                                                             }
                                                       </div>
                                                 </Grid>
