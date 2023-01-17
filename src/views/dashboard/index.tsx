@@ -39,7 +39,7 @@ function Dashbaord() {
 
   // const { address: account, isConnecting, isDisconnected, connector } = useAccount()
   // const { data, error, isLoading, pendingChainId, switchNetwork, status, isSuccess } = useSwitchNetwork()
-  // const { chain  } = useNetwork()
+  const { chain: chainNetwork  } = useNetwork()
   // const { isConnected } = useAccount()
   const [tronObj, setTronObj] = useState<any>()
   const [tronSnackbar, setTronSnackbar] = useState<boolean>(false)
@@ -52,6 +52,8 @@ function Dashbaord() {
   // const { tronLink } = window;
   const chain = useGetActiveBlockChain()
   const setChain = useHandleBlokchainChange()
+
+  console.log('chainNetwork', chainNetwork)
 
 
   useEffect(() => {
@@ -114,6 +116,18 @@ function Dashbaord() {
             message="Please login to TronLink extention wallet first."
           />
       }
+      {
+        chainNetwork?.id !== 5 && 
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+          }}
+            open={chainNetwork?.id !== 5}
+            onClose={() => setTronSnackbar(false)}
+            message="Please switch to a goerli network on Metamask."
+        />
+      }
 
       {/* {
         (!myAccount) && 
@@ -127,6 +141,7 @@ function Dashbaord() {
             message="Please connect to the Metamask on Goerli network or Tronlink on Nile network"
           />
       } */}
+
       <div style={{padding: '28px', display: 'flex', justifyContent: 'flex-end'}}>
         <TextField
           required
